@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>かな練習 · 标日初级上册单词拼写</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="jp">かな書き取り <span style="font-family:inherit">· 单词拼写练习</span></h1>
+    <div class="sub">新版标准日本语 初级上册 · 1065 词</div>
+  </header>
+
+  <!-- ============ 选择范围 ============ -->
+  <section id="setup">
+    <div class="sec-label">选择课文范围</div>
+    <div class="lessons" id="lessonChips"></div>
+    <div class="row">
+      <button class="btn" id="allBtn">全选</button>
+      <button class="btn" id="noneBtn">清空</button>
+      <button class="btn wrongbook" id="wrongBtn">只练错题本（0）</button>
+    </div>
+    <div class="opt">
+      <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
+      <label><input type="checkbox" id="optKanji">题面显示汉字写法</label>
+      <label><input type="checkbox" id="optLen" checked>显示字数格子</label>
+    </div>
+    <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
+    <button class="start" id="startBtn" disabled>请先选择课文</button>
+  </section>
+
+  <!-- ============ 练习 ============ -->
+  <section id="drill" hidden>
+    <div class="drill-top">
+      <button class="quit" id="quitBtn">← 退出</button>
+      <div id="progress"></div>
+      <div class="streak">连对 <b id="streakNum">0</b></div>
+    </div>
+    <div class="card">
+      <div class="tags">
+        <span class="tag pos" id="posTag"></span>
+        <span class="tag lesson" id="lessonTag"></span>
+      </div>
+      <div class="meaning jp" id="meaningEl"></div>
+      <div class="kanji-hint jp" id="kanjiHint" hidden></div>
+      <div class="masu jp" id="masu"></div>
+      <input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入假名，回车判定">
+      <div class="actions">
+        <button class="btn" id="hintBtn">提示下一假名</button>
+        <button class="btn" id="clearBtn">清空</button>
+        <button class="btn" id="skipBtn">跳过（记为答错）</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </section>
+
+  <!-- ============ 结果 ============ -->
+  <section id="result" hidden>
+    <div class="score">
+      <div><div class="num ok" id="scoreCorrect">0</div><div class="lab">答对</div></div>
+      <div><div class="num" id="scoreTotal">0</div><div class="lab">总题数</div></div>
+      <div><div class="num" id="scoreStreak">0</div><div class="lab">最高连对</div></div>
+    </div>
+    <div class="wrong-list" id="wrongListBlock" hidden>
+      <h3>本次答错</h3>
+      <div id="wrongRows"></div>
+    </div>
+    <p class="empty-note" id="allRightNote" hidden>全部答对，漂亮！</p>
+    <div class="row">
+      <button class="btn" id="redoWrongBtn">重练本次错题</button>
+      <button class="btn" id="redoSameBtn">同范围再来一轮</button>
+      <button class="btn" id="backBtn">返回选择</button>
+    </div>
+  </section>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
