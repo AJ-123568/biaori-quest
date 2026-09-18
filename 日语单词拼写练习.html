@@ -1,0 +1,7040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>かな練習 · 标日初级上册单词拼写</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1EE;
+  --panel:#FFFFFF;
+  --ink:#23282B;
+  --muted:#6E7A76;
+  --ai:#33518E;
+  --ai-deep:#26406F;
+  --ai-soft:#DFE6F2;
+  --shu:#BE4441;
+  --shu-soft:#F6E3E2;
+  --midori:#3F7D57;
+  --midori-soft:#E1EFE6;
+  --line:#D7DDD8;
+  --masu-line:#E4E1D6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  min-height:100vh;
+}
+.jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 64px;}
+header.top{
+  display:flex;align-items:baseline;justify-content:space-between;
+  border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px;
+}
+header.top h1{font-size:20px;font-weight:700;letter-spacing:.02em;}
+header.top .sub{font-size:12px;color:var(--muted);}
+main section{margin-top:28px;}
+.note{font-size:13px;color:var(--muted);margin:10px 0 0;}
+
+/* ---------- setup ---------- */
+.sec-label{font-size:13px;font-weight:700;color:var(--ai);letter-spacing:.14em;margin-bottom:10px;}
+.lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
+.chip{
+  border:1px solid var(--line);background:var(--panel);border-radius:6px;
+  padding:7px 4px 5px;text-align:center;cursor:pointer;user-select:none;
+  transition:border-color .12s, background .12s;
+}
+.chip .no{display:block;font-weight:700;font-size:15px;}
+.chip .ct{display:block;font-size:11px;color:var(--muted);line-height:1.3;}
+.chip:hover{border-color:var(--ai);}
+.chip.on{background:var(--ai);border-color:var(--ai);color:#fff;}
+.chip.on .ct{color:#C9D4E8;}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;}
+button{font:inherit;cursor:pointer;}
+.btn{
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:6px;padding:7px 14px;font-size:14px;
+  transition:border-color .12s, background .12s;
+}
+.btn:hover{border-color:var(--ai);color:var(--ai);}
+.btn.wrongbook{color:var(--shu);border-color:#E7C9C7;}
+.btn.wrongbook:hover{border-color:var(--shu);}
+.opt{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:14px;color:var(--muted);}
+.opt label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.opt input{accent-color:var(--ai);width:15px;height:15px;}
+.start{
+  width:100%;margin-top:22px;padding:13px;border:none;border-radius:8px;
+  background:var(--ai);color:#fff;font-size:16px;font-weight:700;letter-spacing:.08em;
+  transition:background .12s;
+}
+.start:hover{background:var(--ai-deep);}
+.start:disabled{background:#A8B2C4;cursor:not-allowed;}
+
+/* ---------- drill ---------- */
+.drill-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:12px;}
+.drill-top .quit{border:none;background:none;color:var(--muted);font-size:13px;padding:4px 2px;}
+.drill-top .quit:hover{color:var(--shu);}
+.streak{font-variant-numeric:tabular-nums;}
+.streak b{color:var(--midori);font-size:15px;}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:28px 26px 24px;position:relative;
+}
+.card .tags{position:absolute;top:-11px;left:20px;display:flex;gap:6px;}
+.tag{
+  font-size:11px;padding:1px 9px;border-radius:99px;background:var(--ink);color:#fff;letter-spacing:.06em;
+}
+.tag.pos{background:var(--ai);}
+.tag.lesson{background:#8B917F;}
+.meaning{font-size:26px;font-weight:700;line-height:1.45;min-height:44px;}
+.kanji-hint{font-size:15px;color:var(--muted);margin-top:2px;}
+
+.masu{
+  display:flex;flex-wrap:wrap;gap:6px;margin:22px 0 4px;
+}
+.masu .cell{
+  width:52px;height:52px;border:1.5px solid var(--masu-line);background:#FDFCF9;
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:700;color:var(--ink);
+  border-radius:2px;
+}
+.masu .cell.filled{border-color:#B9C4B0;}
+.masu.ok .cell{background:var(--midori-soft);border-color:var(--midori);color:var(--midori);}
+.masu.bad .cell{background:var(--shu-soft);border-color:var(--shu);color:var(--shu);}
+.masu.bad .cell.hit{background:var(--midori-soft);border-color:var(--midori);color:var(--midori);}
+
+#ans{
+  width:100%;margin-top:10px;padding:10px 12px;font-size:18px;
+  border:1.5px solid var(--line);border-radius:6px;background:var(--panel);
+  font-family:inherit;color:var(--ink);outline:none;
+}
+#ans:focus{border-color:var(--ai);}
+.actions{display:flex;gap:8px;margin-top:12px;}
+.actions .btn{font-size:13px;padding:6px 12px;}
+.feedback{margin-top:16px;min-height:30px;}
+.fb-msg{font-size:14px;font-weight:700;}
+.fb-msg.ok{color:var(--midori);}
+.fb-msg.bad{color:var(--shu);}
+.reveal{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px;
+  padding-top:12px;border-top:1px dashed var(--line);
+}
+.reveal .kana{font-size:22px;font-weight:800;color:var(--ai);}
+.reveal .kanji{font-size:16px;color:var(--ink);}
+.reveal .say{
+  border:1px solid var(--line);background:var(--panel);border-radius:99px;
+  width:34px;height:34px;font-size:16px;line-height:1;align-self:center;
+}
+.reveal .say:hover{border-color:var(--ai);}
+.enter-tip{font-size:12px;color:var(--muted);margin-top:8px;}
+
+/* ---------- result ---------- */
+.score{display:flex;gap:34px;align-items:baseline;padding:18px 4px;}
+.score .num{font-size:46px;font-weight:800;line-height:1;}
+.score .num.ok{color:var(--midori);}
+.score .lab{font-size:13px;color:var(--muted);margin-top:6px;}
+.wrong-list{margin-top:8px;}
+.wrong-list h3{font-size:14px;color:var(--shu);letter-spacing:.1em;margin-bottom:8px;}
+.wrow{
+  display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;
+  padding:9px 4px;border-bottom:1px solid var(--line);font-size:15px;
+}
+.wrow .l{font-size:11px;color:var(--muted);min-width:44px;}
+.wrow .k{font-weight:800;min-width:120px;}
+.wrow .m{color:var(--muted);font-size:13px;}
+.empty-note{color:var(--muted);font-size:14px;padding:10px 4px;}
+@media (max-width:480px){
+  .masu .cell{width:44px;height:44px;font-size:22px;}
+  .meaning{font-size:21px;}
+  .score{gap:22px;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 class="jp">かな書き取り <span style="font-family:inherit">· 单词拼写练习</span></h1>
+    <div class="sub">新版标准日本语 初级上册 · 1065 词</div>
+  </header>
+
+  <!-- ============ 选择范围 ============ -->
+  <section id="setup">
+    <div class="sec-label">选择课文范围</div>
+    <div class="lessons" id="lessonChips"></div>
+    <div class="row">
+      <button class="btn" id="allBtn">全选</button>
+      <button class="btn" id="noneBtn">清空</button>
+      <button class="btn wrongbook" id="wrongBtn">只练错题本（0）</button>
+    </div>
+    <div class="opt">
+      <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
+      <label><input type="checkbox" id="optKanji">题面显示汉字写法</label>
+      <label><input type="checkbox" id="optLen" checked>显示字数格子</label>
+    </div>
+    <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
+    <button class="start" id="startBtn" disabled>请先选择课文</button>
+  </section>
+
+  <!-- ============ 练习 ============ -->
+  <section id="drill" hidden>
+    <div class="drill-top">
+      <button class="quit" id="quitBtn">← 退出</button>
+      <div id="progress"></div>
+      <div class="streak">连对 <b id="streakNum">0</b></div>
+    </div>
+    <div class="card">
+      <div class="tags">
+        <span class="tag pos" id="posTag"></span>
+        <span class="tag lesson" id="lessonTag"></span>
+      </div>
+      <div class="meaning jp" id="meaningEl"></div>
+      <div class="kanji-hint jp" id="kanjiHint" hidden></div>
+      <div class="masu jp" id="masu"></div>
+      <input id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入假名，回车判定">
+      <div class="actions">
+        <button class="btn" id="hintBtn">提示下一假名</button>
+        <button class="btn" id="clearBtn">清空</button>
+        <button class="btn" id="skipBtn">跳过（记为答错）</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </section>
+
+  <!-- ============ 结果 ============ -->
+  <section id="result" hidden>
+    <div class="score">
+      <div><div class="num ok" id="scoreCorrect">0</div><div class="lab">答对</div></div>
+      <div><div class="num" id="scoreTotal">0</div><div class="lab">总题数</div></div>
+      <div><div class="num" id="scoreStreak">0</div><div class="lab">最高连对</div></div>
+    </div>
+    <div class="wrong-list" id="wrongListBlock" hidden>
+      <h3>本次答错</h3>
+      <div id="wrongRows"></div>
+    </div>
+    <p class="empty-note" id="allRightNote" hidden>全部答对，漂亮！</p>
+    <div class="row">
+      <button class="btn" id="redoWrongBtn">重练本次错题</button>
+      <button class="btn" id="redoSameBtn">同范围再来一轮</button>
+      <button class="btn" id="backBtn">返回选择</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const DATA = {
+  "book": "新版中日交流标准日本语 初级上册（第二版）",
+  "source": "https://github.com/Rabbit-Hu/vocab-helper",
+  "totalWords": 1065,
+  "lessons": [
+    {
+      "lesson": 1,
+      "wordCount": 56,
+      "words": [
+        {
+          "kana": "ちゅうごくじん",
+          "writing": "中国人",
+          "meaning": "中国人",
+          "pos": "名词"
+        },
+        {
+          "kana": "にほんじん",
+          "writing": "日本人",
+          "meaning": "日本人",
+          "pos": "名词"
+        },
+        {
+          "kana": "かんこくじん",
+          "writing": "韓国人",
+          "meaning": "韩国人",
+          "pos": "名词"
+        },
+        {
+          "kana": "アメリカじん",
+          "writing": "アメリカ人",
+          "meaning": "美国人",
+          "pos": "名词"
+        },
+        {
+          "kana": "フランスじん",
+          "writing": "フランス人",
+          "meaning": "法国人",
+          "pos": "名词"
+        },
+        {
+          "kana": "がくせい",
+          "writing": "学生",
+          "meaning": "（大）学生",
+          "pos": "名词"
+        },
+        {
+          "kana": "せんせい",
+          "writing": "先生",
+          "meaning": "老师",
+          "pos": "名词"
+        },
+        {
+          "kana": "りゅうがくせい",
+          "writing": "留学生",
+          "meaning": "留学生",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょうじゅ",
+          "writing": "教授",
+          "meaning": "教授",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃいん",
+          "writing": "社員",
+          "meaning": "职员",
+          "pos": "名词"
+        },
+        {
+          "kana": "かいしゃいん",
+          "writing": "会社員",
+          "meaning": "公司职员",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんいん",
+          "writing": "店員",
+          "meaning": "店员",
+          "pos": "名词"
+        },
+        {
+          "kana": "けんしゅうせい",
+          "writing": "研修生",
+          "meaning": "进修生",
+          "pos": "名词"
+        },
+        {
+          "kana": "きぎょう",
+          "writing": "企業",
+          "meaning": "企业",
+          "pos": "名词"
+        },
+        {
+          "kana": "だいがく",
+          "writing": "大学",
+          "meaning": "大学",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちち",
+          "writing": "父",
+          "meaning": "（我）父亲",
+          "pos": "名词"
+        },
+        {
+          "kana": "かちょう",
+          "writing": "課長",
+          "meaning": "科长",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃちょう",
+          "writing": "社長",
+          "meaning": "总经理，社长",
+          "pos": "名词"
+        },
+        {
+          "kana": "でむかえ",
+          "writing": "出迎え",
+          "meaning": "迎接",
+          "pos": "名词"
+        },
+        {
+          "kana": "あのひと",
+          "writing": "あの人",
+          "meaning": "那个人",
+          "pos": "名词"
+        },
+        {
+          "kana": "わたし",
+          "writing": "わたし",
+          "meaning": "我",
+          "pos": "代词"
+        },
+        {
+          "kana": "あなた",
+          "writing": "あなた",
+          "meaning": "你",
+          "pos": "代词"
+        },
+        {
+          "kana": "どうも",
+          "writing": "どうも",
+          "meaning": "非常，很",
+          "pos": "副词"
+        },
+        {
+          "kana": "はい",
+          "writing": "はい",
+          "meaning": "哎，是",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "いいえ",
+          "writing": "いいえ",
+          "meaning": "不，不是",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "あっ",
+          "writing": "あっ",
+          "meaning": "哎，哎呀",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "り",
+          "writing": "李",
+          "meaning": "李",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おう",
+          "writing": "王",
+          "meaning": "王",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ちょう",
+          "writing": "張",
+          "meaning": "张",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "もり",
+          "writing": "森",
+          "meaning": "森",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "はやし",
+          "writing": "林",
+          "meaning": "林",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おの",
+          "writing": "小野",
+          "meaning": "小野",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "よしだ",
+          "writing": "吉田",
+          "meaning": "吉田",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "たなか",
+          "writing": "田中",
+          "meaning": "田中",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "なかむら",
+          "writing": "中村",
+          "meaning": "中村",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "たろう",
+          "writing": "太郎",
+          "meaning": "太郎",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "キム",
+          "writing": "金",
+          "meaning": "金",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "デュポン",
+          "writing": "デュポン",
+          "meaning": "迪蓬",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "スミス",
+          "writing": "スミス",
+          "meaning": "史密斯",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ジョンソン",
+          "writing": "ジョンソン",
+          "meaning": "约翰逊",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ちゅうごく",
+          "writing": "中国",
+          "meaning": "中国",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "とうきょうだいがく",
+          "writing": "東京大学",
+          "meaning": "东京大学",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ペキンだいがく",
+          "writing": "北京大学",
+          "meaning": "北京大学",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ジェーシーきかく",
+          "writing": "ＪＣ企画",
+          "meaning": "JC策划公司",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ペキンりょこうしゃ",
+          "writing": "北京旅行社",
+          "meaning": "北京旅行社",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "にっちゅうしょうじ",
+          "writing": "日中商事",
+          "meaning": "日中商社",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "こんにちは",
+          "writing": "こんにちは",
+          "meaning": "你好",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "すみません",
+          "writing": "すみません",
+          "meaning": "对不起，请问",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "どうぞ",
+          "writing": "どうぞ",
+          "meaning": "请",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "よろしくおねがいします",
+          "writing": "よろしくお願いします",
+          "meaning": "请多关照",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "はじめまして",
+          "writing": "はじめまして",
+          "meaning": "初次见面",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "こちらこそ",
+          "writing": "こちらこそ",
+          "meaning": "我才要（请您～）",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "そうです",
+          "writing": "そうです",
+          "meaning": "是（这样）",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "ちがいます",
+          "writing": "ちがいます",
+          "meaning": "不是",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "わかりません",
+          "writing": "分かりません",
+          "meaning": "不知道",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "どうもすみません",
+          "writing": "どうもすみません",
+          "meaning": "实在对不起",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 2,
+      "wordCount": 54,
+      "words": [
+        {
+          "kana": "ほん",
+          "writing": "本",
+          "meaning": "书",
+          "pos": "名词"
+        },
+        {
+          "kana": "かばん",
+          "writing": "かばん",
+          "meaning": "包，公文包",
+          "pos": "名词"
+        },
+        {
+          "kana": "ノート",
+          "writing": "ノート",
+          "meaning": "笔记本，本子",
+          "pos": "名词"
+        },
+        {
+          "kana": "えんぴつ",
+          "writing": "鉛筆",
+          "meaning": "铅笔",
+          "pos": "名词"
+        },
+        {
+          "kana": "かさ",
+          "writing": "傘",
+          "meaning": "伞",
+          "pos": "名词"
+        },
+        {
+          "kana": "くつ",
+          "writing": "靴",
+          "meaning": "鞋",
+          "pos": "名词"
+        },
+        {
+          "kana": "しんぶん",
+          "writing": "新聞",
+          "meaning": "报纸",
+          "pos": "名词"
+        },
+        {
+          "kana": "ざっし",
+          "writing": "雑誌",
+          "meaning": "杂志",
+          "pos": "名词"
+        },
+        {
+          "kana": "じしょ",
+          "writing": "辞書",
+          "meaning": "词典",
+          "pos": "名词"
+        },
+        {
+          "kana": "カメラ",
+          "writing": "カメラ",
+          "meaning": "照相机",
+          "pos": "名词"
+        },
+        {
+          "kana": "テレビ",
+          "writing": "テレビ",
+          "meaning": "电视机",
+          "pos": "名词"
+        },
+        {
+          "kana": "パソコン",
+          "writing": "パソコン",
+          "meaning": "个人电脑",
+          "pos": "名词"
+        },
+        {
+          "kana": "ラジオ",
+          "writing": "ラジオ",
+          "meaning": "收音机",
+          "pos": "名词"
+        },
+        {
+          "kana": "でんわ",
+          "writing": "電話",
+          "meaning": "电话",
+          "pos": "名词"
+        },
+        {
+          "kana": "つくえ",
+          "writing": "机",
+          "meaning": "桌子，书桌",
+          "pos": "名词"
+        },
+        {
+          "kana": "いす",
+          "writing": "いす",
+          "meaning": "椅子",
+          "pos": "名词"
+        },
+        {
+          "kana": "かぎ",
+          "writing": "かぎ",
+          "meaning": "钥匙，锁",
+          "pos": "名词"
+        },
+        {
+          "kana": "とけい",
+          "writing": "時計",
+          "meaning": "钟，表",
+          "pos": "名词"
+        },
+        {
+          "kana": "てちょう",
+          "writing": "手帳",
+          "meaning": "记事本",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃしん",
+          "writing": "写真",
+          "meaning": "照片",
+          "pos": "名词"
+        },
+        {
+          "kana": "くるま",
+          "writing": "車",
+          "meaning": "车",
+          "pos": "名词"
+        },
+        {
+          "kana": "じてんしゃ",
+          "writing": "自転車",
+          "meaning": "自行车",
+          "pos": "名词"
+        },
+        {
+          "kana": "おみやげ",
+          "writing": "お土産",
+          "meaning": "礼物",
+          "pos": "名词"
+        },
+        {
+          "kana": "めいさんひん",
+          "writing": "名産品",
+          "meaning": "特产，名产",
+          "pos": "名词"
+        },
+        {
+          "kana": "シルク",
+          "writing": "シルク",
+          "meaning": "丝绸",
+          "pos": "名词"
+        },
+        {
+          "kana": "ハンカチ",
+          "writing": "ハンカチ",
+          "meaning": "手绢",
+          "pos": "名词"
+        },
+        {
+          "kana": "かいしゃ",
+          "writing": "会社",
+          "meaning": "公司",
+          "pos": "名词"
+        },
+        {
+          "kana": "かた",
+          "writing": "方",
+          "meaning": "（敬称）位，人",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひと",
+          "writing": "人",
+          "meaning": "人",
+          "pos": "名词"
+        },
+        {
+          "kana": "かぞく",
+          "writing": "家族",
+          "meaning": "家人，家属",
+          "pos": "名词"
+        },
+        {
+          "kana": "はは",
+          "writing": "母",
+          "meaning": "（我）母亲",
+          "pos": "名词"
+        },
+        {
+          "kana": "おかあさん",
+          "writing": "お母さん",
+          "meaning": "母亲",
+          "pos": "名词"
+        },
+        {
+          "kana": "にほんご",
+          "writing": "日本語",
+          "meaning": "日语",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちゅうごくご",
+          "writing": "中国語",
+          "meaning": "汉语，中文",
+          "pos": "名词"
+        },
+        {
+          "kana": "これ",
+          "writing": "これ",
+          "meaning": "这，这个",
+          "pos": "代词"
+        },
+        {
+          "kana": "それ",
+          "writing": "それ",
+          "meaning": "那，那个",
+          "pos": "代词"
+        },
+        {
+          "kana": "あれ",
+          "writing": "あれ",
+          "meaning": "那，那个",
+          "pos": "代词"
+        },
+        {
+          "kana": "どれ",
+          "writing": "どれ",
+          "meaning": "哪个",
+          "pos": "代词"
+        },
+        {
+          "kana": "なん",
+          "writing": "何",
+          "meaning": "什么",
+          "pos": "代词"
+        },
+        {
+          "kana": "だれ",
+          "writing": "だれ",
+          "meaning": "谁",
+          "pos": "代词"
+        },
+        {
+          "kana": "どなた",
+          "writing": "どなた",
+          "meaning": "哪位",
+          "pos": "代词"
+        },
+        {
+          "kana": "この",
+          "writing": "この",
+          "meaning": "这，这个",
+          "pos": "接续词"
+        },
+        {
+          "kana": "その",
+          "writing": "その",
+          "meaning": "那，那个",
+          "pos": "接续词"
+        },
+        {
+          "kana": "あの",
+          "writing": "あの",
+          "meaning": "那，那个",
+          "pos": "接续词"
+        },
+        {
+          "kana": "どの",
+          "writing": "どの",
+          "meaning": "哪个",
+          "pos": "接续词"
+        },
+        {
+          "kana": "えっ",
+          "writing": "えっ",
+          "meaning": "啊",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "わあ",
+          "writing": "わあ",
+          "meaning": "哇",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "ええ",
+          "writing": "ええ",
+          "meaning": "（应答）嗯，是",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "ながしま",
+          "writing": "長島",
+          "meaning": "长岛",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "にほん",
+          "writing": "日本",
+          "meaning": "日本",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "スワトウ",
+          "writing": "スワトウ",
+          "meaning": "汕头",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ロンドン",
+          "writing": "ロンドン",
+          "meaning": "伦敦",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ありがとうございます",
+          "writing": "ありがとうございます",
+          "meaning": "谢谢",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おいくつ",
+          "writing": "おいくつ",
+          "meaning": "多大",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 3,
+      "wordCount": 43,
+      "words": [
+        {
+          "kana": "デパート",
+          "writing": "デパート",
+          "meaning": "百货商店",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょくどう",
+          "writing": "食堂",
+          "meaning": "食堂",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆうびんきょく",
+          "writing": "郵便局",
+          "meaning": "邮局",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぎんこう",
+          "writing": "銀行",
+          "meaning": "银行",
+          "pos": "名词"
+        },
+        {
+          "kana": "としょかん",
+          "writing": "図書館",
+          "meaning": "图书馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "マンション",
+          "writing": "マンション",
+          "meaning": "（高级）公寓",
+          "pos": "名词"
+        },
+        {
+          "kana": "ホテル",
+          "writing": "ホテル",
+          "meaning": "宾馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "コンビニ",
+          "writing": "コンビニ",
+          "meaning": "便利店",
+          "pos": "名词"
+        },
+        {
+          "kana": "きっさてん",
+          "writing": "喫茶店",
+          "meaning": "咖啡馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "びょういん",
+          "writing": "病院",
+          "meaning": "医院",
+          "pos": "名词"
+        },
+        {
+          "kana": "ほんや",
+          "writing": "本屋",
+          "meaning": "书店",
+          "pos": "名词"
+        },
+        {
+          "kana": "レストラン",
+          "writing": "レストラン",
+          "meaning": "餐馆，西餐馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "ビル",
+          "writing": "ビル",
+          "meaning": "大楼，大厦",
+          "pos": "名词"
+        },
+        {
+          "kana": "たてもの",
+          "writing": "建物",
+          "meaning": "大楼，建筑物",
+          "pos": "名词"
+        },
+        {
+          "kana": "うりば",
+          "writing": "売り場",
+          "meaning": "柜台，出售处",
+          "pos": "名词"
+        },
+        {
+          "kana": "トイレ",
+          "writing": "トイレ",
+          "meaning": "厕所，盥洗室",
+          "pos": "名词"
+        },
+        {
+          "kana": "いりぐち",
+          "writing": "入り口",
+          "meaning": "入口",
+          "pos": "名词"
+        },
+        {
+          "kana": "じむしょ",
+          "writing": "事務所",
+          "meaning": "事务所，办事处",
+          "pos": "名词"
+        },
+        {
+          "kana": "うけつけ",
+          "writing": "受付",
+          "meaning": "接待处",
+          "pos": "名词"
+        },
+        {
+          "kana": "バーゲンかいじょう",
+          "writing": "バーゲン会場",
+          "meaning": "降价处理大卖场",
+          "pos": "名词"
+        },
+        {
+          "kana": "エスカレーター",
+          "writing": "エスカレーター",
+          "meaning": "自动扶梯",
+          "pos": "名词"
+        },
+        {
+          "kana": "ふく",
+          "writing": "服",
+          "meaning": "衣服",
+          "pos": "名词"
+        },
+        {
+          "kana": "コート",
+          "writing": "コート",
+          "meaning": "风衣，大衣",
+          "pos": "名词"
+        },
+        {
+          "kana": "デジカメ",
+          "writing": "デジカメ",
+          "meaning": "数码相机",
+          "pos": "名词"
+        },
+        {
+          "kana": "くに",
+          "writing": "国",
+          "meaning": "国，国家",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちず",
+          "writing": "地図",
+          "meaning": "地图",
+          "pos": "名词"
+        },
+        {
+          "kana": "となり",
+          "writing": "隣",
+          "meaning": "旁边",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅうへん",
+          "writing": "周辺",
+          "meaning": "附近，周边",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょう",
+          "writing": "今日",
+          "meaning": "今天",
+          "pos": "名词"
+        },
+        {
+          "kana": "すいようび",
+          "writing": "水曜日",
+          "meaning": "星期三",
+          "pos": "名词"
+        },
+        {
+          "kana": "もくようび",
+          "writing": "木曜日",
+          "meaning": "星期四",
+          "pos": "名词"
+        },
+        {
+          "kana": "ここ",
+          "writing": "ここ",
+          "meaning": "这里，这儿",
+          "pos": "代词"
+        },
+        {
+          "kana": "そこ",
+          "writing": "そこ",
+          "meaning": "那里，那儿",
+          "pos": "代词"
+        },
+        {
+          "kana": "あそこ",
+          "writing": "あそこ",
+          "meaning": "那里，那儿",
+          "pos": "代词"
+        },
+        {
+          "kana": "こちら",
+          "writing": "こちら",
+          "meaning": "这儿，这边",
+          "pos": "代词"
+        },
+        {
+          "kana": "そちら",
+          "writing": "そちら",
+          "meaning": "那儿，那边",
+          "pos": "代词"
+        },
+        {
+          "kana": "あちら",
+          "writing": "あちら",
+          "meaning": "那儿，那边",
+          "pos": "代词"
+        },
+        {
+          "kana": "どこ",
+          "writing": "どこ",
+          "meaning": "哪里，哪儿",
+          "pos": "代词"
+        },
+        {
+          "kana": "どちら",
+          "writing": "どちら",
+          "meaning": "哪儿，哪边",
+          "pos": "代词"
+        },
+        {
+          "kana": "あのう",
+          "writing": "あのう",
+          "meaning": "请问，对不起",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "シャンハイ",
+          "writing": "上海",
+          "meaning": "上海",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "とうきょう",
+          "writing": "東京",
+          "meaning": "东京",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "いくら",
+          "writing": "いくら",
+          "meaning": "多少钱",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 4,
+      "wordCount": 49,
+      "words": [
+        {
+          "kana": "へや",
+          "writing": "部屋",
+          "meaning": "房间，屋子",
+          "pos": "名词"
+        },
+        {
+          "kana": "にわ",
+          "writing": "庭",
+          "meaning": "院子",
+          "pos": "名词"
+        },
+        {
+          "kana": "いえ",
+          "writing": "家",
+          "meaning": "家",
+          "pos": "名词"
+        },
+        {
+          "kana": "いま",
+          "writing": "居間",
+          "meaning": "起居室",
+          "pos": "名词"
+        },
+        {
+          "kana": "れいぞうこ",
+          "writing": "冷蔵庫",
+          "meaning": "冰箱",
+          "pos": "名词"
+        },
+        {
+          "kana": "かべ",
+          "writing": "壁",
+          "meaning": "墙壁",
+          "pos": "名词"
+        },
+        {
+          "kana": "スイッチ",
+          "writing": "スイッチ",
+          "meaning": "开关",
+          "pos": "名词"
+        },
+        {
+          "kana": "ほんだな",
+          "writing": "本棚",
+          "meaning": "书架",
+          "pos": "名词"
+        },
+        {
+          "kana": "ベッド",
+          "writing": "ベッド",
+          "meaning": "床",
+          "pos": "名词"
+        },
+        {
+          "kana": "ねこ",
+          "writing": "猫",
+          "meaning": "猫",
+          "pos": "名词"
+        },
+        {
+          "kana": "いぬ",
+          "writing": "犬",
+          "meaning": "狗",
+          "pos": "名词"
+        },
+        {
+          "kana": "はこ",
+          "writing": "箱",
+          "meaning": "盒子，箱子",
+          "pos": "名词"
+        },
+        {
+          "kana": "めがね",
+          "writing": "眼鏡",
+          "meaning": "眼镜",
+          "pos": "名词"
+        },
+        {
+          "kana": "ビデオ",
+          "writing": "ビデオ",
+          "meaning": "录像机",
+          "pos": "名词"
+        },
+        {
+          "kana": "サッカーボール",
+          "writing": "サッカーボール",
+          "meaning": "足球",
+          "pos": "名词"
+        },
+        {
+          "kana": "ビール",
+          "writing": "ビール",
+          "meaning": "啤酒",
+          "pos": "名词"
+        },
+        {
+          "kana": "ウイスキー",
+          "writing": "ウイスキー",
+          "meaning": "威士忌",
+          "pos": "名词"
+        },
+        {
+          "kana": "こども",
+          "writing": "子供",
+          "meaning": "孩子，小孩",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょうだい",
+          "writing": "兄弟",
+          "meaning": "兄弟姐妹",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょうしん",
+          "writing": "両親",
+          "meaning": "父母，双亲",
+          "pos": "名词"
+        },
+        {
+          "kana": "いもうと",
+          "writing": "妹",
+          "meaning": "妹妹",
+          "pos": "名词"
+        },
+        {
+          "kana": "おとこ",
+          "writing": "男",
+          "meaning": "男",
+          "pos": "名词"
+        },
+        {
+          "kana": "おんな",
+          "writing": "女",
+          "meaning": "女",
+          "pos": "名词"
+        },
+        {
+          "kana": "せいと",
+          "writing": "生徒",
+          "meaning": "学生",
+          "pos": "名词"
+        },
+        {
+          "kana": "うえ",
+          "writing": "上",
+          "meaning": "上面",
+          "pos": "名词"
+        },
+        {
+          "kana": "そと",
+          "writing": "外",
+          "meaning": "外面",
+          "pos": "名词"
+        },
+        {
+          "kana": "なか",
+          "writing": "中",
+          "meaning": "里面，内部，中间",
+          "pos": "名词"
+        },
+        {
+          "kana": "した",
+          "writing": "下",
+          "meaning": "下面",
+          "pos": "名词"
+        },
+        {
+          "kana": "まえ",
+          "writing": "前",
+          "meaning": "前，前面",
+          "pos": "名词"
+        },
+        {
+          "kana": "うしろ",
+          "writing": "後ろ",
+          "meaning": "后，后面",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちかく",
+          "writing": "近く",
+          "meaning": "附近，近旁",
+          "pos": "名词"
+        },
+        {
+          "kana": "ばしょ",
+          "writing": "場所",
+          "meaning": "所在地，地方，场所",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょうしつ",
+          "writing": "教室",
+          "meaning": "教室",
+          "pos": "名词"
+        },
+        {
+          "kana": "かいぎしつ",
+          "writing": "会議室",
+          "meaning": "会议室",
+          "pos": "名词"
+        },
+        {
+          "kana": "としょしつ",
+          "writing": "図書室",
+          "meaning": "图书室",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうえん",
+          "writing": "公園",
+          "meaning": "公园",
+          "pos": "名词"
+        },
+        {
+          "kana": "はなや",
+          "writing": "花屋",
+          "meaning": "花店",
+          "pos": "名词"
+        },
+        {
+          "kana": "ばいてん",
+          "writing": "売店",
+          "meaning": "小卖部，售货亭",
+          "pos": "名词"
+        },
+        {
+          "kana": "えき",
+          "writing": "駅",
+          "meaning": "车站",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちかてつ",
+          "writing": "地下鉄",
+          "meaning": "地铁",
+          "pos": "名词"
+        },
+        {
+          "kana": "き",
+          "writing": "樹",
+          "meaning": "树，树木",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひとりぐらし",
+          "writing": "一人暮らし",
+          "meaning": "单身生活",
+          "pos": "名词"
+        },
+        {
+          "kana": "あります",
+          "writing": "あります",
+          "meaning": "有，在（非意志者）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "います",
+          "writing": "います",
+          "meaning": "有，在（具意志者）",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "ええと",
+          "writing": "ええと",
+          "meaning": "啊，嗯",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "よこはま",
+          "writing": "横浜",
+          "meaning": "横滨",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "なごや",
+          "writing": "名古屋",
+          "meaning": "名古屋",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おおさか",
+          "writing": "大阪",
+          "meaning": "大阪",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ジェーアール",
+          "writing": "ＪＲ",
+          "meaning": "JR",
+          "pos": "专有名词"
+        }
+      ]
+    },
+    {
+      "lesson": 5,
+      "wordCount": 51,
+      "words": [
+        {
+          "kana": "いま",
+          "writing": "今",
+          "meaning": "现在",
+          "pos": "名词"
+        },
+        {
+          "kana": "せんしゅう",
+          "writing": "先週",
+          "meaning": "上个星期",
+          "pos": "名词"
+        },
+        {
+          "kana": "らいしゅう",
+          "writing": "来週",
+          "meaning": "下个星期",
+          "pos": "名词"
+        },
+        {
+          "kana": "さらいしゅう",
+          "writing": "さ来週",
+          "meaning": "下下个星期",
+          "pos": "名词"
+        },
+        {
+          "kana": "こんしゅう",
+          "writing": "今週",
+          "meaning": "这个星期",
+          "pos": "名词"
+        },
+        {
+          "kana": "きのう",
+          "writing": "昨日",
+          "meaning": "昨天",
+          "pos": "名词"
+        },
+        {
+          "kana": "あした",
+          "writing": "明日",
+          "meaning": "明天",
+          "pos": "名词"
+        },
+        {
+          "kana": "あさって",
+          "writing": "あさって",
+          "meaning": "后天",
+          "pos": "名词"
+        },
+        {
+          "kana": "おととい",
+          "writing": "おととい",
+          "meaning": "前天",
+          "pos": "名词"
+        },
+        {
+          "kana": "まいにち",
+          "writing": "毎日",
+          "meaning": "每天，每日",
+          "pos": "名词"
+        },
+        {
+          "kana": "まいあさ",
+          "writing": "毎朝",
+          "meaning": "每天早晨",
+          "pos": "名词"
+        },
+        {
+          "kana": "まいばん",
+          "writing": "毎晩",
+          "meaning": "每天晚上",
+          "pos": "名词"
+        },
+        {
+          "kana": "まいしゅう",
+          "writing": "毎週",
+          "meaning": "每个星期",
+          "pos": "名词"
+        },
+        {
+          "kana": "ごぜん",
+          "writing": "午前",
+          "meaning": "上午",
+          "pos": "名词"
+        },
+        {
+          "kana": "ごご",
+          "writing": "午後/ピーエム",
+          "meaning": "下午",
+          "pos": "名词"
+        },
+        {
+          "kana": "にちようび",
+          "writing": "日曜日",
+          "meaning": "星期日",
+          "pos": "名词"
+        },
+        {
+          "kana": "げつようび",
+          "writing": "月曜日",
+          "meaning": "星期一",
+          "pos": "名词"
+        },
+        {
+          "kana": "かようび",
+          "writing": "火曜日",
+          "meaning": "星期二",
+          "pos": "名词"
+        },
+        {
+          "kana": "きんようび",
+          "writing": "金曜日",
+          "meaning": "星期五",
+          "pos": "名词"
+        },
+        {
+          "kana": "どようび",
+          "writing": "土曜日",
+          "meaning": "星期六",
+          "pos": "名词"
+        },
+        {
+          "kana": "けさ",
+          "writing": "今朝",
+          "meaning": "今天早晨",
+          "pos": "名词"
+        },
+        {
+          "kana": "こんばん",
+          "writing": "今晩",
+          "meaning": "今天晚上",
+          "pos": "名词"
+        },
+        {
+          "kana": "らいねん",
+          "writing": "来年",
+          "meaning": "明年",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょねん",
+          "writing": "去年",
+          "meaning": "去年",
+          "pos": "名词"
+        },
+        {
+          "kana": "よる",
+          "writing": "夜",
+          "meaning": "晚上，夜里，夜晚",
+          "pos": "名词"
+        },
+        {
+          "kana": "ばん",
+          "writing": "晩",
+          "meaning": "晚上",
+          "pos": "名词"
+        },
+        {
+          "kana": "あさ",
+          "writing": "朝",
+          "meaning": "早晨",
+          "pos": "名词"
+        },
+        {
+          "kana": "がっこう",
+          "writing": "学校",
+          "meaning": "学校",
+          "pos": "名词"
+        },
+        {
+          "kana": "しけん",
+          "writing": "試験",
+          "meaning": "考试",
+          "pos": "名词"
+        },
+        {
+          "kana": "しごと",
+          "writing": "仕事",
+          "meaning": "工作",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちこく",
+          "writing": "遅刻",
+          "meaning": "迟到",
+          "pos": "名词"
+        },
+        {
+          "kana": "やすみ",
+          "writing": "休み",
+          "meaning": "休息",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅっちょう",
+          "writing": "出張",
+          "meaning": "出差",
+          "pos": "名词"
+        },
+        {
+          "kana": "けんしゅう",
+          "writing": "研修",
+          "meaning": "进修",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょこう",
+          "writing": "旅行",
+          "meaning": "旅行",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんらんかい",
+          "writing": "展覧会",
+          "meaning": "展览会",
+          "pos": "名词"
+        },
+        {
+          "kana": "かんげいかい",
+          "writing": "歓迎会",
+          "meaning": "欢迎会",
+          "pos": "名词"
+        },
+        {
+          "kana": "パーティー",
+          "writing": "パーティー",
+          "meaning": "联欢会",
+          "pos": "名词"
+        },
+        {
+          "kana": "おたく",
+          "writing": "お宅",
+          "meaning": "府上，（您）家",
+          "pos": "名词"
+        },
+        {
+          "kana": "いつ",
+          "writing": "いつ",
+          "meaning": "什么时候",
+          "pos": "代词"
+        },
+        {
+          "kana": "やすみます",
+          "writing": "休みます",
+          "meaning": "休息",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はたらきます",
+          "writing": "働きます",
+          "meaning": "工作",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はじまります",
+          "writing": "始まります",
+          "meaning": "开始",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おわります",
+          "writing": "終わります",
+          "meaning": "结束",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おきます",
+          "writing": "起きます",
+          "meaning": "起床",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "ねます",
+          "writing": "寝ます",
+          "meaning": "睡觉",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "べんきょうします",
+          "writing": "勉強します",
+          "meaning": "学习",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "いつも",
+          "writing": "いつも",
+          "meaning": "经常，总是",
+          "pos": "副词"
+        },
+        {
+          "kana": "ペキンししゃ",
+          "writing": "北京支社",
+          "meaning": "北京分社",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "こうべ",
+          "writing": "神戸",
+          "meaning": "神户",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おはよう",
+          "writing": "お早う",
+          "meaning": "你早",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 6,
+      "wordCount": 44,
+      "words": [
+        {
+          "kana": "らいげつ",
+          "writing": "来月",
+          "meaning": "下个月",
+          "pos": "名词"
+        },
+        {
+          "kana": "せんげつ",
+          "writing": "先月",
+          "meaning": "上个月",
+          "pos": "名词"
+        },
+        {
+          "kana": "よなか",
+          "writing": "夜中",
+          "meaning": "午夜，半夜",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆうべ",
+          "writing": "ゆうべ",
+          "meaning": "昨天晚上",
+          "pos": "名词"
+        },
+        {
+          "kana": "コンサート",
+          "writing": "コンサート",
+          "meaning": "音乐会",
+          "pos": "名词"
+        },
+        {
+          "kana": "クリスマス",
+          "writing": "クリスマス",
+          "meaning": "圣诞节",
+          "pos": "名词"
+        },
+        {
+          "kana": "たんじょうび",
+          "writing": "誕生日",
+          "meaning": "生日",
+          "pos": "名词"
+        },
+        {
+          "kana": "こどものひ",
+          "writing": "こどもの日",
+          "meaning": "儿童节",
+          "pos": "名词"
+        },
+        {
+          "kana": "なつやすみ",
+          "writing": "夏休み",
+          "meaning": "暑假",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうつうきかん",
+          "writing": "交通機関",
+          "meaning": "交通工具",
+          "pos": "名词"
+        },
+        {
+          "kana": "しんかんせん",
+          "writing": "新幹線",
+          "meaning": "新干线",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひこうき",
+          "writing": "飛行機",
+          "meaning": "飞机",
+          "pos": "名词"
+        },
+        {
+          "kana": "フェリー",
+          "writing": "フェリー",
+          "meaning": "渡轮",
+          "pos": "名词"
+        },
+        {
+          "kana": "でんしゃ",
+          "writing": "電車",
+          "meaning": "电车",
+          "pos": "名词"
+        },
+        {
+          "kana": "バス",
+          "writing": "バス",
+          "meaning": "公共汽车",
+          "pos": "名词"
+        },
+        {
+          "kana": "タクシー",
+          "writing": "タクシー",
+          "meaning": "出租车",
+          "pos": "名词"
+        },
+        {
+          "kana": "びじゅつかん",
+          "writing": "美術館",
+          "meaning": "美术馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "アパート",
+          "writing": "アパート",
+          "meaning": "公寓",
+          "pos": "名词"
+        },
+        {
+          "kana": "うち",
+          "writing": "うち",
+          "meaning": "家",
+          "pos": "名词"
+        },
+        {
+          "kana": "プール",
+          "writing": "プール",
+          "meaning": "游泳池",
+          "pos": "名词"
+        },
+        {
+          "kana": "ともだち",
+          "writing": "友達",
+          "meaning": "朋友",
+          "pos": "名词"
+        },
+        {
+          "kana": "おとうと",
+          "writing": "弟",
+          "meaning": "弟弟",
+          "pos": "名词"
+        },
+        {
+          "kana": "いきます",
+          "writing": "行きます",
+          "meaning": "去",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かえります",
+          "writing": "帰ります",
+          "meaning": "回来，回去",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "きます",
+          "writing": "来ます",
+          "meaning": "来",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "たしか",
+          "writing": "たしか",
+          "meaning": "好像是，大概；的确",
+          "pos": "副词"
+        },
+        {
+          "kana": "まっすぐ",
+          "writing": "まっすぐ",
+          "meaning": "径直，笔直",
+          "pos": "副词"
+        },
+        {
+          "kana": "いっしょに",
+          "writing": "いっしょに",
+          "meaning": "一起",
+          "pos": "副词"
+        },
+        {
+          "kana": "さとう",
+          "writing": "佐藤",
+          "meaning": "佐藤",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ペキン",
+          "writing": "北京",
+          "meaning": "北京",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "アメリカ",
+          "writing": "アメリカ",
+          "meaning": "美国",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "かんこく",
+          "writing": "韓国",
+          "meaning": "韩国",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "フランス",
+          "writing": "フランス",
+          "meaning": "法国",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ひろしま",
+          "writing": "広島",
+          "meaning": "广岛",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "きょうと",
+          "writing": "京都",
+          "meaning": "京都",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ほっかいどう",
+          "writing": "北海道",
+          "meaning": "北海道",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "はこね",
+          "writing": "箱根",
+          "meaning": "箱根",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ぎんざ",
+          "writing": "銀座",
+          "meaning": "银座",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "しぶや",
+          "writing": "渋谷",
+          "meaning": "涩谷",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "しんじゅく",
+          "writing": "新宿",
+          "meaning": "新宿",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おつかれさまでした",
+          "writing": "お疲れ様でした",
+          "meaning": "够累的",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おさきにしつれいします",
+          "writing": "お先に失礼します",
+          "meaning": "我先走了，我先告辞了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "あるいて",
+          "writing": "歩いて",
+          "meaning": "步行",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "たいへんですね",
+          "writing": "大変ですね",
+          "meaning": "真不容易，够受的，不得了",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 7,
+      "wordCount": 54,
+      "words": [
+        {
+          "kana": "コーヒー",
+          "writing": "コーヒー",
+          "meaning": "咖啡",
+          "pos": "名词"
+        },
+        {
+          "kana": "コーラ",
+          "writing": "コーラ",
+          "meaning": "可乐",
+          "pos": "名词"
+        },
+        {
+          "kana": "おちゃ",
+          "writing": "お茶",
+          "meaning": "茶",
+          "pos": "名词"
+        },
+        {
+          "kana": "ワイン",
+          "writing": "ワイン",
+          "meaning": "葡萄酒",
+          "pos": "名词"
+        },
+        {
+          "kana": "パン",
+          "writing": "パン",
+          "meaning": "面包",
+          "pos": "名词"
+        },
+        {
+          "kana": "ケーキ",
+          "writing": "ケーキ",
+          "meaning": "蛋糕",
+          "pos": "名词"
+        },
+        {
+          "kana": "おかゆ",
+          "writing": "お粥",
+          "meaning": "粥",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひるごはん",
+          "writing": "昼ご飯",
+          "meaning": "午饭",
+          "pos": "名词"
+        },
+        {
+          "kana": "おべんとう",
+          "writing": "お弁当",
+          "meaning": "盒饭",
+          "pos": "名词"
+        },
+        {
+          "kana": "そば",
+          "writing": "そば",
+          "meaning": "荞麦面",
+          "pos": "名词"
+        },
+        {
+          "kana": "うどん",
+          "writing": "うどん",
+          "meaning": "面条",
+          "pos": "名词"
+        },
+        {
+          "kana": "おやこどん",
+          "writing": "親子丼",
+          "meaning": "鸡肉鸡蛋盖饭",
+          "pos": "名词"
+        },
+        {
+          "kana": "カレー",
+          "writing": "カレー",
+          "meaning": "咖喱（饭）",
+          "pos": "名词"
+        },
+        {
+          "kana": "たまご",
+          "writing": "卵",
+          "meaning": "鸡蛋",
+          "pos": "名词"
+        },
+        {
+          "kana": "チーズ",
+          "writing": "チーズ",
+          "meaning": "干酪",
+          "pos": "名词"
+        },
+        {
+          "kana": "リンゴ",
+          "writing": "リンゴ",
+          "meaning": "苹果",
+          "pos": "名词"
+        },
+        {
+          "kana": "イチゴ",
+          "writing": "イチゴ",
+          "meaning": "草莓",
+          "pos": "名词"
+        },
+        {
+          "kana": "そばや",
+          "writing": "そば屋",
+          "meaning": "荞麦面馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "テニス",
+          "writing": "テニス",
+          "meaning": "网球",
+          "pos": "名词"
+        },
+        {
+          "kana": "ジョギング",
+          "writing": "ジョギング",
+          "meaning": "慢跑，跑步",
+          "pos": "名词"
+        },
+        {
+          "kana": "サッカー",
+          "writing": "サッカー",
+          "meaning": "足球",
+          "pos": "名词"
+        },
+        {
+          "kana": "やきゅう",
+          "writing": "野球",
+          "meaning": "棒球",
+          "pos": "名词"
+        },
+        {
+          "kana": "もうしこみしょ",
+          "writing": "申込書",
+          "meaning": "申请书",
+          "pos": "名词"
+        },
+        {
+          "kana": "てがみ",
+          "writing": "手紙",
+          "meaning": "信",
+          "pos": "名词"
+        },
+        {
+          "kana": "シーディー",
+          "writing": "ＣＤ",
+          "meaning": "CD",
+          "pos": "名词"
+        },
+        {
+          "kana": "おんがく",
+          "writing": "音楽",
+          "meaning": "音乐",
+          "pos": "名词"
+        },
+        {
+          "kana": "えいが",
+          "writing": "映画",
+          "meaning": "电影",
+          "pos": "名词"
+        },
+        {
+          "kana": "どうぶつえん",
+          "writing": "動物園",
+          "meaning": "动物园",
+          "pos": "名词"
+        },
+        {
+          "kana": "パンダ",
+          "writing": "パンダ",
+          "meaning": "熊猫",
+          "pos": "名词"
+        },
+        {
+          "kana": "のみます",
+          "writing": "飲みます",
+          "meaning": "喝",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かいます",
+          "writing": "買います",
+          "meaning": "买",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "とります",
+          "writing": "撮ります",
+          "meaning": "拍照，拍摄",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かきます",
+          "writing": "書きます",
+          "meaning": "写",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "よみます",
+          "writing": "読みます",
+          "meaning": "读",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "ききます",
+          "writing": "聞きます",
+          "meaning": "听",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "たべます",
+          "writing": "食べます",
+          "meaning": "吃",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "みます",
+          "writing": "見ます",
+          "meaning": "看",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "します",
+          "writing": "します",
+          "meaning": "干，做",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "そうじします",
+          "writing": "掃除します",
+          "meaning": "打扫，扫除",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "これから",
+          "writing": "これから",
+          "meaning": "从现在起，今后",
+          "pos": "副词"
+        },
+        {
+          "kana": "じゃあ",
+          "writing": "じゃあ",
+          "meaning": "那么",
+          "pos": "接续词"
+        },
+        {
+          "kana": "では",
+          "writing": "では",
+          "meaning": "那么",
+          "pos": "接续词"
+        },
+        {
+          "kana": "いらっしゃいませ",
+          "writing": "いらっしゃいませ",
+          "meaning": "欢迎光临",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "しつれいします",
+          "writing": "失礼します",
+          "meaning": "告辞了，我走了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "しつれいしました",
+          "writing": "失礼しました",
+          "meaning": "打搅了，失礼了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "いってまいります",
+          "writing": "いってまいります",
+          "meaning": "我走了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "いってきます",
+          "writing": "いってきます",
+          "meaning": "我走了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "いってらっしゃい",
+          "writing": "いってらっしゃい",
+          "meaning": "你走好",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "ただいま",
+          "writing": "ただいま",
+          "meaning": "我回来了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おかえりなさい",
+          "writing": "お帰りなさい",
+          "meaning": "你回来了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "かしこまりました",
+          "writing": "かしこまりました",
+          "meaning": "我知道了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おじゃまします",
+          "writing": "お邪魔します",
+          "meaning": "打扰了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "ください",
+          "writing": "ください",
+          "meaning": "给我",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "ごぜんちゅう",
+          "writing": "午前中",
+          "meaning": "上午",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 8,
+      "wordCount": 53,
+      "words": [
+        {
+          "kana": "プレゼント",
+          "writing": "プレゼント",
+          "meaning": "礼物",
+          "pos": "名词"
+        },
+        {
+          "kana": "チケット",
+          "writing": "チケット",
+          "meaning": "票",
+          "pos": "名词"
+        },
+        {
+          "kana": "パンフレット",
+          "writing": "パンフレット",
+          "meaning": "小册子",
+          "pos": "名词"
+        },
+        {
+          "kana": "きねんひん",
+          "writing": "記念品",
+          "meaning": "纪念品",
+          "pos": "名词"
+        },
+        {
+          "kana": "スケジュールひょう",
+          "writing": "スケジュール表",
+          "meaning": "日程表",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃしんしゅう",
+          "writing": "写真集",
+          "meaning": "影集",
+          "pos": "名词"
+        },
+        {
+          "kana": "はな",
+          "writing": "花",
+          "meaning": "花",
+          "pos": "名词"
+        },
+        {
+          "kana": "おかね",
+          "writing": "お金",
+          "meaning": "钱，金钱",
+          "pos": "名词"
+        },
+        {
+          "kana": "ボールペン",
+          "writing": "ボールペン",
+          "meaning": "圆珠笔",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅくだい",
+          "writing": "宿題",
+          "meaning": "作业",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうくうびん",
+          "writing": "航空便",
+          "meaning": "航空邮件",
+          "pos": "名词"
+        },
+        {
+          "kana": "そくたつ",
+          "writing": "速達",
+          "meaning": "速递，快件",
+          "pos": "名词"
+        },
+        {
+          "kana": "ファックス",
+          "writing": "ファックス",
+          "meaning": "传真",
+          "pos": "名词"
+        },
+        {
+          "kana": "メール",
+          "writing": "メール",
+          "meaning": "邮件",
+          "pos": "名词"
+        },
+        {
+          "kana": "でんわばんごう",
+          "writing": "電話番号",
+          "meaning": "电话号码",
+          "pos": "名词"
+        },
+        {
+          "kana": "じゅうしょ",
+          "writing": "住所",
+          "meaning": "住址",
+          "pos": "名词"
+        },
+        {
+          "kana": "なまえ",
+          "writing": "名前",
+          "meaning": "姓名",
+          "pos": "名词"
+        },
+        {
+          "kana": "けん",
+          "writing": "件",
+          "meaning": "事件，事情",
+          "pos": "名词"
+        },
+        {
+          "kana": "しんぶんし",
+          "writing": "新聞紙",
+          "meaning": "报纸",
+          "pos": "名词"
+        },
+        {
+          "kana": "かみひこうき",
+          "writing": "紙飛行機",
+          "meaning": "纸折的飞机",
+          "pos": "名词"
+        },
+        {
+          "kana": "チョコレート",
+          "writing": "チョコレート",
+          "meaning": "巧克力",
+          "pos": "名词"
+        },
+        {
+          "kana": "アイスクリーム",
+          "writing": "アイスクリーム",
+          "meaning": "冰激凌",
+          "pos": "名词"
+        },
+        {
+          "kana": "こむぎこ",
+          "writing": "小麦粉",
+          "meaning": "面粉",
+          "pos": "名词"
+        },
+        {
+          "kana": "はし",
+          "writing": "はし",
+          "meaning": "筷子",
+          "pos": "名词"
+        },
+        {
+          "kana": "スプーン",
+          "writing": "スプーン",
+          "meaning": "勺子",
+          "pos": "名词"
+        },
+        {
+          "kana": "おにいさん",
+          "writing": "お兄さん",
+          "meaning": "哥哥",
+          "pos": "名词"
+        },
+        {
+          "kana": "かんこくご",
+          "writing": "韓国語",
+          "meaning": "韩语",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆうがた",
+          "writing": "夕方",
+          "meaning": "傍晚",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひるやすみ",
+          "writing": "昼休み",
+          "meaning": "午休",
+          "pos": "名词"
+        },
+        {
+          "kana": "もらいます",
+          "writing": "もらいます",
+          "meaning": "拿到，得到",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あいます",
+          "writing": "会います",
+          "meaning": "见",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おくります",
+          "writing": "送ります",
+          "meaning": "寄",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "つくります",
+          "writing": "作ります",
+          "meaning": "做，制造",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "ふとります",
+          "writing": "太ります",
+          "meaning": "胖",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "だします",
+          "writing": "出します",
+          "meaning": "寄（信）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "とどきます",
+          "writing": "届きます",
+          "meaning": "收到，送到，寄到",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かきます",
+          "writing": "かきます",
+          "meaning": "画",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かします",
+          "writing": "貸します",
+          "meaning": "借出，借给",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "ならいます",
+          "writing": "習います",
+          "meaning": "学习",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あげます",
+          "writing": "あげます",
+          "meaning": "给",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "かけます",
+          "writing": "かけます",
+          "meaning": "打（电话）",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "かります",
+          "writing": "借ります",
+          "meaning": "（向别人）借",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "おしえます",
+          "writing": "教えます",
+          "meaning": "教",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "もう",
+          "writing": "もう",
+          "meaning": "已经",
+          "pos": "副词"
+        },
+        {
+          "kana": "さっき",
+          "writing": "さっき",
+          "meaning": "刚才",
+          "pos": "副词"
+        },
+        {
+          "kana": "たったいま",
+          "writing": "たった今",
+          "meaning": "刚刚",
+          "pos": "副词"
+        },
+        {
+          "kana": "もういちど",
+          "writing": "もう一度",
+          "meaning": "再一次",
+          "pos": "副词"
+        },
+        {
+          "kana": "まえに",
+          "writing": "前に",
+          "meaning": "以前",
+          "pos": "副词"
+        },
+        {
+          "kana": "ちん",
+          "writing": "陳",
+          "meaning": "陈",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "どうですか",
+          "writing": "どうですか",
+          "meaning": "怎样，如何",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おねがいします",
+          "writing": "お願いします",
+          "meaning": "拜托了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "わかりました",
+          "writing": "分かりました",
+          "meaning": "明白了",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "よかったです",
+          "writing": "よかったです",
+          "meaning": "太好了",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 9,
+      "wordCount": 74,
+      "words": [
+        {
+          "kana": "りょうり",
+          "writing": "料理",
+          "meaning": "菜肴，饭菜",
+          "pos": "名词"
+        },
+        {
+          "kana": "しせんりょうり",
+          "writing": "四川料理",
+          "meaning": "四川菜",
+          "pos": "名词"
+        },
+        {
+          "kana": "スープ",
+          "writing": "スープ",
+          "meaning": "汤",
+          "pos": "名词"
+        },
+        {
+          "kana": "ペキンダック",
+          "writing": "北京ダック",
+          "meaning": "北京烤鸭",
+          "pos": "名词"
+        },
+        {
+          "kana": "たべもの",
+          "writing": "食べ物",
+          "meaning": "食物，食品",
+          "pos": "名词"
+        },
+        {
+          "kana": "すきやき",
+          "writing": "すき焼き",
+          "meaning": "日式牛肉火锅",
+          "pos": "名词"
+        },
+        {
+          "kana": "おんせん",
+          "writing": "温泉",
+          "meaning": "温泉",
+          "pos": "名词"
+        },
+        {
+          "kana": "おゆ",
+          "writing": "お湯",
+          "meaning": "热水，开水",
+          "pos": "名词"
+        },
+        {
+          "kana": "みず",
+          "writing": "水",
+          "meaning": "水，凉水",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆかた",
+          "writing": "浴衣",
+          "meaning": "浴衣，夏季和服",
+          "pos": "名词"
+        },
+        {
+          "kana": "ながめ",
+          "writing": "眺め",
+          "meaning": "景色，风景",
+          "pos": "名词"
+        },
+        {
+          "kana": "くすり",
+          "writing": "薬",
+          "meaning": "药",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんき",
+          "writing": "天気",
+          "meaning": "天气",
+          "pos": "名词"
+        },
+        {
+          "kana": "うみ",
+          "writing": "海",
+          "meaning": "大海",
+          "pos": "名词"
+        },
+        {
+          "kana": "やま",
+          "writing": "山",
+          "meaning": "山",
+          "pos": "名词"
+        },
+        {
+          "kana": "かみ",
+          "writing": "紙",
+          "meaning": "纸",
+          "pos": "名词"
+        },
+        {
+          "kana": "ニュース",
+          "writing": "ニュース",
+          "meaning": "新闻",
+          "pos": "名词"
+        },
+        {
+          "kana": "じょせい",
+          "writing": "女性",
+          "meaning": "女性",
+          "pos": "名词"
+        },
+        {
+          "kana": "おきゃくさま",
+          "writing": "お客様",
+          "meaning": "来宾",
+          "pos": "名词"
+        },
+        {
+          "kana": "グラス",
+          "writing": "グラス",
+          "meaning": "玻璃杯",
+          "pos": "名词"
+        },
+        {
+          "kana": "かぶき",
+          "writing": "歌舞伎",
+          "meaning": "歌舞伎",
+          "pos": "名词"
+        },
+        {
+          "kana": "きもち",
+          "writing": "気持ち",
+          "meaning": "心情",
+          "pos": "名词"
+        },
+        {
+          "kana": "たくさん",
+          "writing": "たくさん",
+          "meaning": "很多",
+          "pos": "名词"
+        },
+        {
+          "kana": "からい",
+          "writing": "辛い",
+          "meaning": "辣",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あまい",
+          "writing": "甘い",
+          "meaning": "甜",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "しおからい",
+          "writing": "塩辛い",
+          "meaning": "咸",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "しょっぱい",
+          "writing": "しょっぱい",
+          "meaning": "咸",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "すっぱい",
+          "writing": "酸っぱい",
+          "meaning": "酸",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "にがい",
+          "writing": "苦い",
+          "meaning": "苦",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おいしい",
+          "writing": "おいしい",
+          "meaning": "好吃，可口",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "まずい",
+          "writing": "まずい",
+          "meaning": "不好吃，难吃",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あつい",
+          "writing": "あつい",
+          "meaning": "热，烫",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "つめたい",
+          "writing": "冷たい",
+          "meaning": "凉",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "たのしい",
+          "writing": "楽しい",
+          "meaning": "愉快，快乐",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おもしろい",
+          "writing": "おもしろい",
+          "meaning": "有趣，有意思",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "つまらない",
+          "writing": "つまらない",
+          "meaning": "无聊",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ひろい",
+          "writing": "広い",
+          "meaning": "广阔，宽敞",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "せまい",
+          "writing": "狭い",
+          "meaning": "狭窄",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おおきい",
+          "writing": "大きい",
+          "meaning": "大",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ちいさい",
+          "writing": "小さい",
+          "meaning": "小",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "いそがしい",
+          "writing": "忙しい",
+          "meaning": "忙，忙碌",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "いい",
+          "writing": "いい",
+          "meaning": "好",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "わるい",
+          "writing": "悪い",
+          "meaning": "不好，坏",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "すばらしい",
+          "writing": "すばらしい",
+          "meaning": "极好，绝佳",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "とおい",
+          "writing": "遠い",
+          "meaning": "远",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ちかい",
+          "writing": "近い",
+          "meaning": "近",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "たかい",
+          "writing": "高い",
+          "meaning": "高，贵",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ひくい",
+          "writing": "低い",
+          "meaning": "低",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "やすい",
+          "writing": "安い",
+          "meaning": "便宜",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "さむい",
+          "writing": "寒い",
+          "meaning": "寒冷",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あつい",
+          "writing": "暑い",
+          "meaning": "（天气）热",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あおい",
+          "writing": "青い",
+          "meaning": "蓝色的",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "しろい",
+          "writing": "白い",
+          "meaning": "白色的",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あたらしい",
+          "writing": "新しい",
+          "meaning": "新",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ふるい",
+          "writing": "古い",
+          "meaning": "旧",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "むずかしい",
+          "writing": "難しい",
+          "meaning": "难",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "やさしい",
+          "writing": "易しい",
+          "meaning": "容易",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おおい",
+          "writing": "多い",
+          "meaning": "多",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "すくない",
+          "writing": "少ない",
+          "meaning": "少",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "かわいい",
+          "writing": "かわいい",
+          "meaning": "可爱",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ほんとうに",
+          "writing": "本当に",
+          "meaning": "真的，实在是",
+          "pos": "副词"
+        },
+        {
+          "kana": "あまり",
+          "writing": "あまり",
+          "meaning": "不（太）～，不很～",
+          "pos": "副词"
+        },
+        {
+          "kana": "とても",
+          "writing": "とても",
+          "meaning": "很，非常",
+          "pos": "副词"
+        },
+        {
+          "kana": "たいへん",
+          "writing": "たいへん",
+          "meaning": "很，非常",
+          "pos": "副词"
+        },
+        {
+          "kana": "すこし",
+          "writing": "少し",
+          "meaning": "一点儿",
+          "pos": "副词"
+        },
+        {
+          "kana": "ちょっと",
+          "writing": "ちょっと",
+          "meaning": "一点儿",
+          "pos": "副词"
+        },
+        {
+          "kana": "ぜんぜん",
+          "writing": "全然",
+          "meaning": "根本",
+          "pos": "副词"
+        },
+        {
+          "kana": "ちょうど",
+          "writing": "ちょうど",
+          "meaning": "正好，恰好",
+          "pos": "副词"
+        },
+        {
+          "kana": "あら",
+          "writing": "あら",
+          "meaning": "哎呀，咦",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "あれ",
+          "writing": "あれ",
+          "meaning": "哎呀，咦",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "ああ",
+          "writing": "ああ",
+          "meaning": "啊",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "てんあんもん",
+          "writing": "天安門",
+          "meaning": "天安门",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ばんりのちょうじょう",
+          "writing": "万里の長城",
+          "meaning": "万里长城",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "きもちがいい",
+          "writing": "気持ちがいい",
+          "meaning": "感觉舒服，心情愉快",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 10,
+      "wordCount": 52,
+      "words": [
+        {
+          "kana": "もみじ",
+          "writing": "紅葉",
+          "meaning": "红叶",
+          "pos": "名词"
+        },
+        {
+          "kana": "こきょう",
+          "writing": "故郷",
+          "meaning": "故乡",
+          "pos": "名词"
+        },
+        {
+          "kana": "とおり",
+          "writing": "通り",
+          "meaning": "大街",
+          "pos": "名词"
+        },
+        {
+          "kana": "まち",
+          "writing": "町",
+          "meaning": "城市，街道",
+          "pos": "名词"
+        },
+        {
+          "kana": "ところ",
+          "writing": "所",
+          "meaning": "场所",
+          "pos": "名词"
+        },
+        {
+          "kana": "おみせ",
+          "writing": "お店",
+          "meaning": "餐馆；商店",
+          "pos": "名词"
+        },
+        {
+          "kana": "にんぎょう",
+          "writing": "人形",
+          "meaning": "玩偶",
+          "pos": "名词"
+        },
+        {
+          "kana": "さくひん",
+          "writing": "作品",
+          "meaning": "作品",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちょうこく",
+          "writing": "彫刻",
+          "meaning": "雕刻",
+          "pos": "名词"
+        },
+        {
+          "kana": "じどうしゃ",
+          "writing": "自動車",
+          "meaning": "汽车",
+          "pos": "名词"
+        },
+        {
+          "kana": "どうぐ",
+          "writing": "道具",
+          "meaning": "工具",
+          "pos": "名词"
+        },
+        {
+          "kana": "さかな",
+          "writing": "魚",
+          "meaning": "鱼",
+          "pos": "名词"
+        },
+        {
+          "kana": "おかし",
+          "writing": "お菓子",
+          "meaning": "点心",
+          "pos": "名词"
+        },
+        {
+          "kana": "もの",
+          "writing": "物",
+          "meaning": "物品，东西",
+          "pos": "名词"
+        },
+        {
+          "kana": "シーズン",
+          "writing": "シーズン",
+          "meaning": "季节",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅうがくりょこう",
+          "writing": "修学旅行",
+          "meaning": "修学旅行",
+          "pos": "名词"
+        },
+        {
+          "kana": "かんこうきゃく",
+          "writing": "観光客",
+          "meaning": "游客",
+          "pos": "名词"
+        },
+        {
+          "kana": "さっか",
+          "writing": "作家",
+          "meaning": "作家",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぶちょう",
+          "writing": "部長",
+          "meaning": "部长",
+          "pos": "名词"
+        },
+        {
+          "kana": "へいじつ",
+          "writing": "平日",
+          "meaning": "平日，非休息日",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひ",
+          "writing": "日",
+          "meaning": "日子",
+          "pos": "名词"
+        },
+        {
+          "kana": "せいかつ",
+          "writing": "生活",
+          "meaning": "生活",
+          "pos": "名词"
+        },
+        {
+          "kana": "せかい",
+          "writing": "世界",
+          "meaning": "世界",
+          "pos": "名词"
+        },
+        {
+          "kana": "はれ",
+          "writing": "晴れ",
+          "meaning": "晴天",
+          "pos": "名词"
+        },
+        {
+          "kana": "あめ",
+          "writing": "雨",
+          "meaning": "雨，下雨",
+          "pos": "名词"
+        },
+        {
+          "kana": "くもり",
+          "writing": "曇り",
+          "meaning": "阴天",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆき",
+          "writing": "雪",
+          "meaning": "雪",
+          "pos": "名词"
+        },
+        {
+          "kana": "きたない",
+          "writing": "汚い",
+          "meaning": "脏",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "きれい",
+          "writing": "きれい",
+          "meaning": "漂亮，干净",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ゆうめい",
+          "writing": "有名",
+          "meaning": "有名",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "にぎやか",
+          "writing": "にぎやか",
+          "meaning": "热闹，繁华",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "しずか",
+          "writing": "静か",
+          "meaning": "安静",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ひま",
+          "writing": "暇",
+          "meaning": "空闲",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "しんせつ",
+          "writing": "親切",
+          "meaning": "热情",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "すき",
+          "writing": "好き",
+          "meaning": "喜欢",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "きらい",
+          "writing": "嫌い",
+          "meaning": "讨厌",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "べんり",
+          "writing": "便利",
+          "meaning": "方便",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ふべん",
+          "writing": "不便",
+          "meaning": "不方便",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "げんき",
+          "writing": "元気",
+          "meaning": "健康，有精神",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "かんたん",
+          "writing": "簡単",
+          "meaning": "简单",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ハンサム",
+          "writing": "ハンサム",
+          "meaning": "英俊，帅气",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "どんな",
+          "writing": "どんな",
+          "meaning": "什么样的，怎样的",
+          "pos": "代词"
+        },
+        {
+          "kana": "どう",
+          "writing": "どう",
+          "meaning": "怎样，如何",
+          "pos": "副词"
+        },
+        {
+          "kana": "いかが",
+          "writing": "いかが",
+          "meaning": "如何",
+          "pos": "副词"
+        },
+        {
+          "kana": "いろいろ",
+          "writing": "いろいろ",
+          "meaning": "各种各样",
+          "pos": "副词"
+        },
+        {
+          "kana": "でも",
+          "writing": "でも",
+          "meaning": "可是，不过",
+          "pos": "接续词"
+        },
+        {
+          "kana": "そして",
+          "writing": "そして",
+          "meaning": "而且，于是",
+          "pos": "接续词"
+        },
+        {
+          "kana": "ところで",
+          "writing": "ところで",
+          "meaning": "（转换话题）哎",
+          "pos": "接续词"
+        },
+        {
+          "kana": "あれえ",
+          "writing": "あれえ",
+          "meaning": "咦",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "なら",
+          "writing": "奈良",
+          "meaning": "奈良",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ふじさん",
+          "writing": "富士山",
+          "meaning": "富士山",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "もうすこし",
+          "writing": "もう少し",
+          "meaning": "再～一点",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 11,
+      "wordCount": 55,
+      "words": [
+        {
+          "kana": "うた",
+          "writing": "歌",
+          "meaning": "歌，歌曲",
+          "pos": "名词"
+        },
+        {
+          "kana": "カラオケ",
+          "writing": "カラオケ",
+          "meaning": "卡拉OK",
+          "pos": "名词"
+        },
+        {
+          "kana": "ロック",
+          "writing": "ロック",
+          "meaning": "摇滚乐",
+          "pos": "名词"
+        },
+        {
+          "kana": "ポップス",
+          "writing": "ポップス",
+          "meaning": "流行音乐",
+          "pos": "名词"
+        },
+        {
+          "kana": "クラシック",
+          "writing": "クラシック",
+          "meaning": "西方古典音乐",
+          "pos": "名词"
+        },
+        {
+          "kana": "ピアノ",
+          "writing": "ピアノ",
+          "meaning": "钢琴",
+          "pos": "名词"
+        },
+        {
+          "kana": "え",
+          "writing": "絵",
+          "meaning": "画儿",
+          "pos": "名词"
+        },
+        {
+          "kana": "えいご",
+          "writing": "英語",
+          "meaning": "英语",
+          "pos": "名词"
+        },
+        {
+          "kana": "スペインご",
+          "writing": "スペイン語",
+          "meaning": "西班牙语",
+          "pos": "名词"
+        },
+        {
+          "kana": "スポーツ",
+          "writing": "スポーツ",
+          "meaning": "体育，运动",
+          "pos": "名词"
+        },
+        {
+          "kana": "すいえい",
+          "writing": "水泳",
+          "meaning": "游泳",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゴルフ",
+          "writing": "ゴルフ",
+          "meaning": "高尔夫球",
+          "pos": "名词"
+        },
+        {
+          "kana": "うんてん",
+          "writing": "運転",
+          "meaning": "开车",
+          "pos": "名词"
+        },
+        {
+          "kana": "のみもの",
+          "writing": "飲み物",
+          "meaning": "饮料",
+          "pos": "名词"
+        },
+        {
+          "kana": "おさけ",
+          "writing": "お酒",
+          "meaning": "酒，酒类",
+          "pos": "名词"
+        },
+        {
+          "kana": "にく",
+          "writing": "肉",
+          "meaning": "肉",
+          "pos": "名词"
+        },
+        {
+          "kana": "やさい",
+          "writing": "野菜",
+          "meaning": "蔬菜",
+          "pos": "名词"
+        },
+        {
+          "kana": "くだもの",
+          "writing": "果物",
+          "meaning": "水果",
+          "pos": "名词"
+        },
+        {
+          "kana": "ヒマワリ",
+          "writing": "ヒマワリ",
+          "meaning": "向日葵",
+          "pos": "名词"
+        },
+        {
+          "kana": "バラ",
+          "writing": "バラ",
+          "meaning": "蔷薇，玫瑰",
+          "pos": "名词"
+        },
+        {
+          "kana": "コンピュータ",
+          "writing": "コンピュータ",
+          "meaning": "计算机，电脑",
+          "pos": "名词"
+        },
+        {
+          "kana": "まど",
+          "writing": "窓",
+          "meaning": "窗，窗户",
+          "pos": "名词"
+        },
+        {
+          "kana": "けっこんしき",
+          "writing": "結婚式",
+          "meaning": "结婚典礼",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃしんてん",
+          "writing": "写真展",
+          "meaning": "摄影展",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょかん",
+          "writing": "旅館",
+          "meaning": "旅馆，旅店",
+          "pos": "名词"
+        },
+        {
+          "kana": "べっそう",
+          "writing": "別荘",
+          "meaning": "别墅",
+          "pos": "名词"
+        },
+        {
+          "kana": "よせぎざいく",
+          "writing": "寄木細工",
+          "meaning": "木片儿拼花工艺品",
+          "pos": "名词"
+        },
+        {
+          "kana": "もよう",
+          "writing": "模様",
+          "meaning": "花纹，纹案",
+          "pos": "名词"
+        },
+        {
+          "kana": "がいこく",
+          "writing": "外国",
+          "meaning": "外国",
+          "pos": "名词"
+        },
+        {
+          "kana": "かいぎ",
+          "writing": "会議",
+          "meaning": "会议",
+          "pos": "名词"
+        },
+        {
+          "kana": "あし",
+          "writing": "脚",
+          "meaning": "腿",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぼく",
+          "writing": "僕",
+          "meaning": "我（男性自称）",
+          "pos": "代词"
+        },
+        {
+          "kana": "わかります",
+          "writing": "分かります",
+          "meaning": "懂，明白",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "まよいます",
+          "writing": "迷います",
+          "meaning": "犹豫，难以决定",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "できます",
+          "writing": "できます",
+          "meaning": "会；能；完成",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "しめます",
+          "writing": "閉めます",
+          "meaning": "关闭，关门",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "つかれます",
+          "writing": "疲れます",
+          "meaning": "疲倦，疲惫",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "さんぽします",
+          "writing": "散歩します",
+          "meaning": "散步",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "こわい",
+          "writing": "怖い",
+          "meaning": "害怕，恐怖",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あかい",
+          "writing": "赤い",
+          "meaning": "红",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "いたい",
+          "writing": "痛い",
+          "meaning": "疼，疼痛",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "じょうず",
+          "writing": "上手",
+          "meaning": "擅长，高明，水平高",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "へた",
+          "writing": "下手",
+          "meaning": "不高明，水平低",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "にがて",
+          "writing": "苦手",
+          "meaning": "不擅长，不善于",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ときどき",
+          "writing": "時々",
+          "meaning": "有时，时不时",
+          "pos": "副词"
+        },
+        {
+          "kana": "よく",
+          "writing": "よく",
+          "meaning": "经常，常常",
+          "pos": "副词"
+        },
+        {
+          "kana": "たまに",
+          "writing": "たまに",
+          "meaning": "偶尔，很少",
+          "pos": "副词"
+        },
+        {
+          "kana": "また",
+          "writing": "また",
+          "meaning": "还，再，又",
+          "pos": "副词"
+        },
+        {
+          "kana": "どうして",
+          "writing": "どうして",
+          "meaning": "为什么",
+          "pos": "副词"
+        },
+        {
+          "kana": "だから",
+          "writing": "だから",
+          "meaning": "所以，因此（简）",
+          "pos": "接续词"
+        },
+        {
+          "kana": "ですから",
+          "writing": "ですから",
+          "meaning": "所以，因此（礼貌）",
+          "pos": "接续词"
+        },
+        {
+          "kana": "うーん",
+          "writing": "うーん",
+          "meaning": "嗯……，这个……",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "けっこうです",
+          "writing": "結構です",
+          "meaning": "不用，不要",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "きにいります",
+          "writing": "気に入ります",
+          "meaning": "喜欢，中意",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "など",
+          "writing": "など",
+          "meaning": "等等",
+          "pos": "副助词"
+        }
+      ]
+    },
+    {
+      "lesson": 12,
+      "wordCount": 34,
+      "words": [
+        {
+          "kana": "きせつ",
+          "writing": "季節",
+          "meaning": "季节",
+          "pos": "名词"
+        },
+        {
+          "kana": "ふゆ",
+          "writing": "冬",
+          "meaning": "冬天，冬季",
+          "pos": "名词"
+        },
+        {
+          "kana": "はる",
+          "writing": "春",
+          "meaning": "春天，春季",
+          "pos": "名词"
+        },
+        {
+          "kana": "にほんりょうり",
+          "writing": "日本料理",
+          "meaning": "日式饭菜",
+          "pos": "名词"
+        },
+        {
+          "kana": "すし",
+          "writing": "寿司",
+          "meaning": "寿司",
+          "pos": "名词"
+        },
+        {
+          "kana": "ナシ",
+          "writing": "ナシ",
+          "meaning": "梨",
+          "pos": "名词"
+        },
+        {
+          "kana": "バナナ",
+          "writing": "バナナ",
+          "meaning": "香蕉",
+          "pos": "名词"
+        },
+        {
+          "kana": "ミカン",
+          "writing": "ミカン",
+          "meaning": "橘子",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょうちゅう",
+          "writing": "焼酎",
+          "meaning": "烧酒",
+          "pos": "名词"
+        },
+        {
+          "kana": "にほんしゅ",
+          "writing": "日本酒",
+          "meaning": "日本酒",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうちゃ",
+          "writing": "紅茶",
+          "meaning": "红茶",
+          "pos": "名词"
+        },
+        {
+          "kana": "ウーロンちゃ",
+          "writing": "ウーロン茶",
+          "meaning": "乌龙茶",
+          "pos": "名词"
+        },
+        {
+          "kana": "ジャスミンちゃ",
+          "writing": "ジャスミン茶",
+          "meaning": "茉莉花茶",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょくちゃ",
+          "writing": "緑茶",
+          "meaning": "绿茶",
+          "pos": "名词"
+        },
+        {
+          "kana": "ジュース",
+          "writing": "ジュース",
+          "meaning": "果汁",
+          "pos": "名词"
+        },
+        {
+          "kana": "にんき",
+          "writing": "人気",
+          "meaning": "声望，受欢迎",
+          "pos": "名词"
+        },
+        {
+          "kana": "せき",
+          "writing": "席",
+          "meaning": "座位，席位",
+          "pos": "名词"
+        },
+        {
+          "kana": "クラス",
+          "writing": "クラス",
+          "meaning": "班级",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅるい",
+          "writing": "種類",
+          "meaning": "种类",
+          "pos": "名词"
+        },
+        {
+          "kana": "せ",
+          "writing": "背",
+          "meaning": "个子",
+          "pos": "名词"
+        },
+        {
+          "kana": "あに",
+          "writing": "兄",
+          "meaning": "哥哥，兄长",
+          "pos": "名词"
+        },
+        {
+          "kana": "さいきん",
+          "writing": "最近",
+          "meaning": "最近，近来",
+          "pos": "名词"
+        },
+        {
+          "kana": "ふります",
+          "writing": "降ります",
+          "meaning": "下（雨，雪），降（雨，雪）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "わかい",
+          "writing": "若い",
+          "meaning": "年轻",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "あたたかい",
+          "writing": "暖かい",
+          "meaning": "暖和，温暖",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "すずしい",
+          "writing": "涼しい",
+          "meaning": "凉爽",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "はやい",
+          "writing": "速い",
+          "meaning": "快",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "だいすき",
+          "writing": "大好き",
+          "meaning": "非常喜欢",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "いちばん",
+          "writing": "いちばん",
+          "meaning": "最，第一",
+          "pos": "副词"
+        },
+        {
+          "kana": "ずっと",
+          "writing": "ずっと",
+          "meaning": "～得多",
+          "pos": "副词"
+        },
+        {
+          "kana": "やはり",
+          "writing": "やはり",
+          "meaning": "仍然，还是",
+          "pos": "副词"
+        },
+        {
+          "kana": "やっぱり",
+          "writing": "やっぱり",
+          "meaning": "仍然，还是",
+          "pos": "副词"
+        },
+        {
+          "kana": "エベレスト",
+          "writing": "エベレスト",
+          "meaning": "珠穆朗玛峰",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "にんきがあります",
+          "writing": "人気があります",
+          "meaning": "受欢迎",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 13,
+      "wordCount": 29,
+      "words": [
+        {
+          "kana": "にもつ",
+          "writing": "荷物",
+          "meaning": "包裹",
+          "pos": "名词"
+        },
+        {
+          "kana": "はがき",
+          "writing": "はがき",
+          "meaning": "明信片",
+          "pos": "名词"
+        },
+        {
+          "kana": "きって",
+          "writing": "切手",
+          "meaning": "邮票",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひきだし",
+          "writing": "引き出し",
+          "meaning": "抽屉",
+          "pos": "名词"
+        },
+        {
+          "kana": "アルバム",
+          "writing": "アルバム",
+          "meaning": "相册",
+          "pos": "名词"
+        },
+        {
+          "kana": "タバコ",
+          "writing": "タバコ",
+          "meaning": "烟，烟草",
+          "pos": "名词"
+        },
+        {
+          "kana": "まんが",
+          "writing": "漫画",
+          "meaning": "漫画",
+          "pos": "名词"
+        },
+        {
+          "kana": "ガレージ",
+          "writing": "ガレージ",
+          "meaning": "车库，汽车房",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅうり",
+          "writing": "修理",
+          "meaning": "修理",
+          "pos": "名词"
+        },
+        {
+          "kana": "いざかや",
+          "writing": "居酒屋",
+          "meaning": "酒馆",
+          "pos": "名词"
+        },
+        {
+          "kana": "なまビール",
+          "writing": "生ビール",
+          "meaning": "生啤",
+          "pos": "名词"
+        },
+        {
+          "kana": "やきとり",
+          "writing": "焼き鳥",
+          "meaning": "烤鸡肉串",
+          "pos": "名词"
+        },
+        {
+          "kana": "からあげ",
+          "writing": "唐揚げ",
+          "meaning": "炸鸡，油炸食品",
+          "pos": "名词"
+        },
+        {
+          "kana": "にくじゃが",
+          "writing": "肉じゃが",
+          "meaning": "土豆炖肉",
+          "pos": "名词"
+        },
+        {
+          "kana": "ボーリング",
+          "writing": "ボーリング",
+          "meaning": "保龄球",
+          "pos": "名词"
+        },
+        {
+          "kana": "かみ",
+          "writing": "髪",
+          "meaning": "头发",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぞう",
+          "writing": "象",
+          "meaning": "象，大象",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひる",
+          "writing": "昼",
+          "meaning": "白天，中午",
+          "pos": "名词"
+        },
+        {
+          "kana": "ほか",
+          "writing": "ほか",
+          "meaning": "另外，其他",
+          "pos": "名词"
+        },
+        {
+          "kana": "かかります",
+          "writing": "かかります",
+          "meaning": "花费（时间，金钱）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "さきます",
+          "writing": "咲きます",
+          "meaning": "花开",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "およぎます",
+          "writing": "泳ぎます",
+          "meaning": "游泳",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あそびます",
+          "writing": "遊びます",
+          "meaning": "玩，玩耍",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "すいます",
+          "writing": "吸います",
+          "meaning": "吸（烟）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "きります",
+          "writing": "切ります",
+          "meaning": "剪，切，割",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "だいたい",
+          "writing": "だいたい",
+          "meaning": "大约，大概，大体",
+          "pos": "副词"
+        },
+        {
+          "kana": "とりあえず",
+          "writing": "とりあえず",
+          "meaning": "暂且",
+          "pos": "副词"
+        },
+        {
+          "kana": "どのぐらい",
+          "writing": "どのぐらい",
+          "meaning": "多久，多少钱",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "どれぐらい",
+          "writing": "どれぐらい",
+          "meaning": "多久，多少钱",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 14,
+      "wordCount": 53,
+      "words": [
+        {
+          "kana": "ふなびん",
+          "writing": "船便",
+          "meaning": "海运",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょるい",
+          "writing": "書類",
+          "meaning": "文件，文稿",
+          "pos": "名词"
+        },
+        {
+          "kana": "げんこう",
+          "writing": "原稿",
+          "meaning": "稿子，原稿",
+          "pos": "名词"
+        },
+        {
+          "kana": "きじ",
+          "writing": "記事",
+          "meaning": "报道",
+          "pos": "名词"
+        },
+        {
+          "kana": "メモ",
+          "writing": "メモ",
+          "meaning": "记录",
+          "pos": "名词"
+        },
+        {
+          "kana": "えきまえ",
+          "writing": "駅前",
+          "meaning": "车站一带",
+          "pos": "名词"
+        },
+        {
+          "kana": "はし",
+          "writing": "橋",
+          "meaning": "桥，桥梁",
+          "pos": "名词"
+        },
+        {
+          "kana": "かど",
+          "writing": "角",
+          "meaning": "拐角",
+          "pos": "名词"
+        },
+        {
+          "kana": "おうだんほどう",
+          "writing": "横断歩道",
+          "meaning": "人行横道",
+          "pos": "名词"
+        },
+        {
+          "kana": "みぎ",
+          "writing": "右",
+          "meaning": "右，右边",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひだり",
+          "writing": "左",
+          "meaning": "左，左边",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうさてん",
+          "writing": "交差点",
+          "meaning": "十字路口",
+          "pos": "名词"
+        },
+        {
+          "kana": "みち",
+          "writing": "道",
+          "meaning": "路，道路",
+          "pos": "名词"
+        },
+        {
+          "kana": "ドア",
+          "writing": "ドア",
+          "meaning": "门",
+          "pos": "名词"
+        },
+        {
+          "kana": "でんき",
+          "writing": "電気",
+          "meaning": "电，电力",
+          "pos": "名词"
+        },
+        {
+          "kana": "たいきょくけん",
+          "writing": "太極拳",
+          "meaning": "太极拳",
+          "pos": "名词"
+        },
+        {
+          "kana": "あさごはん",
+          "writing": "朝ご飯",
+          "meaning": "早饭",
+          "pos": "名词"
+        },
+        {
+          "kana": "ばんごはん",
+          "writing": "晩ご飯",
+          "meaning": "晚饭",
+          "pos": "名词"
+        },
+        {
+          "kana": "バーベキュー",
+          "writing": "バーベキュー",
+          "meaning": "户外烧烤",
+          "pos": "名词"
+        },
+        {
+          "kana": "とおります",
+          "writing": "通ります",
+          "meaning": "通过，经过",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "いそぎます",
+          "writing": "急ぎます",
+          "meaning": "急，急忙",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "とびます",
+          "writing": "飛びます",
+          "meaning": "飞，飞行",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "しにます",
+          "writing": "死にます",
+          "meaning": "死，死亡",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "まちます",
+          "writing": "待ちます",
+          "meaning": "等待，等候",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "うります",
+          "writing": "売ります",
+          "meaning": "卖，销售",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はなします",
+          "writing": "話します",
+          "meaning": "说话，说",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "わたります",
+          "writing": "渡ります",
+          "meaning": "过（桥，河），穿过（马路）",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おろします",
+          "writing": "下ろします",
+          "meaning": "取，卸货",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "えらびます",
+          "writing": "選びます",
+          "meaning": "挑选，选择",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "けします",
+          "writing": "消します",
+          "meaning": "关（灯），消除，去除",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あるきます",
+          "writing": "歩きます",
+          "meaning": "步行，行走",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "まがります",
+          "writing": "曲がります",
+          "meaning": "拐弯，曲折",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あらいます",
+          "writing": "洗います",
+          "meaning": "洗，洗涤",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "でます",
+          "writing": "出ます",
+          "meaning": "离开",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "でかけます",
+          "writing": "出かけます",
+          "meaning": "外出，出门",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "あけます",
+          "writing": "開けます",
+          "meaning": "开，打开，开启",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "すぎます",
+          "writing": "過ぎます",
+          "meaning": "过",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "みせます",
+          "writing": "見せます",
+          "meaning": "给～看；出示",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "つけます",
+          "writing": "つけます",
+          "meaning": "开（灯）",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "おります",
+          "writing": "降ります",
+          "meaning": "下（车，山）",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "かいものします",
+          "writing": "買い物します",
+          "meaning": "买东西",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "そつぎょうします",
+          "writing": "卒業します",
+          "meaning": "毕业",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "しょくじします",
+          "writing": "食事します",
+          "meaning": "吃饭，用餐",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "せいりします",
+          "writing": "整理します",
+          "meaning": "整理",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "コピーします",
+          "writing": "コピーします",
+          "meaning": "复印",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "くらい",
+          "writing": "暗い",
+          "meaning": "黑暗，昏暗",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "たいへん",
+          "writing": "大変",
+          "meaning": "够受的，不得了",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "なかなか",
+          "writing": "なかなか",
+          "meaning": "相当，很，非常",
+          "pos": "副词"
+        },
+        {
+          "kana": "こう",
+          "writing": "こう",
+          "meaning": "这样，如此",
+          "pos": "副词"
+        },
+        {
+          "kana": "そう/ああ",
+          "writing": "そう/ああ",
+          "meaning": "那样",
+          "pos": "副词"
+        },
+        {
+          "kana": "あとで",
+          "writing": "後で",
+          "meaning": "过会儿",
+          "pos": "副词"
+        },
+        {
+          "kana": "それから",
+          "writing": "それから",
+          "meaning": "然后",
+          "pos": "接续词"
+        },
+        {
+          "kana": "すみませんが",
+          "writing": "すみませんが",
+          "meaning": "对不起……，劳驾……",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 15,
+      "wordCount": 44,
+      "words": [
+        {
+          "kana": "ボート",
+          "writing": "ボート",
+          "meaning": "小船，小艇",
+          "pos": "名词"
+        },
+        {
+          "kana": "ベンチ",
+          "writing": "ベンチ",
+          "meaning": "长椅，长凳",
+          "pos": "名词"
+        },
+        {
+          "kana": "しやくしょ",
+          "writing": "市役所",
+          "meaning": "市政府",
+          "pos": "名词"
+        },
+        {
+          "kana": "けいたいでんわ",
+          "writing": "携帯電話",
+          "meaning": "手机",
+          "pos": "名词"
+        },
+        {
+          "kana": "きんえん",
+          "writing": "禁煙",
+          "meaning": "禁止吸烟",
+          "pos": "名词"
+        },
+        {
+          "kana": "かぜ",
+          "writing": "風邪",
+          "meaning": "感冒",
+          "pos": "名词"
+        },
+        {
+          "kana": "ねつ",
+          "writing": "熱",
+          "meaning": "发烧，体温",
+          "pos": "名词"
+        },
+        {
+          "kana": "すいみん",
+          "writing": "睡眠",
+          "meaning": "睡眠",
+          "pos": "名词"
+        },
+        {
+          "kana": "おふろ",
+          "writing": "お風呂",
+          "meaning": "澡堂，浴室",
+          "pos": "名词"
+        },
+        {
+          "kana": "やっきょく",
+          "writing": "薬局",
+          "meaning": "药店",
+          "pos": "名词"
+        },
+        {
+          "kana": "クーラー",
+          "writing": "クーラー",
+          "meaning": "空调",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひ",
+          "writing": "火",
+          "meaning": "火",
+          "pos": "名词"
+        },
+        {
+          "kana": "き",
+          "writing": "気",
+          "meaning": "精神，意识",
+          "pos": "名词"
+        },
+        {
+          "kana": "うちあわせ",
+          "writing": "打ち合わせ",
+          "meaning": "事先商量，碰头，商洽",
+          "pos": "名词"
+        },
+        {
+          "kana": "むり",
+          "writing": "無理",
+          "meaning": "勉强，难以办到",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちゅうしゃきんし",
+          "writing": "駐車禁止",
+          "meaning": "禁止停车",
+          "pos": "名词"
+        },
+        {
+          "kana": "たちいりきんし",
+          "writing": "立入禁止",
+          "meaning": "禁止进入",
+          "pos": "名词"
+        },
+        {
+          "kana": "かきげんきん",
+          "writing": "火気厳禁",
+          "meaning": "严禁烟火",
+          "pos": "名词"
+        },
+        {
+          "kana": "さつえいきんし",
+          "writing": "撮影禁止",
+          "meaning": "禁止拍照",
+          "pos": "名词"
+        },
+        {
+          "kana": "のります",
+          "writing": "乗ります",
+          "meaning": "乘坐，乘",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "つかいます",
+          "writing": "使います",
+          "meaning": "用，使用",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "すわります",
+          "writing": "座ります",
+          "meaning": "坐，落座",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はいります",
+          "writing": "入ります",
+          "meaning": "进入，加入",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "もうします",
+          "writing": "申します",
+          "meaning": "是，说，讲，告诉",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "とります",
+          "writing": "とります",
+          "meaning": "取，取得",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "うたいます",
+          "writing": "歌います",
+          "meaning": "唱，歌唱",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "つたえます",
+          "writing": "伝えます",
+          "meaning": "说，传达，转告",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "とめます",
+          "writing": "止めます",
+          "meaning": "停，制止",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "あたたかい",
+          "writing": "暖かい",
+          "meaning": "热乎，温暖",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "だいじょうぶ",
+          "writing": "大丈夫",
+          "meaning": "没关系，放心",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "だめ",
+          "writing": "だめ",
+          "meaning": "不行，不可以",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "じゅうぶん",
+          "writing": "十分",
+          "meaning": "好好地，充足地",
+          "pos": "副词"
+        },
+        {
+          "kana": "もちろん",
+          "writing": "もちろん",
+          "meaning": "当然，不用说",
+          "pos": "副词"
+        },
+        {
+          "kana": "ゆっくり",
+          "writing": "ゆっくり",
+          "meaning": "好好地，安静地",
+          "pos": "副词"
+        },
+        {
+          "kana": "もしもし",
+          "writing": "もしもし",
+          "meaning": "喂",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "いえ",
+          "writing": "いえ",
+          "meaning": "不，不是",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "おだいじに",
+          "writing": "お大事に",
+          "meaning": "请多保重",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "いけません",
+          "writing": "いけません",
+          "meaning": "不行，不可以",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "かまいません",
+          "writing": "かまいません",
+          "meaning": "没关系，不要紧",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "まだです",
+          "writing": "まだです",
+          "meaning": "还没有，仍然……没有",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "きをつけます",
+          "writing": "気をつけます",
+          "meaning": "注意",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "むりをします",
+          "writing": "無理をします",
+          "meaning": "勉强",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "すいみんをとります",
+          "writing": "睡眠をとります",
+          "meaning": "睡觉",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おふろにはいります",
+          "writing": "お風呂にはいります",
+          "meaning": "洗澡",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 16,
+      "wordCount": 69,
+      "words": [
+        {
+          "kana": "そうさ",
+          "writing": "操作",
+          "meaning": "操作，操纵",
+          "pos": "名词"
+        },
+        {
+          "kana": "きかい",
+          "writing": "機械",
+          "meaning": "机械，机器",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょこうがいしゃ",
+          "writing": "旅行会社",
+          "meaning": "旅行社",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうくうがいしゃ",
+          "writing": "航空会社",
+          "meaning": "航空公司",
+          "pos": "名词"
+        },
+        {
+          "kana": "えいぎょうぶ",
+          "writing": "営業部",
+          "meaning": "营业部",
+          "pos": "名词"
+        },
+        {
+          "kana": "アイティーさんぎょう",
+          "writing": "ＩＴ産業",
+          "meaning": "IT产业，信息技术产业",
+          "pos": "名词"
+        },
+        {
+          "kana": "せいひん",
+          "writing": "製品",
+          "meaning": "产品",
+          "pos": "名词"
+        },
+        {
+          "kana": "けんちくか",
+          "writing": "建築家",
+          "meaning": "建筑师",
+          "pos": "名词"
+        },
+        {
+          "kana": "せっけい",
+          "writing": "設計",
+          "meaning": "设计",
+          "pos": "名词"
+        },
+        {
+          "kana": "デザイン",
+          "writing": "デザイン",
+          "meaning": "设计（图），（制作）图案",
+          "pos": "名词"
+        },
+        {
+          "kana": "かたち",
+          "writing": "形",
+          "meaning": "造型，形状，形式",
+          "pos": "名词"
+        },
+        {
+          "kana": "さいしん",
+          "writing": "最新",
+          "meaning": "最新",
+          "pos": "名词"
+        },
+        {
+          "kana": "ネクタイ",
+          "writing": "ネクタイ",
+          "meaning": "领带",
+          "pos": "名词"
+        },
+        {
+          "kana": "さいふ",
+          "writing": "財布",
+          "meaning": "钱包",
+          "pos": "名词"
+        },
+        {
+          "kana": "かわ",
+          "writing": "革",
+          "meaning": "革，皮革",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぬの",
+          "writing": "布",
+          "meaning": "布，布匹",
+          "pos": "名词"
+        },
+        {
+          "kana": "すいとう",
+          "writing": "水筒",
+          "meaning": "水壶，水筒",
+          "pos": "名词"
+        },
+        {
+          "kana": "みどり",
+          "writing": "緑",
+          "meaning": "绿，绿色",
+          "pos": "名词"
+        },
+        {
+          "kana": "あし",
+          "writing": "足",
+          "meaning": "脚",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆび",
+          "writing": "指",
+          "meaning": "手指，指头",
+          "pos": "名词"
+        },
+        {
+          "kana": "め",
+          "writing": "目",
+          "meaning": "眼，眼睛",
+          "pos": "名词"
+        },
+        {
+          "kana": "はな",
+          "writing": "鼻",
+          "meaning": "鼻，鼻子",
+          "pos": "名词"
+        },
+        {
+          "kana": "かお",
+          "writing": "顔",
+          "meaning": "脸，颜面",
+          "pos": "名词"
+        },
+        {
+          "kana": "あたま",
+          "writing": "頭",
+          "meaning": "头，头脑",
+          "pos": "名词"
+        },
+        {
+          "kana": "アイディーカード",
+          "writing": "ＩＤカード",
+          "meaning": "身份证件",
+          "pos": "名词"
+        },
+        {
+          "kana": "まちがい",
+          "writing": "間違い",
+          "meaning": "错误，失误",
+          "pos": "名词"
+        },
+        {
+          "kana": "もんだい",
+          "writing": "問題",
+          "meaning": "问题",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうこく",
+          "writing": "広告",
+          "meaning": "广告",
+          "pos": "名词"
+        },
+        {
+          "kana": "かんばん",
+          "writing": "看板",
+          "meaning": "牌子",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんじじょう",
+          "writing": "展示場",
+          "meaning": "展览会场",
+          "pos": "名词"
+        },
+        {
+          "kana": "にゅうじょうりょう",
+          "writing": "入場料",
+          "meaning": "门票，进场费",
+          "pos": "名词"
+        },
+        {
+          "kana": "サービス",
+          "writing": "サービス",
+          "meaning": "服务",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんじょう",
+          "writing": "天井",
+          "meaning": "天棚",
+          "pos": "名词"
+        },
+        {
+          "kana": "けいび",
+          "writing": "警備",
+          "meaning": "戒备，警备",
+          "pos": "名词"
+        },
+        {
+          "kana": "クリスマスツリー",
+          "writing": "クリスマスツリー",
+          "meaning": "圣诞树",
+          "pos": "名词"
+        },
+        {
+          "kana": "オーストラリアじん",
+          "writing": "オーストラリア人",
+          "meaning": "澳大利亚人",
+          "pos": "名词"
+        },
+        {
+          "kana": "みなさん",
+          "writing": "皆さん",
+          "meaning": "大家，诸位",
+          "pos": "名词"
+        },
+        {
+          "kana": "こ",
+          "writing": "子",
+          "meaning": "孩子",
+          "pos": "名词"
+        },
+        {
+          "kana": "よこ",
+          "writing": "横",
+          "meaning": "旁边，侧面",
+          "pos": "名词"
+        },
+        {
+          "kana": "もちます",
+          "writing": "持ちます",
+          "meaning": "有，拥有，持有",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "すみます",
+          "writing": "住みます",
+          "meaning": "住，居住",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "しります",
+          "writing": "知ります",
+          "meaning": "认识，知道，了解",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "なおします",
+          "writing": "直します",
+          "meaning": "改，修改，改正",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かたづけます",
+          "writing": "片づけます",
+          "meaning": "收拾，整理",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "れんしゅうします",
+          "writing": "練習します",
+          "meaning": "练习",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "けっこんします",
+          "writing": "結婚します",
+          "meaning": "结婚",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "あんしんします",
+          "writing": "安心します",
+          "meaning": "安心，放心",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "あかるい",
+          "writing": "明るい",
+          "meaning": "明亮，开朗",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ながい",
+          "writing": "長い",
+          "meaning": "长，长久，长远",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "みじかい",
+          "writing": "短い",
+          "meaning": "短，短暂",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "かるい",
+          "writing": "軽い",
+          "meaning": "轻巧，轻，轻松，轻微",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "やさしい",
+          "writing": "優しい",
+          "meaning": "和蔼，温和，体贴",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ほそい",
+          "writing": "細い",
+          "meaning": "小，细长，纤细",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ふとい",
+          "writing": "太い",
+          "meaning": "粗，胖",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "くろい",
+          "writing": "黒い",
+          "meaning": "黑，黑色",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ユニーク",
+          "writing": "ユニーク",
+          "meaning": "独特，唯一",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "あんぜん",
+          "writing": "安全",
+          "meaning": "安全",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "はで",
+          "writing": "派手",
+          "meaning": "耀眼，花哨",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "じみ",
+          "writing": "地味",
+          "meaning": "朴素，质朴",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "げんじゅう",
+          "writing": "厳重",
+          "meaning": "森严；严格",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "まじめ",
+          "writing": "まじめ",
+          "meaning": "认真；严肃",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "たいせつ",
+          "writing": "大切",
+          "meaning": "重要，珍贵",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ふくざつ",
+          "writing": "複雑",
+          "meaning": "复杂，繁杂",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "ちゃんと",
+          "writing": "ちゃんと",
+          "meaning": "好好地，的确，完全",
+          "pos": "副词"
+        },
+        {
+          "kana": "すぐ",
+          "writing": "すぐ",
+          "meaning": "马上，立即",
+          "pos": "副词"
+        },
+        {
+          "kana": "ずいぶん",
+          "writing": "ずいぶん",
+          "meaning": "相当，非常，很",
+          "pos": "副词"
+        },
+        {
+          "kana": "ほら",
+          "writing": "ほら",
+          "meaning": "你看，瞧，喂",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "にっちゅうでんき",
+          "writing": "日中電気",
+          "meaning": "日中电器",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "あたまがいい",
+          "writing": "頭がいい",
+          "meaning": "脑子好，聪明",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 17,
+      "wordCount": 30,
+      "words": [
+        {
+          "kana": "ようふく",
+          "writing": "洋服",
+          "meaning": "西服",
+          "pos": "名词"
+        },
+        {
+          "kana": "セーター",
+          "writing": "セーター",
+          "meaning": "毛衣",
+          "pos": "名词"
+        },
+        {
+          "kana": "ノートパソコン",
+          "writing": "ノートパソコン",
+          "meaning": "笔记本电脑",
+          "pos": "名词"
+        },
+        {
+          "kana": "バイク",
+          "writing": "バイク",
+          "meaning": "摩托车",
+          "pos": "名词"
+        },
+        {
+          "kana": "おしるこ",
+          "writing": "お汁粉",
+          "meaning": "年糕小豆汤",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんぷら",
+          "writing": "天ぷら",
+          "meaning": "天麸罗",
+          "pos": "名词"
+        },
+        {
+          "kana": "はつもうで",
+          "writing": "初詣",
+          "meaning": "新年后首次参拜",
+          "pos": "名词"
+        },
+        {
+          "kana": "けんこう",
+          "writing": "健康",
+          "meaning": "健康",
+          "pos": "名词"
+        },
+        {
+          "kana": "れんあい",
+          "writing": "恋愛",
+          "meaning": "恋爱",
+          "pos": "名词"
+        },
+        {
+          "kana": "ドラマ",
+          "writing": "ドラマ",
+          "meaning": "连续剧",
+          "pos": "名词"
+        },
+        {
+          "kana": "あいて",
+          "writing": "相手",
+          "meaning": "对象，对方",
+          "pos": "名词"
+        },
+        {
+          "kana": "こいびと",
+          "writing": "恋人",
+          "meaning": "恋人",
+          "pos": "名词"
+        },
+        {
+          "kana": "せんぱい",
+          "writing": "先輩",
+          "meaning": "前辈",
+          "pos": "名词"
+        },
+        {
+          "kana": "だんせい",
+          "writing": "男性",
+          "meaning": "男性",
+          "pos": "名词"
+        },
+        {
+          "kana": "がいこくじん",
+          "writing": "外国人",
+          "meaning": "外国人",
+          "pos": "名词"
+        },
+        {
+          "kana": "なつ",
+          "writing": "夏",
+          "meaning": "夏天",
+          "pos": "名词"
+        },
+        {
+          "kana": "はじめます",
+          "writing": "始めます",
+          "meaning": "开始",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "れんらくします",
+          "writing": "連絡します",
+          "meaning": "联系",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "ほしい",
+          "writing": "欲しい",
+          "meaning": "想要",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "りっぱ",
+          "writing": "立派",
+          "meaning": "美观，杰出",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "こんど",
+          "writing": "今度",
+          "meaning": "下次；这回",
+          "pos": "副词"
+        },
+        {
+          "kana": "ぜひ",
+          "writing": "ぜひ",
+          "meaning": "一定",
+          "pos": "副词"
+        },
+        {
+          "kana": "そろそろ",
+          "writing": "そろそろ",
+          "meaning": "快要",
+          "pos": "副词"
+        },
+        {
+          "kana": "まず",
+          "writing": "まず",
+          "meaning": "先，首先",
+          "pos": "副词"
+        },
+        {
+          "kana": "ベートーベン",
+          "writing": "ベートーベン",
+          "meaning": "贝多芬",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ショパン",
+          "writing": "ショパン",
+          "meaning": "肖邦",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "こきゅう",
+          "writing": "故宮",
+          "meaning": "故宫",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ヨーロッパ",
+          "writing": "ヨーロッパ",
+          "meaning": "欧洲",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ホンコン",
+          "writing": "香港",
+          "meaning": "香港",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "スイス",
+          "writing": "スイス",
+          "meaning": "瑞士",
+          "pos": "专有名词"
+        }
+      ]
+    },
+    {
+      "lesson": 18,
+      "wordCount": 38,
+      "words": [
+        {
+          "kana": "おと",
+          "writing": "音",
+          "meaning": "声音，响声",
+          "pos": "名词"
+        },
+        {
+          "kana": "こえ",
+          "writing": "声",
+          "meaning": "声音",
+          "pos": "名词"
+        },
+        {
+          "kana": "くうき",
+          "writing": "空気",
+          "meaning": "空气",
+          "pos": "名词"
+        },
+        {
+          "kana": "むすこ",
+          "writing": "息子",
+          "meaning": "儿子",
+          "pos": "名词"
+        },
+        {
+          "kana": "いしゃ",
+          "writing": "医者",
+          "meaning": "医生",
+          "pos": "名词"
+        },
+        {
+          "kana": "おじょうさん",
+          "writing": "お嬢さん",
+          "meaning": "令爱",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゃかいじん",
+          "writing": "社会人",
+          "meaning": "社会的一员，成人",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょこうガイド",
+          "writing": "旅行ガイド",
+          "meaning": "旅行导游",
+          "pos": "名词"
+        },
+        {
+          "kana": "がくしゃ",
+          "writing": "学者",
+          "meaning": "学者",
+          "pos": "名词"
+        },
+        {
+          "kana": "パイロット",
+          "writing": "パイロット",
+          "meaning": "飞行员",
+          "pos": "名词"
+        },
+        {
+          "kana": "デザイナー",
+          "writing": "デザイナー",
+          "meaning": "设计者，设计家",
+          "pos": "名词"
+        },
+        {
+          "kana": "タイムサービス",
+          "writing": "タイムサービス",
+          "meaning": "时段廉价销售",
+          "pos": "名词"
+        },
+        {
+          "kana": "しんしゅんセール",
+          "writing": "新春セール",
+          "meaning": "新年大甩卖",
+          "pos": "名词"
+        },
+        {
+          "kana": "さんわりびき",
+          "writing": "３割引",
+          "meaning": "七折",
+          "pos": "名词"
+        },
+        {
+          "kana": "ていか",
+          "writing": "定価",
+          "meaning": "定价",
+          "pos": "名词"
+        },
+        {
+          "kana": "はんがく",
+          "writing": "半額",
+          "meaning": "半价",
+          "pos": "名词"
+        },
+        {
+          "kana": "ねだん",
+          "writing": "値段",
+          "meaning": "价格",
+          "pos": "名词"
+        },
+        {
+          "kana": "シャツ",
+          "writing": "シャツ",
+          "meaning": "衬衫",
+          "pos": "名词"
+        },
+        {
+          "kana": "スカート",
+          "writing": "スカート",
+          "meaning": "裙子",
+          "pos": "名词"
+        },
+        {
+          "kana": "いろ",
+          "writing": "色",
+          "meaning": "颜色",
+          "pos": "名词"
+        },
+        {
+          "kana": "あか",
+          "writing": "赤",
+          "meaning": "红色",
+          "pos": "名词"
+        },
+        {
+          "kana": "あお",
+          "writing": "青",
+          "meaning": "蓝色",
+          "pos": "名词"
+        },
+        {
+          "kana": "おしょうがつ",
+          "writing": "お正月",
+          "meaning": "过年，新年",
+          "pos": "名词"
+        },
+        {
+          "kana": "じかん",
+          "writing": "時間",
+          "meaning": "时间",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょうらい",
+          "writing": "将来",
+          "meaning": "将来",
+          "pos": "名词"
+        },
+        {
+          "kana": "じゅんび",
+          "writing": "準備",
+          "meaning": "准备",
+          "pos": "名词"
+        },
+        {
+          "kana": "びょうき",
+          "writing": "病気",
+          "meaning": "疾病",
+          "pos": "名词"
+        },
+        {
+          "kana": "なります",
+          "writing": "なります",
+          "meaning": "变，当，变成，成为",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あきます",
+          "writing": "開きます",
+          "meaning": "开",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "にあいます",
+          "writing": "似合います",
+          "meaning": "适合，相称",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "うるさい",
+          "writing": "うるさい",
+          "meaning": "闹，使人心烦",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "シンプル",
+          "writing": "シンプル",
+          "meaning": "单纯，简洁",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "まもなく",
+          "writing": "間もなく",
+          "meaning": "马上，一会儿，不久",
+          "pos": "副词"
+        },
+        {
+          "kana": "さらに/もっと",
+          "writing": "さらに/もっと",
+          "meaning": "更加，更",
+          "pos": "副词"
+        },
+        {
+          "kana": "さあ",
+          "writing": "さあ",
+          "meaning": "啊，喂",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "できるだけ",
+          "writing": "できるだけ",
+          "meaning": "尽量，尽可能",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "まとめて",
+          "writing": "まとめて",
+          "meaning": "一下子，一起，汇总，汇集",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "いまから",
+          "writing": "今から",
+          "meaning": "从现在起",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 19,
+      "wordCount": 40,
+      "words": [
+        {
+          "kana": "しなもの",
+          "writing": "品物",
+          "meaning": "物品，商品",
+          "pos": "名词"
+        },
+        {
+          "kana": "おさら",
+          "writing": "お皿",
+          "meaning": "盘子",
+          "pos": "名词"
+        },
+        {
+          "kana": "ごみ",
+          "writing": "ごみ",
+          "meaning": "垃圾",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょしんしゃ",
+          "writing": "初心者",
+          "meaning": "初学者",
+          "pos": "名词"
+        },
+        {
+          "kana": "じょうきゅうしゃ",
+          "writing": "上級者",
+          "meaning": "熟练者",
+          "pos": "名词"
+        },
+        {
+          "kana": "こうきゅう",
+          "writing": "高級",
+          "meaning": "高级",
+          "pos": "名词"
+        },
+        {
+          "kana": "じょうきゅうクラス",
+          "writing": "上級クラス",
+          "meaning": "高级班",
+          "pos": "名词"
+        },
+        {
+          "kana": "えいかいわ",
+          "writing": "英会話",
+          "meaning": "英语会话",
+          "pos": "名词"
+        },
+        {
+          "kana": "コース",
+          "writing": "コース",
+          "meaning": "路线，滑道",
+          "pos": "名词"
+        },
+        {
+          "kana": "スキー",
+          "writing": "スキー",
+          "meaning": "滑雪",
+          "pos": "名词"
+        },
+        {
+          "kana": "レポート",
+          "writing": "レポート",
+          "meaning": "报告",
+          "pos": "名词"
+        },
+        {
+          "kana": "パスポート",
+          "writing": "パスポート",
+          "meaning": "护照",
+          "pos": "名词"
+        },
+        {
+          "kana": "のど",
+          "writing": "のど",
+          "meaning": "喉咙",
+          "pos": "名词"
+        },
+        {
+          "kana": "さわります",
+          "writing": "触ります",
+          "meaning": "碰，触",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "ぬぎます",
+          "writing": "脱ぎます",
+          "meaning": "脱",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "ころびます",
+          "writing": "転びます",
+          "meaning": "摔，摔倒，跌倒",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かわきます",
+          "writing": "渇きます",
+          "meaning": "渴",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "なおります",
+          "writing": "治ります",
+          "meaning": "痊愈，医好",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "すべります",
+          "writing": "滑ります",
+          "meaning": "滑，滑行",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "よびます",
+          "writing": "呼びます",
+          "meaning": "呼喊",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "かえします",
+          "writing": "返します",
+          "meaning": "归还",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "てつだいます",
+          "writing": "手伝います",
+          "meaning": "帮忙",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はこびます",
+          "writing": "運びます",
+          "meaning": "搬运",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "なくします",
+          "writing": "なくします",
+          "meaning": "丢，丢失",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おとします",
+          "writing": "落とします",
+          "meaning": "掉，使落下",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おきます",
+          "writing": "置きます",
+          "meaning": "放置",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "はらいます",
+          "writing": "払います",
+          "meaning": "支付",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "たちます",
+          "writing": "立ちます",
+          "meaning": "站，立",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "わすれます",
+          "writing": "忘れます",
+          "meaning": "忘记",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "あわてます",
+          "writing": "慌てます",
+          "meaning": "慌张，惊慌，着急",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "すてます",
+          "writing": "捨てます",
+          "meaning": "扔，扔掉",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "ざんぎょうします",
+          "writing": "残業します",
+          "meaning": "加班",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "しんぱいします",
+          "writing": "心配します",
+          "meaning": "担心",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "ほんとう",
+          "writing": "本当",
+          "meaning": "真的，真正",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "はやく",
+          "writing": "早く",
+          "meaning": "早点儿",
+          "pos": "副词"
+        },
+        {
+          "kana": "やっと",
+          "writing": "やっと",
+          "meaning": "好不容易，终于",
+          "pos": "副词"
+        },
+        {
+          "kana": "だいぶ",
+          "writing": "だいぶ",
+          "meaning": "很，相当地",
+          "pos": "副词"
+        },
+        {
+          "kana": "はじめて",
+          "writing": "初めて",
+          "meaning": "第一次",
+          "pos": "副词"
+        },
+        {
+          "kana": "さきに",
+          "writing": "先に",
+          "meaning": "先",
+          "pos": "副词"
+        },
+        {
+          "kana": "やまだ",
+          "writing": "山田",
+          "meaning": "山田",
+          "pos": "专有名词"
+        }
+      ]
+    },
+    {
+      "lesson": 20,
+      "wordCount": 40,
+      "words": [
+        {
+          "kana": "しゅみ",
+          "writing": "趣味",
+          "meaning": "爱好",
+          "pos": "名词"
+        },
+        {
+          "kana": "とくぎ",
+          "writing": "特技",
+          "meaning": "特长，拿手的技术",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょうみ",
+          "writing": "興味",
+          "meaning": "兴趣",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゆめ",
+          "writing": "夢",
+          "meaning": "梦，理想",
+          "pos": "名词"
+        },
+        {
+          "kana": "ギター",
+          "writing": "ギター",
+          "meaning": "吉他",
+          "pos": "名词"
+        },
+        {
+          "kana": "こきゅう",
+          "writing": "胡弓",
+          "meaning": "胡琴",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょどう",
+          "writing": "書道",
+          "meaning": "书法",
+          "pos": "名词"
+        },
+        {
+          "kana": "つり",
+          "writing": "釣り",
+          "meaning": "钓鱼",
+          "pos": "名词"
+        },
+        {
+          "kana": "ドライブ",
+          "writing": "ドライブ",
+          "meaning": "兜风，开汽车远游",
+          "pos": "名词"
+        },
+        {
+          "kana": "あみもの",
+          "writing": "編み物",
+          "meaning": "编制；编织品",
+          "pos": "名词"
+        },
+        {
+          "kana": "てづくり",
+          "writing": "手作り",
+          "meaning": "手工做，自己做，手制",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちゅうかがい",
+          "writing": "中華街",
+          "meaning": "中华街",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちゅうかりょうり",
+          "writing": "中華料理",
+          "meaning": "中国菜",
+          "pos": "名词"
+        },
+        {
+          "kana": "ギョーザ",
+          "writing": "餃子",
+          "meaning": "饺子",
+          "pos": "名词"
+        },
+        {
+          "kana": "かわ",
+          "writing": "皮",
+          "meaning": "皮",
+          "pos": "名词"
+        },
+        {
+          "kana": "しゅんせつ",
+          "writing": "春節",
+          "meaning": "春节",
+          "pos": "名词"
+        },
+        {
+          "kana": "ししまい",
+          "writing": "獅子舞",
+          "meaning": "狮子舞",
+          "pos": "名词"
+        },
+        {
+          "kana": "りょう",
+          "writing": "寮",
+          "meaning": "宿舍",
+          "pos": "名词"
+        },
+        {
+          "kana": "せんたくき",
+          "writing": "洗濯機",
+          "meaning": "洗衣机",
+          "pos": "名词"
+        },
+        {
+          "kana": "シャワー",
+          "writing": "シャワー",
+          "meaning": "淋浴",
+          "pos": "名词"
+        },
+        {
+          "kana": "おなか",
+          "writing": "おなか",
+          "meaning": "肚子",
+          "pos": "名词"
+        },
+        {
+          "kana": "じゅぎょう",
+          "writing": "授業",
+          "meaning": "授课，上课",
+          "pos": "名词"
+        },
+        {
+          "kana": "しりょう",
+          "writing": "資料",
+          "meaning": "资料",
+          "pos": "名词"
+        },
+        {
+          "kana": "フランスご",
+          "writing": "フランス語",
+          "meaning": "法语",
+          "pos": "名词"
+        },
+        {
+          "kana": "しょうせつ",
+          "writing": "小説",
+          "meaning": "小说",
+          "pos": "名词"
+        },
+        {
+          "kana": "かいがん",
+          "writing": "海岸",
+          "meaning": "海岸",
+          "pos": "名词"
+        },
+        {
+          "kana": "ふゆやすみ",
+          "writing": "冬休み",
+          "meaning": "寒假",
+          "pos": "名词"
+        },
+        {
+          "kana": "キャンプ",
+          "writing": "キャンプ",
+          "meaning": "野营",
+          "pos": "名词"
+        },
+        {
+          "kana": "みんな",
+          "writing": "みんな",
+          "meaning": "大家",
+          "pos": "名词"
+        },
+        {
+          "kana": "じぶん",
+          "writing": "自分",
+          "meaning": "自己",
+          "pos": "名词"
+        },
+        {
+          "kana": "ぜんいん",
+          "writing": "全員",
+          "meaning": "全员",
+          "pos": "名词"
+        },
+        {
+          "kana": "ひきます",
+          "writing": "弾きます",
+          "meaning": "弹",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "すきます",
+          "writing": "すきます",
+          "meaning": "（肚子）饿，空",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "のぼります",
+          "writing": "登ります",
+          "meaning": "登，上",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "あつめます",
+          "writing": "集めます",
+          "meaning": "收集",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "あびます",
+          "writing": "浴びます",
+          "meaning": "淋；浇",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "ごちそうします",
+          "writing": "ごちそうします",
+          "meaning": "请客，摆盛宴",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "きこくします",
+          "writing": "帰国します",
+          "meaning": "回国",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "とくに",
+          "writing": "特に",
+          "meaning": "特别",
+          "pos": "副词"
+        },
+        {
+          "kana": "おなかがすきます",
+          "writing": "おなかがすきます",
+          "meaning": "肚子饿",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 21,
+      "wordCount": 26,
+      "words": [
+        {
+          "kana": "ことば",
+          "writing": "言葉",
+          "meaning": "语言",
+          "pos": "名词"
+        },
+        {
+          "kana": "メールアドレス",
+          "writing": "メールアドレス",
+          "meaning": "邮件地址",
+          "pos": "名词"
+        },
+        {
+          "kana": "れんきゅう",
+          "writing": "連休",
+          "meaning": "连休",
+          "pos": "名词"
+        },
+        {
+          "kana": "ゴールデンウィーク",
+          "writing": "ゴールデンウィーク",
+          "meaning": "黄金周",
+          "pos": "名词"
+        },
+        {
+          "kana": "おわり",
+          "writing": "終わり",
+          "meaning": "结束",
+          "pos": "名词"
+        },
+        {
+          "kana": "きゅうけいじかん",
+          "writing": "休憩時間",
+          "meaning": "休息时间",
+          "pos": "名词"
+        },
+        {
+          "kana": "きょうげき",
+          "writing": "京劇",
+          "meaning": "京剧",
+          "pos": "名词"
+        },
+        {
+          "kana": "きっぷ",
+          "writing": "切符",
+          "meaning": "票（券）",
+          "pos": "名词"
+        },
+        {
+          "kana": "からだ",
+          "writing": "体",
+          "meaning": "身体",
+          "pos": "名词"
+        },
+        {
+          "kana": "じしん",
+          "writing": "地震",
+          "meaning": "地震",
+          "pos": "名词"
+        },
+        {
+          "kana": "どろぼう",
+          "writing": "泥棒",
+          "meaning": "小偷，盗贼",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちゅうしゃじょう",
+          "writing": "駐車場",
+          "meaning": "停车场",
+          "pos": "名词"
+        },
+        {
+          "kana": "わたします",
+          "writing": "渡します",
+          "meaning": "交给",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "おくれます",
+          "writing": "遅れます",
+          "meaning": "迟到",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "かんがえます",
+          "writing": "考えます",
+          "meaning": "考虑",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "しらべます",
+          "writing": "調べます",
+          "meaning": "调查",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "きます",
+          "writing": "着ます",
+          "meaning": "穿",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "よやくします",
+          "writing": "予約します",
+          "meaning": "预约",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "かんしゃします",
+          "writing": "感謝します",
+          "meaning": "感谢",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "うんどうします",
+          "writing": "運動します",
+          "meaning": "运动",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "せんたくします",
+          "writing": "洗濯します",
+          "meaning": "洗涤，洗",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "ほうこくします",
+          "writing": "報告します",
+          "meaning": "报告",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "あぶない",
+          "writing": "危ない",
+          "meaning": "危险",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "それとも",
+          "writing": "それとも",
+          "meaning": "还是，或者",
+          "pos": "接续词"
+        },
+        {
+          "kana": "とうきょうタワー",
+          "writing": "東京タワー",
+          "meaning": "东京塔",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "そんなに",
+          "writing": "そんなに",
+          "meaning": "那么",
+          "pos": "惯用语"
+        }
+      ]
+    },
+    {
+      "lesson": 22,
+      "wordCount": 27,
+      "words": [
+        {
+          "kana": "スキーじょう",
+          "writing": "スキー場",
+          "meaning": "滑雪场",
+          "pos": "名词"
+        },
+        {
+          "kana": "そうべつかい",
+          "writing": "送別会",
+          "meaning": "欢送会",
+          "pos": "名词"
+        },
+        {
+          "kana": "つごう",
+          "writing": "都合",
+          "meaning": "方便；情况",
+          "pos": "名词"
+        },
+        {
+          "kana": "よてい",
+          "writing": "予定",
+          "meaning": "预约",
+          "pos": "名词"
+        },
+        {
+          "kana": "おもちゃ",
+          "writing": "おもちゃ",
+          "meaning": "玩具",
+          "pos": "名词"
+        },
+        {
+          "kana": "かじ",
+          "writing": "火事",
+          "meaning": "火灾",
+          "pos": "名词"
+        },
+        {
+          "kana": "きかん",
+          "writing": "期間",
+          "meaning": "时间，期间",
+          "pos": "名词"
+        },
+        {
+          "kana": "てんきん",
+          "writing": "転勤",
+          "meaning": "调动工作",
+          "pos": "名词"
+        },
+        {
+          "kana": "けいたい",
+          "writing": "携帯",
+          "meaning": "手机",
+          "pos": "名词"
+        },
+        {
+          "kana": "バドミントン",
+          "writing": "バドミントン",
+          "meaning": "羽毛球",
+          "pos": "名词"
+        },
+        {
+          "kana": "ラケット",
+          "writing": "ラケット",
+          "meaning": "球拍",
+          "pos": "名词"
+        },
+        {
+          "kana": "おくさん",
+          "writing": "奥さん",
+          "meaning": "夫人，（别人的）爱人",
+          "pos": "名词"
+        },
+        {
+          "kana": "かしゅ",
+          "writing": "歌手",
+          "meaning": "歌手",
+          "pos": "名词"
+        },
+        {
+          "kana": "だいとうりょう",
+          "writing": "大統領",
+          "meaning": "总统",
+          "pos": "名词"
+        },
+        {
+          "kana": "やります",
+          "writing": "やります",
+          "meaning": "做",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "うれしい",
+          "writing": "うれしい",
+          "meaning": "高兴",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "ねむい",
+          "writing": "眠い",
+          "meaning": "困倦",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おもい",
+          "writing": "重い",
+          "meaning": "重，沉重",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "きゅう",
+          "writing": "急",
+          "meaning": "突然；紧急",
+          "pos": "二类形容词"
+        },
+        {
+          "kana": "まあまあ",
+          "writing": "まあまあ",
+          "meaning": "大致，还算",
+          "pos": "副词"
+        },
+        {
+          "kana": "ごめん",
+          "writing": "ごめん",
+          "meaning": "抱歉，请原谅",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "ううん/いや",
+          "writing": "ううん/いや",
+          "meaning": "不",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "うん",
+          "writing": "うん",
+          "meaning": "嗯",
+          "pos": "感叹词"
+        },
+        {
+          "kana": "しみず",
+          "writing": "清水",
+          "meaning": "清水",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おおた",
+          "writing": "太田",
+          "meaning": "太田",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "モーツァルト",
+          "writing": "モーツァルト",
+          "meaning": "莫扎特",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "ディズニーランド",
+          "writing": "ディズニーランド",
+          "meaning": "迪斯尼乐园",
+          "pos": "专有名词"
+        }
+      ]
+    },
+    {
+      "lesson": 23,
+      "wordCount": 20,
+      "words": [
+        {
+          "kana": "しゅうまつ",
+          "writing": "週末",
+          "meaning": "周末",
+          "pos": "名词"
+        },
+        {
+          "kana": "スケート",
+          "writing": "スケート",
+          "meaning": "滑冰，溜冰",
+          "pos": "名词"
+        },
+        {
+          "kana": "あじ",
+          "writing": "味",
+          "meaning": "口味，（食物的）味道",
+          "pos": "名词"
+        },
+        {
+          "kana": "まいかい",
+          "writing": "毎回",
+          "meaning": "每次，每回",
+          "pos": "名词"
+        },
+        {
+          "kana": "つうきん",
+          "writing": "通勤",
+          "meaning": "上下班，通勤",
+          "pos": "名词"
+        },
+        {
+          "kana": "ふね",
+          "writing": "船",
+          "meaning": "船",
+          "pos": "名词"
+        },
+        {
+          "kana": "きじ",
+          "writing": "生地",
+          "meaning": "布料，衣料",
+          "pos": "名词"
+        },
+        {
+          "kana": "へいてんじこく",
+          "writing": "閉店時刻",
+          "meaning": "关门时间",
+          "pos": "名词"
+        },
+        {
+          "kana": "そつぎょうしき",
+          "writing": "卒業式",
+          "meaning": "毕业典礼",
+          "pos": "名词"
+        },
+        {
+          "kana": "ちがいます",
+          "writing": "違います",
+          "meaning": "不同，不一样",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "こみます",
+          "writing": "込みます",
+          "meaning": "拥挤，混杂",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "きまります",
+          "writing": "決まります",
+          "meaning": "定，决定",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "しらせます",
+          "writing": "知らせます",
+          "meaning": "告诉",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "たしかめます",
+          "writing": "確かめます",
+          "meaning": "查（看），弄清",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "こい",
+          "writing": "濃い",
+          "meaning": "（口味）重；浓",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "うすい",
+          "writing": "薄い",
+          "meaning": "（口味）轻；薄",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "はやい",
+          "writing": "早い",
+          "meaning": "早",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "おそい",
+          "writing": "遅い",
+          "meaning": "晚，慢",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "たぶん",
+          "writing": "たぶん",
+          "meaning": "可能，大概",
+          "pos": "副词"
+        },
+        {
+          "kana": "とうきょうえき",
+          "writing": "東京駅",
+          "meaning": "东京站",
+          "pos": "专有名词"
+        }
+      ]
+    },
+    {
+      "lesson": 24,
+      "wordCount": 30,
+      "words": [
+        {
+          "kana": "ハイキング",
+          "writing": "ハイキング",
+          "meaning": "郊游，远足",
+          "pos": "名词"
+        },
+        {
+          "kana": "おわかれ",
+          "writing": "お別れ",
+          "meaning": "分别，分手",
+          "pos": "名词"
+        },
+        {
+          "kana": "はなし",
+          "writing": "話",
+          "meaning": "说话",
+          "pos": "名词"
+        },
+        {
+          "kana": "みおくり",
+          "writing": "見送り",
+          "meaning": "送行，送别",
+          "pos": "名词"
+        },
+        {
+          "kana": "あいだ",
+          "writing": "間",
+          "meaning": "时间，期间",
+          "pos": "名词"
+        },
+        {
+          "kana": "ほうりつ",
+          "writing": "法律",
+          "meaning": "法律",
+          "pos": "名词"
+        },
+        {
+          "kana": "おもいます",
+          "writing": "思います",
+          "meaning": "想，思考",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "いいます",
+          "writing": "言います",
+          "meaning": "说，讲",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "さがします",
+          "writing": "探します",
+          "meaning": "找，寻找，寻求",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "わらいます",
+          "writing": "笑います",
+          "meaning": "笑",
+          "pos": "一类动词"
+        },
+        {
+          "kana": "やめます",
+          "writing": "やめます",
+          "meaning": "戒，停止，放弃",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "きめます",
+          "writing": "決めます",
+          "meaning": "决定",
+          "pos": "二类动词"
+        },
+        {
+          "kana": "ねぼうします",
+          "writing": "寝坊します",
+          "meaning": "睡懒觉",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "がいしゅつします",
+          "writing": "外出します",
+          "meaning": "外出，出去",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "けんきゅうします",
+          "writing": "研究します",
+          "meaning": "研究",
+          "pos": "三类动词"
+        },
+        {
+          "kana": "おかしい",
+          "writing": "おかしい",
+          "meaning": "可笑，滑稽",
+          "pos": "一类形容词"
+        },
+        {
+          "kana": "いっぱい",
+          "writing": "いっぱい",
+          "meaning": "满",
+          "pos": "副词"
+        },
+        {
+          "kana": "すごい",
+          "writing": "すごい",
+          "meaning": "惊人的，了不起",
+          "pos": "副词"
+        },
+        {
+          "kana": "とうとう",
+          "writing": "とうとう",
+          "meaning": "终于，终究，到底",
+          "pos": "副词"
+        },
+        {
+          "kana": "かならず",
+          "writing": "必ず",
+          "meaning": "一定，必定",
+          "pos": "副词"
+        },
+        {
+          "kana": "ぜったいに",
+          "writing": "絶対に",
+          "meaning": "绝对",
+          "pos": "副词"
+        },
+        {
+          "kana": "ば",
+          "writing": "馬",
+          "meaning": "马",
+          "pos": "专有名词"
+        },
+        {
+          "kana": "おせわになりました",
+          "writing": "お世話になりました",
+          "meaning": "承蒙照顾",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "よろしくおつたえください",
+          "writing": "よろしくお伝えください",
+          "meaning": "请代问好",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おげんきで",
+          "writing": "お元気で",
+          "meaning": "请多保重",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おきをつけて",
+          "writing": "お気をつけて",
+          "meaning": "小心点儿",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "さようなら",
+          "writing": "さようなら",
+          "meaning": "再见",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "どうやって",
+          "writing": "どうやって",
+          "meaning": "怎样，如何",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "やくにたちます",
+          "writing": "役に立ちます",
+          "meaning": "有用",
+          "pos": "惯用语"
+        },
+        {
+          "kana": "おなかがいっぱいです",
+          "writing": "おなかがいっぱいです",
+          "meaning": "吃饱，饱",
+          "pos": "惯用语"
+        }
+      ]
+    }
+  ]
+};
+DATA.lessons.forEach(L => L.words.forEach(w => { w.lesson = L.lesson; }));
+const LS_KEY = "biaori1_kana_v1";
+
+/* ---------- 存档 ---------- */
+function loadStore(){
+  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.wrong) return s; }catch(e){}
+  return { wrong: [], stats: {} };
+}
+const store = loadStore();
+function saveStore(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
+const wkey = w => "l" + w.lesson + ":" + w.kana;
+
+/* ---------- 工具 ---------- */
+function shuffle(a){
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function kataToHira(s){
+  return s.replace(/[\u30A1-\u30F6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+}
+function norm(s){
+  return kataToHira(s.replace(/[～~・∕/／\s（）()！!？?。、,，]/g, ""));
+}
+const $ = id => document.getElementById(id);
+
+/* ---------- 范围选择 ---------- */
+const selected = new Set();
+function buildChips(){
+  const box = $("lessonChips");
+  DATA.lessons.forEach(L => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.dataset.lesson = L.lesson;
+    b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + L.wordCount + '词</span>';
+    b.addEventListener("click", () => {
+      if(selected.has(L.lesson)) selected.delete(L.lesson); else selected.add(L.lesson);
+      b.classList.toggle("on", selected.has(L.lesson));
+      refreshStart();
+    });
+    box.appendChild(b);
+  });
+}
+function refreshStart(){
+  const onlyWrong = $("wrongBtn").dataset.on === "1";
+  const empty = onlyWrong ? store.wrong.length === 0 : selected.size === 0;
+  $("startBtn").disabled = empty;
+  $("startBtn").textContent = onlyWrong
+    ? "开始 · 错题本 " + store.wrong.length + " 词"
+    : "开始 · 共 " + [...selected].reduce((s, l) => s + DATA.lessons[l-1].wordCount, 0) + " 词";
+}
+
+/* ---------- 会话状态 ---------- */
+let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0;
+let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced = false;
+function advance(){
+  if(advanced) return;
+  advanced = true;
+  idx++;
+  nextWord();
+}
+
+function startSession(list){
+  pool = list.slice();
+  if($("optRandom").checked) shuffle(pool);
+  idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
+  $("setup").hidden = true; $("result").hidden = true; $("drill").hidden = false;
+  nextWord();
+}
+
+function currentPool(){
+  if($("wrongBtn").dataset.on === "1"){
+    const set = new Set(store.wrong);
+    const all = [];
+    DATA.lessons.forEach(L => L.words.forEach(w => { if(set.has(wkey(w))) all.push(w); }));
+    return all;
+  }
+  const all = [];
+  DATA.lessons.forEach(L => { if(selected.has(L.lesson)) L.words.forEach(w => all.push(w)); });
+  return all;
+}
+
+function nextWord(){
+  if(idx >= pool.length){ showResult(); return; }
+  cur = pool[idx]; answered = false; hintUsed = false; forceWrong = false; advanced = false;
+  $("progress").textContent = "第 " + (idx + 1) + " / " + pool.length + " 题";
+  $("streakNum").textContent = streak;
+  $("posTag").textContent = cur.pos;
+  $("lessonTag").textContent = "第" + cur.lesson + "课";
+  $("meaningEl").textContent = cur.meaning;
+  const showKanji = $("optKanji").checked && cur.writing !== cur.kana;
+  $("kanjiHint").hidden = !showKanji;
+  $("kanjiHint").textContent = cur.writing;
+  $("ans").value = "";
+  $("feedback").innerHTML = "";
+  $("hintBtn").disabled = false; $("skipBtn").disabled = false;
+  renderMasu();
+  $("ans").focus();
+}
+
+function renderMasu(){
+  const masu = $("masu");
+  masu.className = "masu jp";
+  masu.innerHTML = "";
+  const typed = $("ans").value;
+  const n = ($("optLen").checked && !answered) ? Math.max(cur.kana.length, typed.length) : Math.max(typed.length, answered ? cur.kana.length : typed.length);
+  for(let i = 0; i < n; i++){
+    const c = document.createElement("div");
+    c.className = "cell";
+    const ch = typed[i];
+    if(ch !== undefined){ c.textContent = ch; c.classList.add("filled"); }
+    if(answered && i < cur.kana.length && ch === cur.kana[i]) c.classList.add("hit");
+    masu.appendChild(c);
+  }
+  if(answered) masu.classList.add(forceWrong ? "bad" : (norm($("ans").value) === norm(cur.kana) ? "ok" : "bad"));
+}
+
+function check(){
+  if(answered){ advance(); return; }
+  const val = $("ans").value;
+  if(!norm(val)) return;
+  answered = true;
+  const ok = !forceWrong && norm(val) === norm(cur.kana);
+  const k = wkey(cur);
+  const st = store.stats[k] || (store.stats[k] = { c: 0, w: 0 });
+  if(ok){
+    correctCount++; streak++; bestStreak = Math.max(bestStreak, streak);
+    st.c++;
+    if(!hintUsed){
+      const wi = store.wrong.indexOf(k);
+      if(wi >= 0){ store.wrong.splice(wi, 1); }
+    }
+  } else {
+    streak = 0; st.w++;
+    if(!store.wrong.includes(k)) store.wrong.push(k);
+    sessionWrong.push(cur);
+  }
+  saveStore();
+  $("streakNum").textContent = streak;
+  $("hintBtn").disabled = true; $("skipBtn").disabled = true;
+  renderMasu();
+  const fb = $("feedback");
+  fb.innerHTML = '<div class="fb-msg ' + (ok ? "ok" : "bad") + '"></div>'
+    + '<div class="reveal"><button class="say" title="发音">🔊</button>'
+    + '<span class="kana jp"></span><span class="kanji jp"></span></div>'
+    + (ok ? '' : '<div class="enter-tip">回车继续下一题</div>');
+  fb.querySelector(".fb-msg").textContent = ok
+    ? (hintUsed ? "正确（用了提示）" : "正确！") : "不对，正确答案是：";
+  fb.querySelector(".kana").textContent = cur.kana;
+  fb.querySelector(".kanji").textContent = cur.writing !== cur.kana ? cur.writing : "";
+  fb.querySelector(".say").addEventListener("click", speak);
+  speak();
+  if(ok) setTimeout(advance, 900);
+}
+
+function hint(){
+  if(answered) return;
+  const a = cur.kana, v = $("ans").value;
+  if(v.length < a.length){ $("ans").value = v + a[v.length]; hintUsed = true; renderMasu(); }
+  $("ans").focus();
+}
+
+function skip(){
+  if(answered) return;
+  hintUsed = true;
+  forceWrong = true;
+  $("ans").value = cur.kana;
+  check();
+}
+
+/* ---------- 发音 ---------- */
+function speak(){
+  if(!("speechSynthesis" in window)) return;
+  const u = new SpeechSynthesisUtterance(cur.writing);
+  u.lang = "ja-JP"; u.rate = 0.85;
+  const v = speechSynthesis.getVoices().find(v => v.lang.startsWith("ja"));
+  if(v) u.voice = v;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => {};
+
+/* ---------- 结果页 ---------- */
+function showResult(){
+  $("drill").hidden = true;
+  $("result").hidden = false;
+  $("scoreCorrect").textContent = correctCount;
+  $("scoreTotal").textContent = pool.length;
+  $("scoreStreak").textContent = bestStreak;
+  const blk = $("wrongListBlock"), rows = $("wrongRows");
+  rows.innerHTML = "";
+  if(sessionWrong.length){
+    blk.hidden = false;
+    $("allRightNote").hidden = true;
+    $("redoWrongBtn").disabled = false;
+    sessionWrong.forEach(w => {
+      const d = document.createElement("div");
+      d.className = "wrow";
+      d.innerHTML = '<span class="l"></span><span class="k jp"></span><span class="m"></span>';
+      d.querySelector(".l").textContent = "第" + w.lesson + "课";
+      d.querySelector(".k").textContent = w.kana + (w.writing !== w.kana ? "（" + w.writing + "）" : "");
+      d.querySelector(".m").textContent = w.meaning;
+      rows.appendChild(d);
+    });
+  } else {
+    blk.hidden = true;
+    $("allRightNote").hidden = false;
+    $("redoWrongBtn").disabled = true;
+  }
+}
+
+/* ---------- 事件 ---------- */
+$("startBtn").addEventListener("click", () => startSession(currentPool()));
+$("allBtn").addEventListener("click", () => {
+  DATA.lessons.forEach(L => selected.add(L.lesson));
+  document.querySelectorAll(".chip").forEach(c => c.classList.add("on"));
+  refreshStart();
+});
+$("noneBtn").addEventListener("click", () => {
+  selected.clear();
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  refreshStart();
+});
+$("wrongBtn").addEventListener("click", function(){
+  const on = this.dataset.on === "1";
+  this.dataset.on = on ? "0" : "1";
+  this.style.background = on ? "" : "var(--shu-soft)";
+  this.textContent = "只练错题本（" + store.wrong.length + "）";
+  refreshStart();
+});
+$("quitBtn").addEventListener("click", () => {
+  $("drill").hidden = true; $("setup").hidden = false;
+  $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
+  refreshStart();
+});
+$("hintBtn").addEventListener("click", hint);
+$("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
+$("skipBtn").addEventListener("click", skip);
+$("ans").addEventListener("input", renderMasu);
+$("ans").addEventListener("keydown", e => {
+  if(e.key !== "Enter") return;
+  if(e.isComposing || e.keyCode === 229) return; /* IME 确认假名，不判定 */
+  e.preventDefault();
+  check();
+});
+document.addEventListener("keydown", e => {
+  if(e.key === "Enter" && !$("drill").hidden && document.activeElement !== $("ans")){
+    e.preventDefault(); $("ans").focus(); if(answered) check();
+  }
+});
+$("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWrong.slice())));
+$("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
+$("backBtn").addEventListener("click", () => {
+  $("result").hidden = true; $("setup").hidden = false;
+  $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
+  refreshStart();
+});
+
+buildChips();
+refreshStart();
+if(store.wrong.length) $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
+</script>
+</body>
+</html>
