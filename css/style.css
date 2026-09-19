@@ -214,10 +214,12 @@ button{font:inherit;cursor:pointer;}
 
 /* ---------- 中也伴侣（P3） ---------- */
 .companion{
-  position:fixed;right:14px;bottom:14px;z-index:45;
+  position:fixed;right:14px;bottom:14px;z-index:9999;
   display:flex;flex-direction:column;align-items:flex-end;gap:8px;
   pointer-events:none;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
 }
+.companion.dragging{cursor:grabbing;}
 .companion-bubble{
   pointer-events:auto;cursor:pointer;
   max-width:min(300px,72vw);

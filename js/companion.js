@@ -2,6 +2,7 @@
 (function(){
   const CONFIG_URL = "config/companion.json";
   const OFF_KEY = "biaori1_companion_off";
+  const POS_KEY = "biaori1_companion_pos";
   const COOLDOWN_MS = 4000;          /* 答题类事件的最小间隔，防止刷屏 */
   const CORRECT_RATE = 0.35;         /* 答对台词的触发概率 */
   const IDLE_MS = 90000;             /* 无操作多久触发闲置彩蛋 */
@@ -43,6 +44,56 @@
       }
     });
     bubble.addEventListener("click", () => hideBubble());
+    makeDraggable();
+    restorePos();
+  }
+
+  /* 整个伴侣盒（气泡+立绘一起）可自由拖动，位置存 localStorage，越界自动夹回视口内 */
+  function restorePos(){
+    try{
+      const p = (localStorage.getItem(POS_KEY) || "").split("|");
+      if(p[0] && p[0].endsWith("px") && p[1] && p[1].endsWith("px")){
+        const x = Math.min(Math.max(parseFloat(p[0]), 0), innerWidth - 60);
+        const y = Math.min(Math.max(parseFloat(p[1]), 0), innerHeight - 60);
+        box.style.left = x + "px"; box.style.top = y + "px";
+        box.style.right = "auto"; box.style.bottom = "auto";
+      }
+    }catch(e){}
+  }
+  function savePos(){
+    try{ localStorage.setItem(POS_KEY, box.style.left + "|" + box.style.top); }catch(e){}
+  }
+  function makeDraggable(){
+    let st = null, moved = false;
+    const onMove = e => {
+      if(!moved && Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > 3){
+        moved = true;
+        box.classList.add("dragging");
+      }
+      if(!moved) return;
+      const x = Math.min(Math.max(st.ox + e.clientX - st.x, 0), innerWidth - box.offsetWidth);
+      const y = Math.min(Math.max(st.oy + e.clientY - st.y, 0), innerHeight - box.offsetHeight);
+      box.style.left = x + "px"; box.style.top = y + "px";
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      box.classList.remove("dragging");
+      if(moved){
+        savePos();
+        /* 拖动松手产生的那次 click 吞掉，免得误关气泡或误触下层 */
+        box.addEventListener("click", ev => ev.stopPropagation(), { once: true, capture: true });
+      }
+    };
+    box.addEventListener("pointerdown", e => {
+      if(e.target === closeBtn || e.button !== 0) return;
+      const r = box.getBoundingClientRect();
+      box.style.left = r.left + "px"; box.style.top = r.top + "px";
+      box.style.right = "auto"; box.style.bottom = "auto";
+      st = { x: e.clientX, y: e.clientY, ox: r.left, oy: r.top };
+      moved = false;
+      window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointerup", onUp, { once: true });
+    });
   }
 
   function isOff(){ try{ return localStorage.getItem(OFF_KEY) === "1"; }catch(e){ return false; } }
