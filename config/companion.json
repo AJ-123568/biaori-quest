@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "note": "中也伴侣台词配置。这是给 P3 companion.js 用的数据文件，也是你自定义台词的模板：增删改 lines 里的条目即可，不用碰代码。合成新音频的流程见 docs/voice-guide.md。",
+  "fields": {
+    "id": "唯一标识，同时是音频文件名（audio/companion/<id>.wav）",
+    "event": "触发事件：greet=进入练习 | answer-correct=答对 | answer-wrong=答错 | combo5=连对满5 | quest-clear=过关 | quest-perfect=完美通关 | quest-bad=低于60% | idle=闲置彩蛋。同一事件放多条，随机抽一条",
+    "text": "台词原文，想让他说的任何话，中日语混排",
+    "lang": "zh=中文 | ja=日语（合成时选的语言，也是回落系统TTS的语种）",
+    "audio": "可省。填了就播 audio/companion/<id>.wav（中也本音）；不填回落系统TTS",
+    "voice": "可省。回落系统TTS时指定系统音色名的一部分（如 Keita=Edge 日语男声、Yunxi/云希=中文男声），不填用默认"
+  },
+  "tips": [
+    "合成时按 event 选对应情绪的参考音频：answer-wrong/combo5 用炸毛段，quest-perfect 用低声认真段",
+    "同一条台词想换着说：复制一行改 id（如 correct-02）即可",
+    "日语台词里汉字读音容易念错时，把读音写成假名再合成（例：汚濁→おだく）"
+  ],
+  "lines": [
+    { "id": "greet-01", "event": "greet", "text": "哟，来了啊。今天也给我赢漂亮点。", "lang": "zh" },
+    { "id": "greet-02", "event": "greet", "text": "よう。やる気なら、いつでも付き合ってやるよ。", "lang": "ja" },
+
+    { "id": "correct-01", "event": "answer-correct", "text": "哼，这种程度，理所当然吧。", "lang": "zh" },
+    { "id": "correct-02", "event": "answer-correct", "text": "哈？这种事也要夸？继续下一题。", "lang": "zh" },
+    { "id": "correct-03", "event": "answer-correct", "text": "当然だろ。次、いこうぜ。", "lang": "ja" },
+    { "id": "correct-04", "event": "answer-correct", "text": "へぇ、やるじゃないか。", "lang": "ja" },
+
+    { "id": "wrong-01", "event": "answer-wrong", "text": "喂！专心点啊你！", "lang": "zh" },
+    { "id": "wrong-02", "event": "answer-wrong", "text": "啧……错了就错了，记住它，下一题拿回来。", "lang": "zh" },
+    { "id": "wrong-03", "event": "answer-wrong", "text": "おい、集中しろよ。", "lang": "ja" },
+
+    { "id": "combo5-01", "event": "combo5", "text": "哦？有点意思了，别停下！", "lang": "zh" },
+    { "id": "combo5-02", "event": "combo5", "text": "好势头！就这样连下去！", "lang": "zh" },
+    { "id": "combo5-03", "event": "combo5", "text": "いいぞ、その調子だ！", "lang": "ja" },
+
+    { "id": "clear-01", "event": "quest-clear", "text": "看到了吧？这就是实力。", "lang": "zh" },
+    { "id": "clear-02", "event": "quest-clear", "text": "哼，区区一课，拿下。", "lang": "zh" },
+    { "id": "clear-03", "event": "quest-clear", "text": "見たか。これが俺の実力ってやつだ。", "lang": "ja" },
+
+    { "id": "perfect-01", "event": "quest-perfect", "text": "全对……哼，别傻站着，我难得夸人。", "lang": "zh" },
+    { "id": "perfect-02", "event": "quest-perfect", "text": "……是。做得好。", "lang": "zh" },
+    { "id": "perfect-03", "event": "quest-perfect", "text": "全問正解。……悪くないな。", "lang": "ja" },
+
+    { "id": "bad-01", "event": "quest-bad", "text": "啧，就这点本事？……喂，重来。我可没说让你放弃。", "lang": "zh" },
+    { "id": "bad-02", "event": "quest-bad", "text": "振作点！摔一跤就想赖着不起来了？", "lang": "zh" },
+
+    { "id": "idle-01", "event": "idle", "text": "喂，还打不打？我可没闲着没事才站这儿的。", "lang": "zh" },
+    { "id": "idle-02", "event": "idle", "text": "……发什么呆呢？", "lang": "zh" },
+    { "id": "idle-03", "event": "idle", "text": "……暇だなあ。", "lang": "ja" }
+  ]
+}
