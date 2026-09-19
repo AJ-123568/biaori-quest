@@ -7,6 +7,7 @@
   const IDLE_MS = 90000;             /* 无操作多久触发闲置彩蛋 */
 
   let cfg = null, shown = false, curAudio = null, lastFired = 0, idleTimer = null;
+  let hasGesture = false, pendingDeferred = null;
   let box, bubble, sprite, closeBtn;
 
   function makeEl(tag, cls, parent){
@@ -86,9 +87,13 @@
     const url = (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
     const a = new Audio(url);
     curAudio = a;
-    a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; speak(line); } });
+    a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; hasGesture ? speak(line) : afterGesture(() => speak(line)); } });
     a.addEventListener("ended", () => setTimeout(hideBubble, 800));
-    a.play().catch(() => { if(curAudio === a) speak(line); });
+    a.play().catch(err => {
+      if(curAudio !== a) return;
+      if(!hasGesture && err && err.name === "NotAllowedError") afterGesture(() => playLine(line));
+      else speak(line);
+    });
   }
 
   function fire(ev){
@@ -105,13 +110,21 @@
     playLine(line);
   }
 
+  /* 页面刚打开还没有点击时浏览器会拦截自动播放，此时把这句存起来，等第一次点击/按键再补播 */
+  function afterGesture(fn){
+    pendingDeferred = fn;
+    const go = () => { if(pendingDeferred){ const f = pendingDeferred; pendingDeferred = null; f(); } };
+    document.addEventListener("pointerdown", go, { once: true, passive: true });
+    document.addEventListener("keydown", go, { once: true, passive: true });
+  }
+
   function resetIdle(){
     clearTimeout(idleTimer);
     idleTimer = setTimeout(() => { if(shown) fire("idle"); }, IDLE_MS);
   }
 
   ["pointerdown", "keydown"].forEach(evName =>
-    document.addEventListener(evName, () => { if(shown) resetIdle(); }, { passive: true }));
+    document.addEventListener(evName, () => { hasGesture = true; if(shown) resetIdle(); }, { passive: true }));
 
   fetch(CONFIG_URL).then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
     cfg = json;
@@ -119,6 +132,8 @@
     Object.values(cfg.art.expressions || {}).forEach(f => { new Image().src = (cfg.art.dir || "") + f; });
     buildDom();
     setExpression("normal");
+    show();
+    fire("greet");   /* 打开页面就打招呼；若还没点击过，语音被自动播放拦截 → afterGesture 等首次交互补播 */
   }).catch(() => {});   /* 配置拿不到（如 file:// 打开）→ 伴侣整体静默 */
 
   window.Companion = { fire, show, hide };

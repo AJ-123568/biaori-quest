@@ -3,7 +3,7 @@
   "note": "中也伴侣台词配置。这是给 P3 companion.js 用的数据文件，也是你自定义台词的模板：增删改 lines 里的条目即可，不用碰代码。合成新音频的流程见 docs/voice-guide.md。",
   "fields": {
     "id": "唯一标识，同时是音频文件名（audio/companion/<id>.wav）",
-    "event": "触发事件：greet=进入练习 | answer-correct=答对 | answer-wrong=答错 | combo5=连对满5 | quest-clear=过关 | quest-perfect=完美通关 | quest-bad=低于60% | idle=闲置彩蛋。同一事件放多条，随机抽一条",
+    "event": "触发事件：greet=打开页面时自动打招呼 | answer-correct=答对 | answer-wrong=答错 | combo5=连对满5 | quest-clear=过关 | quest-perfect=完美通关 | quest-bad=低于60% | idle=闲置彩蛋。同一事件放多条，随机抽一条",
     "text": "台词原文，想让他说的任何话，中日语混排",
     "lang": "zh=中文 | ja=日语（合成时选的语言，也是回落系统TTS的语种）",
     "audio": "可省。填了就播 audio/companion/<id>.wav（中也本音）；不填回落系统TTS",

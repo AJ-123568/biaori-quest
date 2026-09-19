@@ -6730,7 +6730,7 @@ function startSession(list, quest = null){
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
-  if(window.Companion){ Companion.show(); Companion.fire("greet"); }
+  if(window.Companion) Companion.show();
 }
 
 function currentPool(){
