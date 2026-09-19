@@ -2,7 +2,7 @@
 (function(){
   const CONFIG_URL = "config/companion.json";
   const OFF_KEY = "biaori1_companion_off";
-  const COOLDOWN_MS = 8000;          /* 答题类事件的最小间隔，防止刷屏 */
+  const COOLDOWN_MS = 4000;          /* 答题类事件的最小间隔，防止刷屏 */
   const CORRECT_RATE = 0.35;         /* 答对台词的触发概率 */
   const IDLE_MS = 90000;             /* 无操作多久触发闲置彩蛋 */
 
