@@ -65,7 +65,24 @@
   }
   function makeDraggable(){
     let st = null, moved = false;
+    function endDrag(doSave, swallowClick){
+      if(!st) return;
+      const wasMoved = moved;
+      st = null; moved = false;
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+      box.classList.remove("dragging");
+      if(doSave && wasMoved){
+        savePos();
+        /* 拖动松手产生的那次 click 吞掉，免得误关气泡或误触下层 */
+        if(swallowClick) box.addEventListener("click", ev => ev.stopPropagation(), { once: true, capture: true });
+      }
+    }
     const onMove = e => {
+      if(!st || e.pointerId !== st.pid) return;
+      /* 松手事件丢失（如在窗口外松开）时兜底：按键已不在按下态就立刻结束 */
+      if(!e.buttons){ endDrag(true, false); return; }
       if(!moved && Math.abs(e.clientX - st.x) + Math.abs(e.clientY - st.y) > 3){
         moved = true;
         box.classList.add("dragging");
@@ -75,25 +92,20 @@
       const y = Math.min(Math.max(st.oy + e.clientY - st.y, 0), innerHeight - box.offsetHeight);
       box.style.left = x + "px"; box.style.top = y + "px";
     };
-    const onUp = () => {
-      window.removeEventListener("pointermove", onMove);
-      box.classList.remove("dragging");
-      if(moved){
-        savePos();
-        /* 拖动松手产生的那次 click 吞掉，免得误关气泡或误触下层 */
-        box.addEventListener("click", ev => ev.stopPropagation(), { once: true, capture: true });
-      }
-    };
+    const onUp = e => { if(st && e.pointerId === st.pid) endDrag(true, true); };
+    const onCancel = () => endDrag(true, false);
     box.addEventListener("pointerdown", e => {
-      if(e.target === closeBtn || e.button !== 0) return;
+      if(st || e.target === closeBtn || e.button !== 0) return;
       const r = box.getBoundingClientRect();
       box.style.left = r.left + "px"; box.style.top = r.top + "px";
       box.style.right = "auto"; box.style.bottom = "auto";
-      st = { x: e.clientX, y: e.clientY, ox: r.left, oy: r.top };
+      st = { x: e.clientX, y: e.clientY, ox: r.left, oy: r.top, pid: e.pointerId };
       moved = false;
       window.addEventListener("pointermove", onMove);
-      window.addEventListener("pointerup", onUp, { once: true });
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onCancel);
     });
+    window.addEventListener("blur", () => endDrag(true, false));
   }
 
   function isOff(){ try{ return localStorage.getItem(OFF_KEY) === "1"; }catch(e){ return false; } }
