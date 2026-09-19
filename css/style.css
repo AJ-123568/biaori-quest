@@ -184,3 +184,30 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+
+/* ---------- 闯关地图（P2） ---------- */
+.btn.quest-entry{color:#B07F1F;border-color:#E3C98F;}
+.btn.quest-entry:hover{border-color:#D9A441;color:#8F6A16;}
+.qmap{position:relative;margin:10px 0 8px;}
+.qmap-path{position:absolute;left:0;top:0;}
+.qmap-path path{fill:none;stroke:#C9D2CB;stroke-width:3;stroke-dasharray:1 10;stroke-linecap:round;}
+.qnode{position:absolute;width:64px;text-align:center;}
+.qnode .qc{
+  width:64px;height:64px;border-radius:50%;border:2px solid var(--line);
+  background:var(--panel);color:var(--ink);font-size:18px;font-weight:700;
+  cursor:pointer;box-shadow:0 3px 8px rgba(35,40,43,.10);font-family:inherit;
+}
+.qnode.open .qc{border-color:var(--ai);color:var(--ai);}
+.qnode.now .qc{animation:qpulse 1.8s ease-in-out infinite;}
+.qnode.done .qc{border-color:var(--midori);background:var(--midori-soft);color:var(--midori);}
+.qnode.done.s3 .qc{border-color:#D9A441;background:#FBF3E1;color:#B07F1F;}
+.qnode.locked .qc{background:#F0F1F0;color:var(--muted);cursor:not-allowed;font-size:15px;}
+.qnode .st{display:block;margin-top:4px;font-size:11px;letter-spacing:1px;color:var(--line);}
+.qnode.done .st{color:#D9A441;}
+.qnode.shake .qc{animation:qshake .4s ease;}
+@keyframes qshake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-3px)}}
+@keyframes qpulse{50%{box-shadow:0 0 0 9px var(--ai-soft);}}
+.qgoal{position:absolute;font-size:22px;}
+.qstars{text-align:center;font-size:30px;letter-spacing:6px;color:#D9A441;margin-top:14px;}
+.diff-right{display:flex;align-items:center;gap:10px;}
+.diff-right .dstars{font-size:13px;color:#D9A441;letter-spacing:1px;}

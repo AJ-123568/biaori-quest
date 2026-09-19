@@ -6548,7 +6548,11 @@ const ECO_DEFAULT = { lv: 1, coins: 10000, hint: 10, skip: 10 };
 function loadStore(){
   try{
     const s = JSON.parse(localStorage.getItem(LS_KEY));
-    if(s && s.wrong && s.eco) return Object.assign(s, { eco: Object.assign({}, ECO_DEFAULT, s.eco) });
+    if(s && s.wrong && s.eco){
+      s.eco = Object.assign({}, ECO_DEFAULT, s.eco);
+      s.quest = s.quest || {};
+      return s;
+    }
   }catch(e){}
   let base = { wrong: [], stats: {} };
   try{
@@ -6556,6 +6560,7 @@ function loadStore(){
     if(old && old.wrong) base = old;   /* v1 迁移：错题本与统计原样带入，v1 保留作备份 */
   }catch(e){}
   base.eco = Object.assign({}, ECO_DEFAULT);
+  base.quest = {};
   return base;
 }
 const store = loadStore();
@@ -6583,6 +6588,83 @@ function useTicket(kind){   /* kind: "hint" | "skip"，成功扣 1 张 */
   return true;
 }
 function denyTicket(msg){ $("feedback").innerHTML = '<div class="enter-tip">' + msg + "</div>"; }
+
+/* ---------- 闯关（P2） ---------- */
+const SVG_NS = "http://www.w3.org/2000/svg";
+const starStr = n => "★".repeat(n) + "☆".repeat(3 - n);
+function bestStars(l){
+  const q = store.quest["l" + l];
+  return q ? Math.max(q.n, q.a) : 0;
+}
+function questUnlocked(l){ return l === 1 || bestStars(l - 1) >= 1; }
+
+let pendingLesson = 0, lastQuest = null;
+function openDiff(lesson){
+  pendingLesson = lesson;
+  $("diffTitle").textContent = "第" + lesson + "课";
+  const q = store.quest["l" + lesson] || { n: 0, a: 0 };
+  $("diffNStars").textContent = starStr(q.n);
+  $("diffAStars").textContent = starStr(q.a);
+  $("diffMask").hidden = false;
+}
+function startQuest(lesson, diff){
+  $("diffMask").hidden = true;
+  startSession(DATA.lessons[lesson - 1].words.slice(), { lesson, diff });
+}
+function buildMap(){
+  const box = $("qmapBox");
+  box.innerHTML = "";
+  const W = box.clientWidth || 640;
+  const xs = [0.18, 0.5, 0.82, 0.5], gap = 104, top = 30, size = 64;
+  const H = top + (DATA.lessons.length - 1) * gap + size + 90;
+  box.style.height = H + "px";
+  const pts = DATA.lessons.map((L, i) => ({ x: W * xs[i % 4], y: top + i * gap + size / 2 }));
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("class", "qmap-path");
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", H);
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  let d = "M " + pts[0].x + " " + pts[0].y;
+  for(let i = 1; i < pts.length; i++){
+    const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
+    d += " C " + a.x + " " + my + ", " + b.x + " " + my + ", " + b.x + " " + b.y;
+  }
+  const p = document.createElementNS(SVG_NS, "path");
+  p.setAttribute("d", d);
+  svg.appendChild(p);
+  box.appendChild(svg);
+  let nowLesson = 0;
+  DATA.lessons.forEach(L => { if(!nowLesson && questUnlocked(L.lesson) && !bestStars(L.lesson)) nowLesson = L.lesson; });
+  DATA.lessons.forEach((L, i) => {
+    const un = questUnlocked(L.lesson), best = bestStars(L.lesson);
+    const wrap = document.createElement("div");
+    wrap.className = "qnode " + (!un ? "locked" : best ? "done" : "open") + (L.lesson === nowLesson ? " now" : "") + (best === 3 ? " s3" : "");
+    wrap.style.left = (pts[i].x - size / 2) + "px";
+    wrap.style.top = (pts[i].y - size / 2) + "px";
+    const c = document.createElement("button");
+    c.className = "qc";
+    c.textContent = un ? L.lesson : "🔒";
+    c.addEventListener("click", () => {
+      if(un){ openDiff(L.lesson); }
+      else { wrap.classList.remove("shake"); void wrap.offsetWidth; wrap.classList.add("shake"); }
+    });
+    const st = document.createElement("span");
+    st.className = "st";
+    st.textContent = un ? starStr(best) : "";
+    wrap.appendChild(c);
+    wrap.appendChild(st);
+    box.appendChild(wrap);
+  });
+  const goal = document.createElement("div");
+  goal.className = "qgoal";
+  goal.textContent = "🏁";
+  const last = pts[pts.length - 1];
+  goal.style.left = (last.x - 16) + "px";
+  goal.style.top = (last.y + size / 2 + 10) + "px";
+  box.appendChild(goal);
+  const cur = box.querySelector(".qnode.now");
+  if(cur) setTimeout(() => cur.scrollIntoView({ block: "center" }), 60);
+}
 
 /* ---------- 工具 ---------- */
 function shuffle(a){
@@ -6629,6 +6711,7 @@ function refreshStart(){
 let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0;
 let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced = false;
 let runUsedTicket = false;   /* 本场用过券：闯关模式下星级封顶 2 星（P2 消费） */
+let questRun = null;         /* null = 自由练习，否则 { lesson, diff: "n"|"adv" } */
 function advance(){
   if(advanced) return;
   advanced = true;
@@ -6636,12 +6719,16 @@ function advance(){
   nextWord();
 }
 
-function startSession(list){
+function startSession(list, quest = null){
+  questRun = quest;
+  if(quest) lastQuest = quest;
   pool = list.slice();
-  if($("optRandom").checked) shuffle(pool);
+  if(!quest && $("optRandom").checked) shuffle(pool);
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
   runUsedTicket = false;
-  $("setup").hidden = true; $("result").hidden = true; $("drill").hidden = false;
+  $("setup").hidden = true; $("questMap").hidden = true; $("result").hidden = true; $("drill").hidden = false;
+  $("diffTag").hidden = !quest;
+  if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
 }
 
@@ -6664,8 +6751,10 @@ function nextWord(){
   $("streakNum").textContent = streak;
   $("posTag").textContent = cur.pos;
   $("lessonTag").textContent = "第" + cur.lesson + "课";
-  $("meaningEl").textContent = cur.meaning;
-  const showKanji = $("optKanji").checked && cur.writing !== cur.kana;
+  const adv = questRun && questRun.diff === "adv";
+  const promptWriting = adv && cur.writing !== cur.kana;
+  $("meaningEl").textContent = promptWriting ? cur.writing : cur.meaning;
+  const showKanji = !questRun && $("optKanji").checked && cur.writing !== cur.kana;
   $("kanjiHint").hidden = !showKanji;
   $("kanjiHint").textContent = cur.writing;
   $("ans").value = "";
@@ -6680,7 +6769,8 @@ function renderMasu(){
   masu.className = "masu jp";
   masu.innerHTML = "";
   const typed = $("ans").value;
-  const n = ($("optLen").checked && !answered) ? Math.max(cur.kana.length, typed.length) : Math.max(typed.length, answered ? cur.kana.length : typed.length);
+  const lenHint = questRun ? questRun.diff !== "adv" : $("optLen").checked;
+  const n = (lenHint && !answered) ? Math.max(cur.kana.length, typed.length) : Math.max(typed.length, answered ? cur.kana.length : typed.length);
   for(let i = 0; i < n; i++){
     const c = document.createElement("div");
     c.className = "cell";
@@ -6771,11 +6861,6 @@ function showResult(){
   $("scoreCorrect").textContent = correctCount;
   $("scoreTotal").textContent = pool.length;
   $("scoreStreak").textContent = bestStreak;
-  if(pool.length && sessionWrong.length === 0){
-    addCoins(20);
-    $("allRightNote").textContent = "全部答对，漂亮！完美奖励 +20 金币";
-  }
-  $("ticketNote").hidden = !runUsedTicket;
   const blk = $("wrongListBlock"), rows = $("wrongRows");
   rows.innerHTML = "";
   if(sessionWrong.length){
@@ -6796,6 +6881,39 @@ function showResult(){
     $("allRightNote").hidden = false;
     $("redoWrongBtn").disabled = true;
   }
+  const notes = [];
+  if(questRun && pool.length){
+    const acc = correctCount / pool.length;
+    let stars = acc >= 1 ? 3 : acc >= 0.9 ? 2 : 1;
+    if(runUsedTicket) stars = Math.min(stars, 2);   /* 用券封顶 2 星 */
+    const k = "l" + questRun.lesson;
+    const q = store.quest[k] || (store.quest[k] = { n: 0, a: 0 });
+    const key = questRun.diff === "adv" ? "a" : "n";
+    const firstClear = !q[key];
+    if(stars > q[key]) q[key] = stars;
+    saveStore();
+    const reward = [0, 20, 30, 50][stars] * (firstClear ? 2 : 1);
+    addCoins(reward + (sessionWrong.length === 0 ? 20 : 0));
+    if(sessionWrong.length === 0) notes.push("全部答对，漂亮！");
+    notes.push("过关 " + starStr(stars) + "，奖励 +" + reward + (firstClear ? "（首通翻倍）" : ""));
+    if(sessionWrong.length === 0) notes.push("完美 +20");
+    $("allRightNote").hidden = true;
+    $("qStars").hidden = false;
+    $("qStars").textContent = starStr(stars);
+  } else {
+    $("qStars").hidden = true;
+    if(pool.length && sessionWrong.length === 0){
+      addCoins(20);
+      notes.push("完美奖励 +20 金币");
+      $("allRightNote").textContent = "全部答对，漂亮！";
+    }
+  }
+  $("qRewardNote").hidden = !notes.length;
+  $("qRewardNote").textContent = notes.join(" · ");
+  $("ticketNote").hidden = !runUsedTicket;
+  $("retryQuestBtn").hidden = !questRun;
+  $("redoWrongBtn").hidden = !!questRun;
+  $("redoSameBtn").hidden = !!questRun;
 }
 
 /* ---------- 事件 ---------- */
@@ -6818,9 +6936,13 @@ $("wrongBtn").addEventListener("click", function(){
   refreshStart();
 });
 $("quitBtn").addEventListener("click", () => {
-  $("drill").hidden = true; $("setup").hidden = false;
-  $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
-  refreshStart();
+  $("drill").hidden = true;
+  if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
+  else {
+    $("setup").hidden = false;
+    $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
+    refreshStart();
+  }
 });
 $("hintBtn").addEventListener("click", hint);
 $("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
@@ -6840,10 +6962,22 @@ document.addEventListener("keydown", e => {
 $("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWrong.slice())));
 $("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
 $("backBtn").addEventListener("click", () => {
-  $("result").hidden = true; $("setup").hidden = false;
-  $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
-  refreshStart();
+  $("result").hidden = true;
+  if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
+  else {
+    $("setup").hidden = false;
+    $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
+    refreshStart();
+  }
 });
+$("retryQuestBtn").addEventListener("click", () => { if(lastQuest) startQuest(lastQuest.lesson, lastQuest.diff); });
+$("mapBtn").addEventListener("click", () => { $("setup").hidden = true; $("questMap").hidden = false; buildMap(); });
+$("mapBackBtn").addEventListener("click", () => { $("questMap").hidden = true; $("setup").hidden = false; refreshStart(); });
+$("diffCloseBtn").addEventListener("click", () => { $("diffMask").hidden = true; });
+$("diffMask").addEventListener("click", e => { if(e.target === $("diffMask")) $("diffMask").hidden = true; });
+$("diffNBtn").addEventListener("click", () => startQuest(pendingLesson, "n"));
+$("diffABtn").addEventListener("click", () => startQuest(pendingLesson, "adv"));
+window.addEventListener("resize", () => { if(!$("questMap").hidden) buildMap(); });
 
 /* ---------- HUD / 商店 ---------- */
 function buyTicket(kind, price){

@@ -34,6 +34,7 @@
       <button class="btn" id="allBtn">全选</button>
       <button class="btn" id="noneBtn">清空</button>
       <button class="btn wrongbook" id="wrongBtn">只练错题本（0）</button>
+      <button class="btn quest-entry" id="mapBtn">🗺 闯关地图</button>
     </div>
     <div class="opt">
       <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
@@ -42,6 +43,17 @@
     </div>
     <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
     <button class="start" id="startBtn" disabled>请先选择课文</button>
+  </section>
+
+  <!-- ============ 闯关地图 ============ -->
+  <section id="questMap" hidden>
+    <div class="drill-top">
+      <button class="quit" id="mapBackBtn">← 返回</button>
+      <div>闯关地图 · 初级上册 24 课</div>
+      <div></div>
+    </div>
+    <div class="qmap" id="qmapBox"></div>
+    <p class="note">3★ = 全对且未用券 · 用券最高 2★ · 首通奖励翻倍 · 自由练习不受限制</p>
   </section>
 
   <!-- ============ 练习 ============ -->
@@ -55,6 +67,7 @@
       <div class="tags">
         <span class="tag pos" id="posTag"></span>
         <span class="tag lesson" id="lessonTag"></span>
+        <span class="tag lesson" id="diffTag" hidden></span>
       </div>
       <div class="meaning jp" id="meaningEl"></div>
       <div class="kanji-hint jp" id="kanjiHint" hidden></div>
@@ -76,6 +89,8 @@
       <div><div class="num" id="scoreTotal">0</div><div class="lab">总题数</div></div>
       <div><div class="num" id="scoreStreak">0</div><div class="lab">最高连对</div></div>
     </div>
+    <div class="qstars" id="qStars" hidden></div>
+    <p class="empty-note" id="qRewardNote" hidden></p>
     <div class="wrong-list" id="wrongListBlock" hidden>
       <h3>本次答错</h3>
       <div id="wrongRows"></div>
@@ -83,6 +98,7 @@
     <p class="empty-note" id="allRightNote" hidden>全部答对，漂亮！</p>
     <p class="empty-note" id="ticketNote" hidden>本场使用了提示/跳过券 · 闯关模式下星级将封顶 2 星</p>
     <div class="row">
+      <button class="btn" id="retryQuestBtn" hidden>再挑战本关</button>
       <button class="btn" id="redoWrongBtn">重练本次错题</button>
       <button class="btn" id="redoSameBtn">同范围再来一轮</button>
       <button class="btn" id="backBtn">返回选择</button>
@@ -103,6 +119,22 @@
       <button class="btn" id="buySkipBtn">🪙 30</button>
     </div>
     <div class="shop-note" id="shopNote">主题商店稍后开放</div>
+  </div>
+</div>
+
+<!-- ============ 难度选择 ============ -->
+<div class="shop-mask" id="diffMask" hidden>
+  <div class="shop">
+    <div class="shop-head"><b id="diffTitle">第1课</b><button class="shop-close" id="diffCloseBtn">✕</button></div>
+    <div class="shop-item">
+      <div class="shop-info"><b>普通</b><span>中文释义 → 打假名 · 显示字数格子</span></div>
+      <div class="diff-right"><span class="dstars" id="diffNStars"></span><button class="btn" id="diffNBtn">开始</button></div>
+    </div>
+    <div class="shop-item">
+      <div class="shop-info"><b>进阶</b><span>看汉字写假名读音 · 无字数格子</span></div>
+      <div class="diff-right"><span class="dstars" id="diffAStars"></span><button class="btn" id="diffABtn">开始</button></div>
+    </div>
+    <div class="shop-note">首通奖励翻倍 · 过关 1/2/3★ +20/30/50</div>
   </div>
 </div>
 
