@@ -82,16 +82,13 @@
     bubble.textContent = line.text;
     bubble.classList.toggle("jp", line.lang === "ja");
     bubble.hidden = false;
-    if(line.audio){
-      const a = new Audio((cfg.audioDir || "audio/companion/") + line.audio);
-      curAudio = a;
-      a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; speak(line); } });
-      a.addEventListener("ended", () => setTimeout(hideBubble, 800));
-      a.play().catch(() => speak(line));
-    } else {
-      speak(line);
-      setTimeout(hideBubble, Math.min(8000, 2500 + line.text.length * 150));
-    }
+    /* 音频优先：按 id 自动找 audio/companion/<id>.wav（audio 字段可覆盖路径），加载失败回落 TTS */
+    const url = (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
+    const a = new Audio(url);
+    curAudio = a;
+    a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; speak(line); } });
+    a.addEventListener("ended", () => setTimeout(hideBubble, 800));
+    a.play().catch(() => { if(curAudio === a) speak(line); });
   }
 
   function fire(ev){
