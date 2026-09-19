@@ -211,3 +211,45 @@ button{font:inherit;cursor:pointer;}
 .qstars{text-align:center;font-size:30px;letter-spacing:6px;color:#D9A441;margin-top:14px;}
 .diff-right{display:flex;align-items:center;gap:10px;}
 .diff-right .dstars{font-size:13px;color:#D9A441;letter-spacing:1px;}
+
+/* ---------- 中也伴侣（P3） ---------- */
+.companion{
+  position:fixed;right:14px;bottom:14px;z-index:45;
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+  pointer-events:none;
+}
+.companion-bubble{
+  pointer-events:auto;cursor:pointer;
+  max-width:min(300px,72vw);
+  background:var(--panel);border:1px solid var(--ink);border-radius:10px;
+  padding:8px 12px;font-size:14px;line-height:1.6;
+  box-shadow:0 6px 16px rgba(35,40,43,.15);
+  position:relative;
+}
+.companion-bubble.jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
+.companion-stage{position:relative;pointer-events:auto;}
+.companion-sprite{
+  display:block;max-height:210px;width:auto;
+  filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));
+  transition:opacity .18s ease;
+}
+.companion-close{
+  position:absolute;top:2px;right:2px;
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);
+  color:var(--muted);font-size:11px;cursor:pointer;line-height:1;
+}
+.companion-close:hover{color:var(--shu);border-color:var(--shu);}
+.companion-credit{
+  text-align:right;font-size:10px;color:var(--muted);opacity:.75;margin-top:2px;
+}
+.companion-restore{
+  position:fixed;right:14px;bottom:14px;z-index:45;
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--ink);background:var(--panel);color:var(--ink);
+  font-size:12px;cursor:pointer;box-shadow:0 4px 10px rgba(35,40,43,.15);
+}
+@media (max-width:520px){
+  .companion-sprite{max-height:150px;}
+  .companion-bubble{font-size:13px;}
+}

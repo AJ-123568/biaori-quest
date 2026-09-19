@@ -6730,6 +6730,7 @@ function startSession(list, quest = null){
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
+  if(window.Companion){ Companion.show(); Companion.fire("greet"); }
 }
 
 function currentPool(){
@@ -6795,6 +6796,8 @@ function check(){
     st.c++;
     addCoins(2);
     if(streak % 5 === 0) addCoins(5);
+    if(window.Companion) Companion.fire("answer-correct");
+    if(streak % 5 === 0 && window.Companion) Companion.fire("combo5");
     if(!hintUsed){
       const wi = store.wrong.indexOf(k);
       if(wi >= 0){ store.wrong.splice(wi, 1); }
@@ -6803,6 +6806,7 @@ function check(){
     streak = 0; st.w++;
     if(!store.wrong.includes(k)) store.wrong.push(k);
     sessionWrong.push(cur);
+    if(window.Companion) Companion.fire("answer-wrong");
   }
   saveStore();
   $("streakNum").textContent = streak;
@@ -6914,6 +6918,10 @@ function showResult(){
   $("retryQuestBtn").hidden = !questRun;
   $("redoWrongBtn").hidden = !!questRun;
   $("redoSameBtn").hidden = !!questRun;
+  if(window.Companion && pool.length){
+    const acc = correctCount / pool.length;
+    Companion.fire(acc < 0.6 ? "quest-bad" : (sessionWrong.length === 0 ? "quest-perfect" : "quest-clear"));
+  }
 }
 
 /* ---------- 事件 ---------- */
@@ -6937,6 +6945,7 @@ $("wrongBtn").addEventListener("click", function(){
 });
 $("quitBtn").addEventListener("click", () => {
   $("drill").hidden = true;
+  if(window.Companion) Companion.hide();
   if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
   else {
     $("setup").hidden = false;
@@ -6963,6 +6972,7 @@ $("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWr
 $("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
 $("backBtn").addEventListener("click", () => {
   $("result").hidden = true;
+  if(window.Companion) Companion.hide();
   if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
   else {
     $("setup").hidden = false;
