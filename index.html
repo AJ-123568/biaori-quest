@@ -16,6 +16,16 @@
     <div class="sub">新版标准日本语 初级上册 · 1065 词</div>
   </header>
 
+  <div class="hud" id="hud">
+    <span class="hud-item">Lv <b id="hudLv">1</b></span>
+    <span class="hud-item" title="金币">🪙 <b id="hudCoins">10000</b></span>
+    <span class="hud-item" title="提示券：揭示下一个假名，每词消耗 1 张">💡 <b id="hudHint">10</b></span>
+    <span class="hud-item" title="跳过券：跳过当前词，每词消耗 1 张">🎫 <b id="hudSkip">10</b></span>
+    <span class="hud-spacer"></span>
+    <button class="hud-btn" id="shopBtn">商店</button>
+    <button class="hud-btn dev" id="resetEcoBtn" title="开发者：重置等级/金币/券为默认值">重置</button>
+  </div>
+
   <!-- ============ 选择范围 ============ -->
   <section id="setup">
     <div class="sec-label">选择课文范围</div>
@@ -71,12 +81,29 @@
       <div id="wrongRows"></div>
     </div>
     <p class="empty-note" id="allRightNote" hidden>全部答对，漂亮！</p>
+    <p class="empty-note" id="ticketNote" hidden>本场使用了提示/跳过券 · 闯关模式下星级将封顶 2 星</p>
     <div class="row">
       <button class="btn" id="redoWrongBtn">重练本次错题</button>
       <button class="btn" id="redoSameBtn">同范围再来一轮</button>
       <button class="btn" id="backBtn">返回选择</button>
     </div>
   </section>
+</div>
+
+<!-- ============ 商店 ============ -->
+<div class="shop-mask" id="shopMask" hidden>
+  <div class="shop">
+    <div class="shop-head"><b>商店</b><button class="shop-close" id="shopCloseBtn">✕</button></div>
+    <div class="shop-item">
+      <div class="shop-info"><b>提示券 💡</b><span>揭示下一个假名 · 每词 1 张</span></div>
+      <button class="btn" id="buyHintBtn">🪙 15</button>
+    </div>
+    <div class="shop-item">
+      <div class="shop-info"><b>跳过券 🎫</b><span>跳过当前词（记为答错）</span></div>
+      <button class="btn" id="buySkipBtn">🪙 30</button>
+    </div>
+    <div class="shop-note" id="shopNote">主题商店稍后开放</div>
+  </div>
 </div>
 
 <script src="js/main.js"></script>

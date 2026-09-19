@@ -6540,16 +6540,49 @@ const DATA = {
   ]
 };
 DATA.lessons.forEach(L => L.words.forEach(w => { w.lesson = L.lesson; }));
-const LS_KEY = "biaori1_kana_v1";
+const LS_KEY = "biaori1_kana_v2";   /* v2：wrong/stats + 经济 eco */
+const LS_KEY_V1 = "biaori1_kana_v1";
+const ECO_DEFAULT = { lv: 1, coins: 10000, hint: 10, skip: 10 };
 
 /* ---------- 存档 ---------- */
 function loadStore(){
-  try{ const s = JSON.parse(localStorage.getItem(LS_KEY)); if(s && s.wrong) return s; }catch(e){}
-  return { wrong: [], stats: {} };
+  try{
+    const s = JSON.parse(localStorage.getItem(LS_KEY));
+    if(s && s.wrong && s.eco) return Object.assign(s, { eco: Object.assign({}, ECO_DEFAULT, s.eco) });
+  }catch(e){}
+  let base = { wrong: [], stats: {} };
+  try{
+    const old = JSON.parse(localStorage.getItem(LS_KEY_V1));
+    if(old && old.wrong) base = old;   /* v1 迁移：错题本与统计原样带入，v1 保留作备份 */
+  }catch(e){}
+  base.eco = Object.assign({}, ECO_DEFAULT);
+  return base;
 }
 const store = loadStore();
 function saveStore(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
 const wkey = w => "l" + w.lesson + ":" + w.kana;
+
+/* ---------- 经济（P1） ---------- */
+function refreshEco(which){
+  $("hudLv").textContent = store.eco.lv;
+  $("hudCoins").textContent = store.eco.coins;
+  $("hudHint").textContent = store.eco.hint;
+  $("hudSkip").textContent = store.eco.skip;
+  if(which){
+    const box = $("hud" + which).parentElement;
+    box.classList.remove("bump"); void box.offsetWidth; box.classList.add("bump");
+  }
+}
+function addCoins(n){
+  store.eco.coins = Math.max(0, store.eco.coins + n);
+  saveStore(); refreshEco("Coins");
+}
+function useTicket(kind){   /* kind: "hint" | "skip"，成功扣 1 张 */
+  if(store.eco[kind] <= 0) return false;
+  store.eco[kind]--; saveStore(); refreshEco(kind === "hint" ? "Hint" : "Skip");
+  return true;
+}
+function denyTicket(msg){ $("feedback").innerHTML = '<div class="enter-tip">' + msg + "</div>"; }
 
 /* ---------- 工具 ---------- */
 function shuffle(a){
@@ -6595,6 +6628,7 @@ function refreshStart(){
 /* ---------- 会话状态 ---------- */
 let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0;
 let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced = false;
+let runUsedTicket = false;   /* 本场用过券：闯关模式下星级封顶 2 星（P2 消费） */
 function advance(){
   if(advanced) return;
   advanced = true;
@@ -6606,6 +6640,7 @@ function startSession(list){
   pool = list.slice();
   if($("optRandom").checked) shuffle(pool);
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
+  runUsedTicket = false;
   $("setup").hidden = true; $("result").hidden = true; $("drill").hidden = false;
   nextWord();
 }
@@ -6668,6 +6703,8 @@ function check(){
   if(ok){
     correctCount++; streak++; bestStreak = Math.max(bestStreak, streak);
     st.c++;
+    addCoins(2);
+    if(streak % 5 === 0) addCoins(5);
     if(!hintUsed){
       const wi = store.wrong.indexOf(k);
       if(wi >= 0){ store.wrong.splice(wi, 1); }
@@ -6698,13 +6735,18 @@ function check(){
 function hint(){
   if(answered) return;
   const a = cur.kana, v = $("ans").value;
-  if(v.length < a.length){ $("ans").value = v + a[v.length]; hintUsed = true; renderMasu(); }
+  if(v.length < a.length){
+    if(!hintUsed && !useTicket("hint")){ denyTicket("提示券不足，可点上方「商店」购买"); return; }
+    hintUsed = true; runUsedTicket = true;
+    $("ans").value = v + a[v.length]; renderMasu();
+  }
   $("ans").focus();
 }
 
 function skip(){
   if(answered) return;
-  hintUsed = true;
+  if(!useTicket("skip")){ denyTicket("跳过券不足，可点上方「商店」购买"); return; }
+  hintUsed = true; runUsedTicket = true;
   forceWrong = true;
   $("ans").value = cur.kana;
   check();
@@ -6729,6 +6771,11 @@ function showResult(){
   $("scoreCorrect").textContent = correctCount;
   $("scoreTotal").textContent = pool.length;
   $("scoreStreak").textContent = bestStreak;
+  if(pool.length && sessionWrong.length === 0){
+    addCoins(20);
+    $("allRightNote").textContent = "全部答对，漂亮！完美奖励 +20 金币";
+  }
+  $("ticketNote").hidden = !runUsedTicket;
   const blk = $("wrongListBlock"), rows = $("wrongRows");
   rows.innerHTML = "";
   if(sessionWrong.length){
@@ -6798,6 +6845,28 @@ $("backBtn").addEventListener("click", () => {
   refreshStart();
 });
 
+/* ---------- HUD / 商店 ---------- */
+function buyTicket(kind, price){
+  if(store.eco.coins < price){
+    const note = $("shopNote");
+    note.textContent = "金币不足（需要 " + price + "）";
+    setTimeout(() => { note.textContent = "主题商店稍后开放"; }, 1600);
+    return;
+  }
+  store.eco.coins -= price; store.eco[kind]++;
+  saveStore(); refreshEco();
+}
+$("shopBtn").addEventListener("click", () => { $("shopMask").hidden = false; });
+$("shopCloseBtn").addEventListener("click", () => { $("shopMask").hidden = true; });
+$("shopMask").addEventListener("click", e => { if(e.target === $("shopMask")) $("shopMask").hidden = true; });
+$("buyHintBtn").addEventListener("click", () => buyTicket("hint", 15));
+$("buySkipBtn").addEventListener("click", () => buyTicket("skip", 30));
+$("resetEcoBtn").addEventListener("click", () => {
+  store.eco = Object.assign({}, ECO_DEFAULT);
+  saveStore(); refreshEco();
+});
+
 buildChips();
 refreshStart();
+refreshEco();
 if(store.wrong.length) $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
