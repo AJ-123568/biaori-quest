@@ -234,6 +234,7 @@ button{font:inherit;cursor:pointer;}
   display:block;max-height:210px;width:auto;
   filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));
   transition:opacity .18s ease;
+  -webkit-user-drag:none;
 }
 .companion-close{
   position:absolute;top:2px;right:2px;

@@ -24,6 +24,7 @@
     bubble = makeEl("div", "companion-bubble", box);
     const stage = makeEl("div", "companion-stage", box);
     sprite = makeEl("img", "companion-sprite", stage);
+    sprite.draggable = false;   /* 禁原生拖图：否则鼠标按住立绘会被浏览器 native drag 劫持，pointercancel 掐断自定义拖动 */
     closeBtn = makeEl("button", "companion-close", stage);
     closeBtn.textContent = "✕";
     closeBtn.title = "关闭中也";
@@ -94,6 +95,7 @@
     };
     const onUp = e => { if(st && e.pointerId === st.pid) endDrag(true, true); };
     const onCancel = () => endDrag(true, false);
+    box.addEventListener("dragstart", e => e.preventDefault());   /* 兜底：盒内任何元素都不许发起原生拖拽 */
     box.addEventListener("pointerdown", e => {
       if(st || e.target === closeBtn || e.button !== 0) return;
       const r = box.getBoundingClientRect();
