@@ -31,7 +31,6 @@
    - 仓库：<https://github.com/RVC-Boss/GPT-SoVITS>
    - 整合包在 Releases 页：<https://github.com/RVC-Boss/GPT-SoVITS/releases> —— 选**最新的 v4 整合包**（文件名 `GPT-SoVITS-v4` 开头的 zip/7z），自带全部底模，解压即用，无需装环境
    - GitHub 直连被重置的话，挂上你的代理（127.0.0.1:7897）再下
-   - **下载慢的提速**：用 Motrix（免费，多线程）粘贴直链下载 + 开代理；或直链前加加速前缀（如 `https://ghproxy.net/` + 原 GitHub 链接）；或用 B 站教程置顶的网盘搬运链接
 2. 解压后运行 `go-webui.bat`。没有 N 卡它会自动走 CPU 模式——慢，但短句完全可用
 3. 进推理界面（TTS 合成面板）：
    - **参考音频**：从清洗好的素材里挑一段 5~10 秒、最有"中也味"的（咬字清楚、情绪典型），转成 wav
