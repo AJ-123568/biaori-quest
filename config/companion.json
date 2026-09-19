@@ -58,7 +58,7 @@
 
     { "id": "perfect-01", "event": "quest-perfect", "text": "全对……哼，别傻站着，我难得夸人。", "lang": "zh" },
     { "id": "perfect-02", "event": "quest-perfect", "text": "……是。做得好。", "lang": "zh" },
-    { "id": "perfect-03", "event": "quest-perfect", "text": "全問正解。……悪くないな。", "lang": "ja" },
+    { "id": "perfect-03", "event": "quest-perfect", "text": "全部正解だよ。……悪くないな。", "lang": "ja" },
 
     { "id": "bad-01", "event": "quest-bad", "text": "啧，就这点本事？……喂，重来。我可没说让你放弃。", "lang": "zh" },
     { "id": "bad-02", "event": "quest-bad", "text": "振作点！摔一跤就想赖着不起来了？", "lang": "zh" },
