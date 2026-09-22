@@ -9,6 +9,12 @@
 
   let cfg = null, shown = false, curAudio = null, lastFired = 0, idleTimer = null;
   let hasGesture = false, pendingDeferred = null;
+  let playing = false, playWaiters = [];   /* 说话状态 + 排队回调：读音等伴侣说完再播 */
+  function notifyDone(){
+    playing = false;
+    const ws = playWaiters; playWaiters = [];
+    ws.forEach(f => f());
+  }
   let box, bubble, sprite, closeBtn;
 
   function makeEl(tag, cls, parent){
@@ -116,6 +122,7 @@
   function stopAudio(){
     if(curAudio){ curAudio.pause(); curAudio = null; }
     if("speechSynthesis" in window) speechSynthesis.cancel();
+    if(playing) notifyDone();   /* 被掐断也要放行排队中的读音 */
   }
   function hideBubble(){ bubble.hidden = true; }
 
@@ -131,19 +138,23 @@
   }
 
   function speak(line){
-    if(!("speechSynthesis" in window)) return;
+    if(!("speechSynthesis" in window)){ notifyDone(); return; }
     const u = new SpeechSynthesisUtterance(line.text);
     u.lang = line.lang === "ja" ? "ja-JP" : "zh-CN";
     if(line.voice){
       const v = speechSynthesis.getVoices().find(v => v.name.includes(line.voice));
       if(v) u.voice = v;
     }
+    playing = true;
+    u.onend = notifyDone;
+    u.onerror = notifyDone;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
   }
 
   function playLine(line){
     stopAudio();
+    playing = true;
     hideBubble();
     bubble.textContent = line.text;
     bubble.classList.toggle("jp", line.lang === "ja");
@@ -153,12 +164,18 @@
     const a = new Audio(url);
     curAudio = a;
     a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; hasGesture ? speak(line) : afterGesture(() => speak(line)); } });
-    a.addEventListener("ended", () => setTimeout(hideBubble, 800));
+    a.addEventListener("ended", () => { if(curAudio === a){ curAudio = null; notifyDone(); setTimeout(hideBubble, 800); } });
     a.play().catch(err => {
       if(curAudio !== a) return;
       if(!hasGesture && err && err.name === "NotAllowedError") afterGesture(() => playLine(line));
       else speak(line);
     });
+  }
+
+  /* 等伴侣说完再执行 cb；没在说话则立即执行（读词音和伴侣语音不抢声道） */
+  function afterSpeak(cb){
+    if(playing) playWaiters.push(cb);
+    else cb();
   }
 
   function fire(ev){
@@ -201,5 +218,5 @@
     fire("greet");   /* 打开页面就打招呼；若还没点击过，语音被自动播放拦截 → afterGesture 等首次交互补播 */
   }).catch(() => {});   /* 配置拿不到（如 file:// 打开）→ 伴侣整体静默 */
 
-  window.Companion = { fire, show, hide };
+  window.Companion = { fire, show, hide, afterSpeak };
 })();

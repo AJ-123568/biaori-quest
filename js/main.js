@@ -6822,7 +6822,7 @@ function check(){
   fb.querySelector(".kana").textContent = cur.kana;
   fb.querySelector(".kanji").textContent = cur.writing !== cur.kana ? cur.writing : "";
   fb.querySelector(".say").addEventListener("click", speak);
-  speak();
+  if(window.Companion){ Companion.afterSpeak(speak); } else speak();   /* 伴侣在说话时排后面，避免抢声道/被 cancel 掐断 */
   if(ok) setTimeout(advance, 900);
 }
 
