@@ -6700,12 +6700,19 @@ function buildChips(){
     b.className = "chip"; b.dataset.lesson = L.lesson;
     b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + L.wordCount + '词</span>';
     b.addEventListener("click", () => {
-      if(selected.has(L.lesson)) selected.delete(L.lesson); else selected.add(L.lesson);
+      if(selected.has(L.lesson)) selected.delete(L.lesson);
+      else { selected.add(L.lesson); setWrong(false); }   /* 选课文与错题本互斥 */
       b.classList.toggle("on", selected.has(L.lesson));
       refreshStart();
     });
     box.appendChild(b);
   });
+}
+/* 课文与错题本互斥：setWrong 同步按钮状态 */
+function setWrong(on){
+  const b = $("wrongBtn");
+  b.dataset.on = on ? "1" : "0";
+  b.style.background = on ? "var(--shu-soft)" : "";
 }
 function refreshStart(){
   const onlyWrong = $("wrongBtn").dataset.on === "1";
@@ -6940,6 +6947,7 @@ $("startBtn").addEventListener("click", () => startSession(currentPool()));
 $("allBtn").addEventListener("click", () => {
   DATA.lessons.forEach(L => selected.add(L.lesson));
   document.querySelectorAll(".chip").forEach(c => c.classList.add("on"));
+  setWrong(false);
   refreshStart();
 });
 $("noneBtn").addEventListener("click", () => {
@@ -6949,9 +6957,11 @@ $("noneBtn").addEventListener("click", () => {
 });
 $("wrongBtn").addEventListener("click", function(){
   const on = this.dataset.on === "1";
-  this.dataset.on = on ? "0" : "1";
-  this.style.background = on ? "" : "var(--shu-soft)";
-  this.textContent = "只练错题本（" + store.wrong.length + "）";
+  setWrong(!on);
+  if(!on){   /* 开错题本时清掉已选课文，保持互斥 */
+    selected.clear();
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  }
   refreshStart();
 });
 $("wrongClearBtn").addEventListener("click", function(){
