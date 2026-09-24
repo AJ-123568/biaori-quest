@@ -176,6 +176,13 @@ button{font:inherit;cursor:pointer;}
   border-radius:10px;padding:16px;box-shadow:0 12px 32px rgba(35,40,43,.18);
 }
 .shop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+/* 弹窗标题旁的「重置」小按钮：日系极简——无边框、淡灰底、轻圆角 */
+#diffResetBtn{
+  border:none;background:rgba(35,40,43,.07);border-radius:6px;
+  color:var(--muted);font-size:12px;font-weight:400;font-family:inherit;
+  padding:3px 10px;cursor:pointer;transition:background .15s ease,color .15s ease;
+}
+#diffResetBtn:hover{background:rgba(35,40,43,.13);color:var(--ink);}
 .shop-close{border:none;background:none;font-size:14px;cursor:pointer;color:var(--muted);}
 .shop-item{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
