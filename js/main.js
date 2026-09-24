@@ -6727,6 +6727,7 @@ function startSession(list, quest = null){
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
   runUsedTicket = false;
   $("setup").hidden = true; $("questMap").hidden = true; $("result").hidden = true; $("drill").hidden = false;
+  $("wrongClearBtn").hidden = $("wrongBtn").dataset.on !== "1";   /* 只在错题本模式显示清空按钮 */
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
@@ -6942,6 +6943,16 @@ $("wrongBtn").addEventListener("click", function(){
   this.style.background = on ? "" : "var(--shu-soft)";
   this.textContent = "只练错题本（" + store.wrong.length + "）";
   refreshStart();
+});
+$("wrongClearBtn").addEventListener("click", function(){
+  if(!store.wrong.length) return;
+  if(!confirm("清空错题本？所有错词记录将删除。")) return;
+  store.wrong = [];
+  saveStore();
+  $("wrongBtn").textContent = "只练错题本（0）";
+  refreshStart();
+  this.textContent = "已清空";
+  setTimeout(() => { this.textContent = "清空错题本"; }, 1500);
 });
 $("quitBtn").addEventListener("click", () => {
   $("drill").hidden = true;
