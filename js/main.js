@@ -6995,6 +6995,24 @@ $("retryQuestBtn").addEventListener("click", () => { if(lastQuest) startQuest(la
 $("mapBtn").addEventListener("click", () => { $("setup").hidden = true; $("questMap").hidden = false; buildMap(); });
 $("mapBackBtn").addEventListener("click", () => { $("questMap").hidden = true; $("setup").hidden = false; refreshStart(); });
 $("diffCloseBtn").addEventListener("click", () => { $("diffMask").hidden = true; });
+$("questResetBtn").addEventListener("click", function(){
+  if(!confirm("重置所有闯关进度？全部课程的星级与解锁将清空，自由练习不受影响。")) return;
+  store.quest = {};
+  saveStore();
+  buildMap();
+  this.textContent = "已重置";
+  setTimeout(() => { this.textContent = "重置进度"; }, 1500);
+});
+$("diffResetBtn").addEventListener("click", () => {
+  const l = pendingLesson;
+  if(!store.quest["l" + l]) return;
+  if(!confirm("重置第" + l + "课的进度？本课普通/进阶两难度的星级将清零。")) return;
+  delete store.quest["l" + l];
+  saveStore();
+  buildMap();
+  $("diffNStars").textContent = starStr(0);
+  $("diffAStars").textContent = starStr(0);
+});
 $("diffMask").addEventListener("click", e => { if(e.target === $("diffMask")) $("diffMask").hidden = true; });
 $("diffNBtn").addEventListener("click", () => startQuest(pendingLesson, "n"));
 $("diffABtn").addEventListener("click", () => startQuest(pendingLesson, "adv"));
