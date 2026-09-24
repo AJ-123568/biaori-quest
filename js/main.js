@@ -6551,6 +6551,14 @@ function loadStore(){
     if(s && s.wrong && s.eco){
       s.eco = Object.assign({}, ECO_DEFAULT, s.eco);
       s.quest = s.quest || {};
+      /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
+      if(!Array.isArray(s.questUnlocked)){
+        s.questUnlocked = [1];
+        Object.keys(s.quest).forEach(k => {
+          const n = +k.slice(1);
+          if(s.quest[k] && (s.quest[k].n || s.quest[k].a) && !s.questUnlocked.includes(n + 1)) s.questUnlocked.push(n + 1);
+        });
+      }
       return s;
     }
   }catch(e){}
@@ -6561,6 +6569,7 @@ function loadStore(){
   }catch(e){}
   base.eco = Object.assign({}, ECO_DEFAULT);
   base.quest = {};
+  base.questUnlocked = [1];
   return base;
 }
 const store = loadStore();
@@ -6596,7 +6605,7 @@ function bestStars(l){
   const q = store.quest["l" + l];
   return q ? Math.max(q.n, q.a) : 0;
 }
-function questUnlocked(l){ return l === 1 || bestStars(l - 1) >= 1; }
+function questUnlocked(l){ return (store.questUnlocked || []).includes(l); }   /* 解锁=通关记忆，不是实时推算 */
 
 let pendingLesson = 0, lastQuest = null;
 function openDiff(lesson){
@@ -6896,6 +6905,7 @@ function showResult(){
     const key = questRun.diff === "adv" ? "a" : "n";
     const firstClear = !q[key];
     if(stars > q[key]) q[key] = stars;
+    if(!store.questUnlocked.includes(questRun.lesson + 1)) store.questUnlocked.push(questRun.lesson + 1);
     saveStore();
     const reward = [0, 20, 30, 50][stars] * (firstClear ? 2 : 1);
     addCoins(reward + (sessionWrong.length === 0 ? 20 : 0));
@@ -6998,6 +7008,7 @@ $("diffCloseBtn").addEventListener("click", () => { $("diffMask").hidden = true;
 $("questResetBtn").addEventListener("click", function(){
   if(!confirm("重置所有闯关进度？全部课程的星级与解锁将清空，自由练习不受影响。")) return;
   store.quest = {};
+  store.questUnlocked = [1];
   saveStore();
   buildMap();
   this.textContent = "已重置";
