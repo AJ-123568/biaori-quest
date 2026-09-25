@@ -207,9 +207,11 @@
         <path d="M108,49 L110,56" stroke="#5E3A22" stroke-width="3" stroke-linecap="round"/>
         <path d="M124,46 L127,53" stroke="#5E3A22" stroke-width="3" stroke-linecap="round"/>
         <ellipse cx="100" cy="50" rx="60" ry="13.5" fill="#26262c"/>
-        <circle cx="157" cy="60" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
-        <circle cx="160" cy="67" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
-        <circle cx="157" cy="73" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
+        <g id="pp-chain">
+          <circle cx="157" cy="60" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
+          <circle cx="160" cy="67" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
+          <circle cx="157" cy="73" r="2.2" fill="none" stroke="#C9A227" stroke-width="1.6"/>
+        </g>
       </g>
     </g>
 

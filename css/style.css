@@ -396,6 +396,8 @@ button{font:inherit;cursor:pointer;}
 @keyframes pp-nod{from{transform:rotate(3deg);}to{transform:rotate(8deg);}}
 .puppet.act-sleep #pp-zzz{animation:pp-zfloat 2.4s ease-in-out infinite;}
 @keyframes pp-zfloat{0%,100%{opacity:.25;}50%{opacity:1;}}
+#pp-chain{transform-box:fill-box;transform-origin:50% 0%;animation:pp-chainsway 2.6s ease-in-out infinite alternate;}
+@keyframes pp-chainsway{from{transform:rotate(-7deg);}to{transform:rotate(7deg);}}
 .companion-close{
   position:absolute;top:2px;right:2px;
   width:22px;height:22px;border-radius:50%;
@@ -418,5 +420,5 @@ button{font:inherit;cursor:pointer;}
 }
 @media (prefers-reduced-motion:reduce){
   #pp-all{animation:none;}
-  .puppet #pp-act,.puppet #pp-head,.puppet #pp-armR,.puppet #pp-armL,.puppet #pp-zzz{animation:none !important;}
+  .puppet #pp-act,.puppet #pp-head,.puppet #pp-armR,.puppet #pp-armL,.puppet #pp-zzz,.puppet #pp-chain{animation:none !important;}
 }
