@@ -349,12 +349,15 @@ button{font:inherit;cursor:pointer;}
 }
 .companion-bubble.jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
 .companion-stage{position:relative;pointer-events:auto;}
-.companion-sprite{
-  display:block;max-height:210px;width:auto;
-  filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));
-  transition:opacity .18s ease;
-  -webkit-user-drag:none;
+.companion-puppet{line-height:0;}
+.companion-puppet svg{display:block;height:200px;width:auto;filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));}
+#pp-all{
+  transform-box:fill-box;transform-origin:50% 100%;
+  animation:pp-breathe 3.4s ease-in-out infinite alternate;
 }
+@keyframes pp-breathe{from{transform:scaleY(1);}to{transform:scaleY(.982);}}
+#pp-eyes-open{transform-box:fill-box;transform-origin:50% 50%;transition:transform .07s ease;}
+.puppet.blink #pp-eyes-open{transform:scaleY(.12);}
 .companion-close{
   position:absolute;top:2px;right:2px;
   width:22px;height:22px;border-radius:50%;
@@ -372,6 +375,9 @@ button{font:inherit;cursor:pointer;}
   font-size:12px;cursor:pointer;box-shadow:0 4px 10px rgba(35,40,43,.15);
 }
 @media (max-width:520px){
-  .companion-sprite{max-height:150px;}
+  .companion-puppet svg{height:140px;}
   .companion-bubble{font-size:13px;}
+}
+@media (prefers-reduced-motion:reduce){
+  #pp-all{animation:none;}
 }

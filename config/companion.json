@@ -14,17 +14,9 @@
     "同一条台词想换着说：复制一行改 id（如 correct-02）即可",
     "日语台词里汉字读音容易念错时，把读音写成假名再合成（例：汚濁→おだく）"
   ],
-  "art": {
-    "note": "立绘配置（自定义图片改这里即可，不用碰代码）。换图两种方式：① 用新图同名覆盖 assets/companion/ 下的 png；② 改 expressions 里的文件名。想加表情（如惊讶）就在 expressions 加一行，再把某事件指向它。图片文件丢失时显示 fallback 占位图。",
-    "dir": "assets/companion/",
-    "fallback": "placeholder.png",
-    "expressions": {
-      "normal": "normal.png",
-      "happy": "happy.png",
-      "angry": "angry.png",
-      "idle": "idle.png"
-    },
-    "eventExpression": {
+  "puppet": {
+    "note": "右下角小人是代码手绘的 Q 版 SVG（js/puppet.js），不用图片文件；衣服配色以后走 config/wardrobe.json。这里只配事件→表情映射，可选值：normal=平常 | happy=开心 | angry=生气 | idle=犯困。",
+    "eventFace": {
       "greet": "normal",
       "answer-correct": "happy",
       "combo5": "happy",

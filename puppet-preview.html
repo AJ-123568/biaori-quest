@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>中也小人 预览 · puppet preview</title>
+<style>
+  body{font-family:"Noto Sans SC",system-ui,sans-serif;background:#f3efe6;margin:0;padding:24px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+  h1{font-size:16px;color:#5a5a5a;font-weight:500;margin:0;}
+  #stage svg{height:440px;width:auto;filter:drop-shadow(0 8px 16px rgba(35,40,43,.25));}
+  .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+  button{border:1px solid #ccc;background:#fff;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit;}
+  button:hover{border-color:#EA7A45;color:#C65A2E;}
+  .tip{font-size:12px;color:#999;}
+</style>
+</head>
+<body>
+<h1>中也小人 · 预览台（最终以游戏内右下角实际大小为准）</h1>
+<div id="stage"></div>
+<div class="row" id="faces">
+  <b style="font-size:13px;color:#888">表情：</b>
+  <button data-face="normal">平常</button>
+  <button data-face="happy">开心</button>
+  <button data-face="angry">生气</button>
+  <button data-face="idle">犯困</button>
+</div>
+<div class="row" id="wear">
+  <b style="font-size:13px;color:#888">换装：</b>
+  <button data-toggle="hat">帽子 开/脱</button>
+  <button data-toggle="coat">大衣 穿/脱</button>
+  <button data-toggle="scarf">围巾</button>
+  <button data-toggle="glasses">眼镜</button>
+</div>
+<p class="tip">调试用预览页，不影响游戏；游戏内通过商店购买 + 侧边栏衣橱换装。</p>
+<script src="js/puppet.js"></script>
+<script>
+  Puppet.mount(document.getElementById("stage"));
+  const worn = { head:"hat", body:"coat", acc:{ scarf:false, glasses:false } };
+  document.getElementById("faces").addEventListener("click", e => {
+    const f = e.target.dataset.face; if(f) Puppet.setFace(f);
+  });
+  document.getElementById("wear").addEventListener("click", e => {
+    const t = e.target.dataset.toggle; if(!t) return;
+    if(t === "hat") worn.head = worn.head === "hat" ? "none" : "hat";
+    else if(t === "coat") worn.body = worn.body === "coat" ? "vest" : "coat";
+    else worn.acc[t] = !worn.acc[t];
+    Puppet.setWorn(worn);
+  });
+</script>
+</body>
+</html>

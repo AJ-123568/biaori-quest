@@ -29,8 +29,8 @@
     box.hidden = true;
     bubble = makeEl("div", "companion-bubble", box);
     const stage = makeEl("div", "companion-stage", box);
-    sprite = makeEl("img", "companion-sprite", stage);
-    sprite.draggable = false;   /* 禁原生拖图：否则鼠标按住立绘会被浏览器 native drag 劫持，pointercancel 掐断自定义拖动 */
+    sprite = makeEl("div", "companion-puppet", stage);   /* 代码手绘 Q 版 SVG 小人（puppet.js） */
+    Puppet.mount(sprite);
     closeBtn = makeEl("button", "companion-close", stage);
     closeBtn.textContent = "✕";
     closeBtn.title = "关闭中也";
@@ -127,9 +127,8 @@
   function hideBubble(){ bubble.hidden = true; }
 
   function setExpression(key){
-    const a = cfg.art;
-    const file = (a.expressions && a.expressions[key]) || a.fallback;
-    sprite.src = (a.dir || "") + file;
+    const faces = (cfg && (cfg.puppet || cfg.art) && (cfg.puppet || cfg.art).eventFace) || {};
+    Puppet.setFace(faces[key] || "normal");
   }
 
   function pickLine(ev){
@@ -188,7 +187,7 @@
     if(!line) return;
     lastFired = now;
     resetIdle();
-    setExpression(cfg.art.eventExpression[ev] || "normal");
+    setExpression(ev);
     playLine(line);
   }
 
@@ -210,8 +209,6 @@
 
   fetch(CONFIG_URL).then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
     cfg = json;
-    if(!cfg.art) return;
-    Object.values(cfg.art.expressions || {}).forEach(f => { new Image().src = (cfg.art.dir || "") + f; });
     buildDom();
     setExpression("normal");
     show();
