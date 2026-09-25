@@ -363,6 +363,13 @@ button{font:inherit;cursor:pointer;}
 .companion-stage{position:relative;pointer-events:auto;}
 .companion-puppet{line-height:0;}
 .companion-puppet svg{display:block;height:200px;width:auto;filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));}
+/* 旧版图片立绘（mode=art 时启用） */
+.companion-sprite{
+  display:block;max-height:210px;width:auto;
+  filter:drop-shadow(0 6px 12px rgba(35,40,43,.22));
+  transition:opacity .18s ease;
+  -webkit-user-drag:none;
+}
 #pp-all{
   transform-box:fill-box;transform-origin:50% 100%;
   animation:pp-breathe 3.4s ease-in-out infinite alternate;
@@ -416,6 +423,7 @@ button{font:inherit;cursor:pointer;}
 }
 @media (max-width:520px){
   .companion-puppet svg{height:140px;}
+  .companion-sprite{max-height:150px;}
   .companion-bubble{font-size:13px;}
 }
 @media (prefers-reduced-motion:reduce){

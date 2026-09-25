@@ -31,13 +31,21 @@
     return el;
   }
 
+  /* 显示模式：art=旧版图片立绘 | puppet=SVG 小人（config/companion.json 的 mode 字段） */
+  const isArt = () => !!(cfg && cfg.mode === "art");
+
   function buildDom(){
     box = makeEl("div", "companion", document.body);
     box.hidden = true;
     bubble = makeEl("div", "companion-bubble", box);
     const stage = makeEl("div", "companion-stage", box);
-    sprite = makeEl("div", "companion-puppet", stage);   /* 代码手绘 Q 版 SVG 小人（puppet.js） */
-    Puppet.mount(sprite);
+    if(isArt()){
+      sprite = makeEl("img", "companion-sprite", stage);
+      sprite.draggable = false;   /* 禁原生拖图：浏览器 native drag 会接管按住立绘的手势，掐断自定义拖动 */
+    } else {
+      sprite = makeEl("div", "companion-puppet", stage);   /* 代码手绘 Q 版 SVG 小人（puppet.js） */
+      Puppet.mount(sprite);
+    }
     closeBtn = makeEl("button", "companion-close", stage);
     closeBtn.textContent = "✕";
     closeBtn.title = "关闭中也";
@@ -136,6 +144,13 @@
   function hideBubble(){ bubble.hidden = true; }
 
   function setExpression(key){
+    if(isArt()){
+      const a = (cfg && cfg.art) || {};
+      const face = (a.eventExpression && a.eventExpression[key]) || key;   /* 事件名→表情名（greet→normal 等） */
+      const file = (a.expressions && a.expressions[face]) || a.fallback;
+      if(sprite && sprite.tagName === "IMG" && file) sprite.src = (a.dir || "") + file;
+      return;
+    }
     const faces = (cfg && (cfg.puppet || cfg.art) && (cfg.puppet || cfg.art).eventFace) || {};
     Puppet.setFace(faces[key] || "normal");
   }
@@ -221,6 +236,9 @@
 
   fetch(CONFIG_URL).then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
     cfg = json;
+    if(isArt() && cfg.art && cfg.art.expressions){
+      Object.values(cfg.art.expressions).forEach(f => { new Image().src = (cfg.art.dir || "") + f; });   /* 预载表情图 */
+    }
     buildDom();
     setExpression("normal");
     show();

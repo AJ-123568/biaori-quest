@@ -1,6 +1,7 @@
 {
   "version": 1,
-  "note": "中也伴侣台词配置。这是给 P3 companion.js 用的数据文件，也是你自定义台词的模板：增删改 lines 里的条目即可，不用碰代码。合成新音频的流程见 docs/voice-guide.md。",
+  "note": "中也伴侣配置。mode 字段控制右下角显示什么：art=旧版图片立绘（四张png，表情随事件切换）；puppet=代码手绘SVG小人（会做动作，支持衣橱换装）。想换显示方式改这个单词即可，台词/语音两种模式共用。",
+  "mode": "art",
   "fields": {
     "id": "唯一标识，同时是音频文件名（audio/companion/<id>.wav）",
     "event": "触发事件：greet=打开页面时自动打招呼 | answer-correct=答对 | answer-wrong=答错 | combo5=连对满5 | quest-clear=过关 | quest-perfect=完美通关 | quest-bad=低于60% | idle=闲置彩蛋。同一事件放多条，随机抽一条",
@@ -37,6 +38,28 @@
       "quest-bad": "angry",
       "idle": "sleep",
       "poke": "poke"
+    }
+  },
+  "art": {
+    "note": "旧版图片立绘（mode=art 时使用）。换图 = 用新图同名覆盖 assets/companion/ 下的 png；eventExpression 里的可选值对应 expressions 的键。想用回小人把最上面的 mode 改成 puppet 即可。",
+    "dir": "assets/companion/",
+    "fallback": "placeholder.png",
+    "expressions": {
+      "normal": "normal.png",
+      "happy": "happy.png",
+      "angry": "angry.png",
+      "idle": "idle.png"
+    },
+    "eventExpression": {
+      "greet": "normal",
+      "answer-correct": "happy",
+      "combo5": "happy",
+      "quest-clear": "happy",
+      "quest-perfect": "happy",
+      "answer-wrong": "angry",
+      "quest-bad": "angry",
+      "idle": "idle",
+      "poke": "angry"
     }
   },
   "lines": [
