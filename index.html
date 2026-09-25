@@ -18,7 +18,7 @@
 <div class="wrap">
   <header class="top">
     <h1 class="jp">かな書き取り <span style="font-family:inherit">· 单词拼写练习</span></h1>
-    <div class="sub">新版标准日本语 初级上册 · 1065 词</div>
+    <div class="sub">新版标准日本语 初级上册 · <span id="totalWords">1065</span> 词</div>
   </header>
 
   <div class="hud" id="hud">
@@ -32,7 +32,7 @@
 
   <!-- ============ 选择范围 ============ -->
   <section id="setup">
-    <div class="sec-label">选择课文范围</div>
+    <button class="word-edit" id="editWordsBtn" disabled title="先勾选下方课文，再点这里增删单词">✏️ 编辑单词</button>
     <div class="lessons" id="lessonChips"></div>
     <div class="row">
       <button class="btn" id="allBtn">全选</button>
@@ -124,6 +124,19 @@
       <button class="btn" id="buySkipBtn">🪙 30</button>
     </div>
     <div class="shop-note" id="shopNote">主题商店稍后开放</div>
+  </div>
+</div>
+
+<!-- ============ 编辑单词 ============ -->
+<div class="shop-mask" id="editMask" hidden>
+  <div class="shop edit-shop">
+    <div class="shop-head"><b id="editTitle">编辑单词</b><button class="shop-close" id="editCloseBtn">✕</button></div>
+    <div class="edit-body" id="editBody"></div>
+    <p class="shop-note" id="editNote"></p>
+    <div class="edit-foot">
+      <button class="btn" id="editCancelBtn">取消</button>
+      <button class="btn save" id="editSaveBtn">保存修改</button>
+    </div>
   </div>
 </div>
 

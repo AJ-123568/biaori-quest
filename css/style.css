@@ -39,7 +39,16 @@ main section{margin-top:28px;}
 .note{font-size:13px;color:var(--muted);margin:10px 0 0;}
 
 /* ---------- setup ---------- */
-.sec-label{font-size:13px;font-weight:700;color:var(--ai);letter-spacing:.14em;margin-bottom:10px;}
+/* 编辑单词入口按钮：细描边胶囊，悬停淡靛底 */
+.word-edit{
+  border:1.5px solid var(--ai);background:var(--panel);color:var(--ai);
+  border-radius:999px;padding:7px 20px;font-size:14px;font-weight:600;
+  font-family:inherit;letter-spacing:.04em;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;
+  transition:background .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.word-edit:hover:not(:disabled){background:var(--ai-soft);box-shadow:0 2px 8px rgba(51,81,142,.14);}
+.word-edit:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
 .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
 .chip{
   border:1px solid var(--line);background:var(--panel);border-radius:6px;
@@ -195,6 +204,53 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+
+/* ---------- 编辑单词弹窗 ---------- */
+.edit-shop{width:min(600px,94vw);}
+.edit-body{max-height:58vh;overflow-y:auto;padding-right:4px;}
+.eg{margin-bottom:16px;}
+.eg-head{
+  display:flex;justify-content:space-between;align-items:baseline;
+  border-bottom:2px solid var(--ink);padding-bottom:5px;
+}
+.eg-head b{font-size:14px;}
+.eg-head span{font-size:12px;color:var(--muted);}
+.ew{
+  display:flex;align-items:center;gap:8px;padding:7px 4px;
+  border-bottom:1px solid var(--masu-line);font-size:14px;
+}
+.ew-kana{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;font-weight:700;color:var(--ink);white-space:nowrap;}
+.ew-writing{font-size:12px;color:var(--muted);white-space:nowrap;}
+.ew-meaning{flex:1;font-size:13px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ew-pos{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;flex-shrink:0;}
+.ew-x{
+  border:none;background:none;color:var(--muted);font-size:16px;line-height:1;
+  width:24px;height:24px;border-radius:50%;cursor:pointer;flex-shrink:0;
+}
+.ew-x:hover{background:var(--shu-soft);color:var(--shu);}
+.ew.del .ew-kana,.ew.del .ew-writing,.ew.del .ew-meaning{text-decoration:line-through;opacity:.4;}
+.ew.del{background:rgba(190,68,65,.06);}
+.ew.add{background:var(--midori-soft);}
+.ew.add .ew-kana{color:var(--midori);}
+.eg-add{display:grid;grid-template-columns:1.1fr 1fr 1.4fr .8fr auto;gap:6px;margin-top:8px;}
+.eg-add input{
+  border:1px solid var(--line);border-radius:6px;padding:6px 8px;
+  font-size:13px;font-family:inherit;min-width:0;
+}
+.eg-add input:focus{outline:none;border-color:var(--ai);}
+.ea-plus{
+  border:1px solid var(--ai);background:var(--panel);color:var(--ai);
+  border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit;
+  cursor:pointer;white-space:nowrap;
+}
+.ea-plus:hover{background:var(--ai-soft);}
+.edit-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:10px;}
+.edit-foot .btn.save{background:var(--ai);border-color:var(--ai);color:#fff;}
+.edit-foot .btn.save:hover{background:var(--ai-deep);border-color:var(--ai-deep);color:#fff;}
+@media (max-width:560px){
+  .eg-add{grid-template-columns:1fr 1fr;}
+  .ea-plus{grid-column:1 / -1;}
+}
 
 /* ---------- 左侧功能边栏 ---------- */
 .sidebar{

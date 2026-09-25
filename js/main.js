@@ -6551,6 +6551,7 @@ function loadStore(){
     if(s && s.wrong && s.eco){
       s.eco = Object.assign({}, ECO_DEFAULT, s.eco);
       s.quest = s.quest || {};
+      s.custom = s.custom || {};
       /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
       if(!Array.isArray(s.questUnlocked)){
         s.questUnlocked = [1];
@@ -6570,11 +6571,24 @@ function loadStore(){
   base.eco = Object.assign({}, ECO_DEFAULT);
   base.quest = {};
   base.questUnlocked = [1];
+  base.custom = {};
   return base;
 }
 const store = loadStore();
 function saveStore(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
 const wkey = w => "l" + w.lesson + ":" + w.kana;
+
+/* ---------- 单词增删（自定义覆盖层：removed=删除的原词 key，added=新词） ---------- */
+function lessonWords(L){
+  const ov = store.custom && store.custom["l" + L.lesson];
+  if(!ov) return L.words;
+  const removed = new Set(ov.removed || []);
+  const out = L.words.filter(w => !removed.has(wkey(w)));
+  (ov.added || []).forEach(a => out.push({
+    lesson: L.lesson, kana: a.kana, writing: a.writing || a.kana, meaning: a.meaning, pos: a.pos || ""
+  }));
+  return out;
+}
 
 /* ---------- 经济（P1） ---------- */
 function refreshEco(which){
@@ -6618,7 +6632,7 @@ function openDiff(lesson){
 }
 function startQuest(lesson, diff){
   $("diffMask").hidden = true;
-  startSession(DATA.lessons[lesson - 1].words.slice(), { lesson, diff });
+  startSession(lessonWords(DATA.lessons[lesson - 1]).slice(), { lesson, diff });
 }
 const QNODE_ICONS = {   /* 每关图标：填 课号:"表情/文字"，如 1:"🍣"；未填的关显示课号 */
 };
@@ -6720,12 +6734,14 @@ const $ = id => document.getElementById(id);
 
 /* ---------- 范围选择 ---------- */
 const selected = new Set();
+const chipEls = {};
 function buildChips(){
   const box = $("lessonChips");
   DATA.lessons.forEach(L => {
     const b = document.createElement("button");
     b.className = "chip"; b.dataset.lesson = L.lesson;
-    b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + L.wordCount + '词</span>';
+    b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + lessonWords(L).length + '词</span>';
+    chipEls[L.lesson] = b;
     b.addEventListener("click", () => {
       if(selected.has(L.lesson)) selected.delete(L.lesson);
       else { selected.add(L.lesson); setWrong(false); }   /* 选课文与错题本互斥 */
@@ -6735,6 +6751,12 @@ function buildChips(){
     box.appendChild(b);
   });
 }
+function updateChipCounts(){   /* 单词增删后同步每课词数与总词数 */
+  DATA.lessons.forEach(L => {
+    if(chipEls[L.lesson]) chipEls[L.lesson].querySelector(".ct").textContent = lessonWords(L).length + "词";
+  });
+  $("totalWords").textContent = DATA.lessons.reduce((s, L) => s + lessonWords(L).length, 0);
+}
 /* 课文与错题本互斥：setWrong 同步按钮状态 */
 function setWrong(on){
   const b = $("wrongBtn");
@@ -6743,11 +6765,13 @@ function setWrong(on){
 }
 function refreshStart(){
   const onlyWrong = $("wrongBtn").dataset.on === "1";
-  const empty = onlyWrong ? store.wrong.length === 0 : selected.size === 0;
+  const selCount = [...selected].reduce((s, l) => s + lessonWords(DATA.lessons[l - 1]).length, 0);
+  const empty = onlyWrong ? store.wrong.length === 0 : (selected.size === 0 || selCount === 0);
   $("startBtn").disabled = empty;
   $("startBtn").textContent = onlyWrong
     ? "开始 · 错题本 " + store.wrong.length + " 词"
-    : "开始 · 共 " + [...selected].reduce((s, l) => s + DATA.lessons[l-1].wordCount, 0) + " 词";
+    : "开始 · 共 " + selCount + " 词";
+  $("editWordsBtn").disabled = onlyWrong || selected.size === 0;
 }
 
 /* ---------- 会话状态 ---------- */
@@ -6781,11 +6805,11 @@ function currentPool(){
   if($("wrongBtn").dataset.on === "1"){
     const set = new Set(store.wrong);
     const all = [];
-    DATA.lessons.forEach(L => L.words.forEach(w => { if(set.has(wkey(w))) all.push(w); }));
+    DATA.lessons.forEach(L => lessonWords(L).forEach(w => { if(set.has(wkey(w))) all.push(w); }));
     return all;
   }
   const all = [];
-  DATA.lessons.forEach(L => { if(selected.has(L.lesson)) L.words.forEach(w => all.push(w)); });
+  DATA.lessons.forEach(L => { if(selected.has(L.lesson)) lessonWords(L).forEach(w => all.push(w)); });
   return all;
 }
 
@@ -7087,7 +7111,126 @@ $("resetEcoBtn").addEventListener("click", () => {
   saveStore(); refreshEco();
 });
 
+/* ---------- 编辑单词 ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let editData = null;   /* 弹窗打开期间的工作副本：[{lesson, base, removed:Set, added:[]}]，保存才写回 store */
+function openEditor(){
+  const lessons = [...selected].sort((a, b) => a - b);
+  if(!lessons.length) return;
+  editData = lessons.map(n => {
+    const ov = store.custom["l" + n];
+    return {
+      lesson: n,
+      base: DATA.lessons[n - 1].words,
+      removed: new Set(ov ? ov.removed || [] : []),
+      added: ov ? (ov.added || []).map(w => ({ kana: w.kana, writing: w.writing, meaning: w.meaning, pos: w.pos })) : []
+    };
+  });
+  $("editNote").textContent = "";
+  renderEditor();
+  $("editMask").hidden = false;
+}
+function editorCount(g){
+  return g.base.filter(w => !g.removed.has(wkey(w))).length + g.added.length;
+}
+function ewRow(kana, writing, meaning, pos){
+  return '<span class="ew-kana">' + esc(kana) + '</span>' +
+    (writing && writing !== kana ? '<span class="ew-writing">' + esc(writing) + '</span>' : "") +
+    '<span class="ew-meaning">' + esc(meaning) + '</span>' +
+    '<span class="ew-pos">' + esc(pos || "") + '</span>';
+}
+function renderEditor(){
+  $("editTitle").textContent = "编辑单词 · " + editData.map(g => "第" + g.lesson + "课").join("、");
+  const body = $("editBody");
+  const st = body.scrollTop;
+  body.innerHTML = "";
+  editData.forEach((g, gi) => {
+    const eg = document.createElement("div");
+    eg.className = "eg";
+    const head = document.createElement("div");
+    head.className = "eg-head";
+    head.innerHTML = "<b>第" + g.lesson + "课</b><span>" + editorCount(g) + " 词</span>";
+    eg.appendChild(head);
+    const list = document.createElement("div");
+    list.className = "eg-list";
+    const addRow = (kana, writing, meaning, pos, del, onX, extra) => {
+      const row = document.createElement("div");
+      row.className = "ew" + (extra ? " " + extra : "") + (del ? " del" : "");
+      row.innerHTML = ewRow(kana, writing, meaning, pos);
+      const x = document.createElement("button");
+      x.className = "ew-x";
+      x.textContent = del ? "↺" : "×";
+      x.title = del ? "撤销删除" : "删除";
+      x.addEventListener("click", onX);
+      row.appendChild(x);
+      list.appendChild(row);
+    };
+    g.base.forEach(w => addRow(w.kana, w.writing, w.meaning, w.pos, g.removed.has(wkey(w)), () => {
+      if(g.removed.has(wkey(w))) g.removed.delete(wkey(w)); else g.removed.add(wkey(w));
+      renderEditor();
+    }));
+    g.added.forEach((w, i) => addRow(w.kana, w.writing, w.meaning, w.pos, false, () => {
+      g.added.splice(i, 1);
+      renderEditor();
+    }, "add"));
+    eg.appendChild(list);
+    /* 加词表单 */
+    const add = document.createElement("div");
+    add.className = "eg-add";
+    add.innerHTML =
+      '<input class="ea-kana" placeholder="假名（必填）">' +
+      '<input class="ea-writing" placeholder="汉字写法（选填）">' +
+      '<input class="ea-meaning" placeholder="中文释义（必填）">' +
+      '<input class="ea-pos" placeholder="词性（选填）">';
+    const plus = document.createElement("button");
+    plus.className = "ea-plus"; plus.textContent = "＋ 添加";
+    plus.addEventListener("click", () => {
+      const kana = add.querySelector(".ea-kana").value.trim();
+      const writing = add.querySelector(".ea-writing").value.trim();
+      const meaning = add.querySelector(".ea-meaning").value.trim();
+      const pos = add.querySelector(".ea-pos").value.trim();
+      if(!kana || !meaning){
+        $("editNote").textContent = "第" + g.lesson + "课：假名和中文释义不能为空。";
+        return;
+      }
+      $("editNote").textContent = "";
+      g.added.push({ kana, writing: writing || kana, meaning, pos });
+      renderEditor();
+      const kanaInput = $("editBody").querySelectorAll(".eg")[gi].querySelector(".ea-kana");
+      if(kanaInput) kanaInput.focus();
+    });
+    add.appendChild(plus);
+    add.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); plus.click(); } });
+    eg.appendChild(add);
+    body.appendChild(eg);
+  });
+  body.scrollTop = st;
+}
+function closeEditor(){
+  $("editMask").hidden = true;
+  editData = null;
+}
+$("editWordsBtn").addEventListener("click", openEditor);
+$("editCloseBtn").addEventListener("click", closeEditor);
+$("editCancelBtn").addEventListener("click", closeEditor);
+$("editMask").addEventListener("click", e => { if(e.target === $("editMask")) closeEditor(); });
+$("editSaveBtn").addEventListener("click", () => {
+  if(!editData) return;
+  editData.forEach(g => {
+    if(g.removed.size || g.added.length){
+      store.custom["l" + g.lesson] = { removed: [...g.removed], added: g.added.map(w => ({ ...w })) };
+    } else {
+      delete store.custom["l" + g.lesson];
+    }
+  });
+  saveStore();
+  updateChipCounts();
+  refreshStart();
+  closeEditor();
+});
+
 buildChips();
 refreshStart();
 refreshEco();
+updateChipCounts();
 if(store.wrong.length) $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
