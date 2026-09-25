@@ -12,6 +12,7 @@
   --midori-soft:#E1EFE6;
   --line:#D7DDD8;
   --masu-line:#E4E1D6;
+  --side-w:102px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -25,6 +26,9 @@ body{
 }
 .jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
 .wrap{max-width:680px;margin:0 auto;padding:24px 16px 64px;}
+@media (max-width:890px){   /* 窄屏：内容区从边栏右侧开始，不再居中 */
+  .wrap{margin-left:var(--side-w);max-width:none;}
+}
 header.top{
   display:flex;align-items:baseline;justify-content:space-between;
   border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px;
@@ -191,6 +195,29 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+
+/* ---------- 左侧功能边栏 ---------- */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--side-w);z-index:40;
+  background:var(--panel);border-right:2px solid var(--ink);
+  display:flex;flex-direction:column;align-items:stretch;gap:6px;padding-top:14px;
+}
+.side-item{
+  width:100%;border:none;background:none;cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:10px 2px;color:var(--muted);
+  transition:background .15s ease,color .15s ease;
+}
+.side-item .si-ico{font-size:20px;line-height:1;}
+.side-item .si-tx{font-size:12px;letter-spacing:.08em;}
+.side-item:hover{background:var(--ai-soft);color:var(--ai);}
+.side-item:focus-visible{outline:2px solid var(--ai);outline-offset:-2px;}
+@media (max-width:560px){   /* 小屏：边栏略窄，按钮随之收窄 */
+  :root{--side-w:54px;}
+  .side-item{padding:9px 2px;}
+  .side-item .si-ico{font-size:18px;}
+  .side-item .si-tx{font-size:11px;}
+}
 
 /* ---------- 闯关地图（P2） ---------- */
 .btn.quest-entry{color:#B07F1F;border-color:#E3C98F;}
