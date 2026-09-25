@@ -39,15 +39,83 @@
       <rect x="90" y="144" width="20" height="5" rx="2.5" fill="#1c1c22"/>
     </g>
 
+    <g id="pp-o-hoodie" display="none">
+      <path d="M68,152 Q100,142 132,152 L127,197 Q100,205 73,197 Z" fill="#C0392B"/>
+      <path d="M84,145 Q100,155 116,145 Q112,138 100,140 Q88,138 84,145 Z" fill="#96281B"/>
+      <path d="M96,157 L94.5,173" stroke="#F2D5CC" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M104,157 L105.5,173" stroke="#F2D5CC" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="94.5" cy="175" r="2" fill="#F2D5CC"/>
+      <circle cx="105.5" cy="175" r="2" fill="#F2D5CC"/>
+      <path d="M86,177 L114,177 L110,194 Q100,198 90,194 Z" fill="#B03226"/>
+      <path d="M86,177 L114,177" stroke="#96281B" stroke-width="2"/>
+    </g>
+
+    <g id="pp-o-uniform" display="none">
+      <path d="M70,152 Q100,143 130,152 L125,197 Q100,204 75,197 Z" fill="#2E3A4E"/>
+      <path d="M89,147 L100,157 L111,147 L112,153 L100,163 L88,153 Z" fill="#F7F4EC"/>
+      <path d="M87,147 L100,159 L91,166 L77,155 Z" fill="#26303F"/>
+      <path d="M113,147 L100,159 L109,166 L123,155 Z" fill="#26303F"/>
+      <path d="M100,160 l4.5,5 -4.5,13 -4.5,-13 Z" fill="#A63232"/>
+      <circle cx="83" cy="166" r="1.8" fill="#C9A227"/>
+    </g>
+
+    <g id="pp-o-yukata" display="none">
+      <path d="M64,154 Q100,143 136,154 L131,199 L135,211 Q100,217 65,211 L69,199 Z" fill="#3E5377"/>
+      <circle cx="80" cy="168" r="2.2" fill="#F2EEE4" opacity=".45"/>
+      <circle cx="124" cy="164" r="2.2" fill="#F2EEE4" opacity=".45"/>
+      <circle cx="78" cy="190" r="2.2" fill="#F2EEE4" opacity=".45"/>
+      <circle cx="122" cy="192" r="2.2" fill="#F2EEE4" opacity=".45"/>
+      <path d="M86,146 L110,168 L104,175 L80,151 Z" fill="#F2EEE4"/>
+      <path d="M114,146 L94,170 L100,177 L120,152 Z" fill="#E8E2D4"/>
+      <rect x="74" y="176" width="52" height="13" rx="2" fill="#8A3B3B"/>
+      <rect x="93" y="174" width="14" height="9" rx="2" fill="#6E2D2D"/>
+      <path d="M98,183 L96,196" stroke="#6E2D2D" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M102,183 L104,196" stroke="#6E2D2D" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+
     <g id="pp-armL">
-      <rect x="61" y="154" width="17" height="40" rx="8" fill="#2A2A32"/>
-      <rect x="62" y="185" width="15" height="4.5" rx="2" fill="#8C5B38"/>
-      <circle cx="69.5" cy="200" r="8.5" fill="#1E1E24"/>
+      <g id="pp-armL-base">
+        <rect x="61" y="154" width="17" height="40" rx="8" fill="#2A2A32"/>
+        <rect x="62" y="185" width="15" height="4.5" rx="2" fill="#8C5B38"/>
+        <circle cx="69.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armL-hoodie" display="none">
+        <rect x="59" y="153" width="20" height="42" rx="9" fill="#C0392B"/>
+        <rect x="60" y="186" width="18" height="5" rx="2.5" fill="#96281B"/>
+        <circle cx="69.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armL-uniform" display="none">
+        <rect x="60" y="154" width="18" height="41" rx="8" fill="#2E3A4E"/>
+        <rect x="61" y="187" width="16" height="4.5" rx="2" fill="#F7F4EC"/>
+        <circle cx="69.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armL-yukata" display="none">
+        <rect x="58" y="152" width="22" height="44" rx="10" fill="#3E5377"/>
+        <rect x="59" y="186" width="20" height="5" rx="2.5" fill="#F2EEE4"/>
+        <circle cx="69.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
     </g>
     <g id="pp-armR">
-      <rect x="122" y="154" width="17" height="40" rx="8" fill="#2A2A32"/>
-      <rect x="123" y="185" width="15" height="4.5" rx="2" fill="#8C5B38"/>
-      <circle cx="130.5" cy="200" r="8.5" fill="#1E1E24"/>
+      <g id="pp-armR-base">
+        <rect x="122" y="154" width="17" height="40" rx="8" fill="#2A2A32"/>
+        <rect x="123" y="185" width="15" height="4.5" rx="2" fill="#8C5B38"/>
+        <circle cx="130.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armR-hoodie" display="none">
+        <rect x="121" y="153" width="20" height="42" rx="9" fill="#C0392B"/>
+        <rect x="122" y="186" width="18" height="5" rx="2.5" fill="#96281B"/>
+        <circle cx="130.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armR-uniform" display="none">
+        <rect x="122" y="154" width="18" height="41" rx="8" fill="#2E3A4E"/>
+        <rect x="123" y="187" width="16" height="4.5" rx="2" fill="#F7F4EC"/>
+        <circle cx="130.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
+      <g id="pp-armR-yukata" display="none">
+        <rect x="120" y="152" width="22" height="44" rx="10" fill="#3E5377"/>
+        <rect x="121" y="186" width="20" height="5" rx="2.5" fill="#F2EEE4"/>
+        <circle cx="130.5" cy="200" r="8.5" fill="#1E1E24"/>
+      </g>
     </g>
 
     <g id="pp-o-scarf" display="none">
@@ -189,11 +257,22 @@
     show("pp-b-angry",  f.brows === "angry");
   }
 
-  /* 换装：head='hat'|'none'，body='coat'|'vest'（后续服装在阶段4扩展），acc={scarf,glasses} */
+  /* 换装：head='hat'|'none'；body 具体衣服；acc={scarf,glasses} 可叠穿。
+     衣服图层与 config/wardrobe.json 的上架状态（ready）对应，这里按 id 开关 group */
+  const BODY_LAYERS = ["hoodie", "uniform", "yukata"];
   function setWorn(w){
     w = w || {};
     show("pp-hat", (w.head || "hat") === "hat");
-    show("pp-o-coat", (w.body || "coat") === "coat");
+    const body = w.body || "coat";
+    show("pp-o-coat", body === "coat");
+    BODY_LAYERS.forEach(id => {
+      show("pp-o-" + id, body === id);
+      show("pp-armL-" + id, body === id);
+      show("pp-armR-" + id, body === id);
+    });
+    const baseArms = body === "coat" || body === "vest";
+    show("pp-armL-base", baseArms);
+    show("pp-armR-base", baseArms);
     show("pp-o-scarf", !!(w.acc && w.acc.scarf));
     show("pp-o-glasses", !!(w.acc && w.acc.glasses));
   }

@@ -27,7 +27,11 @@
 <div class="row" id="wear">
   <b style="font-size:13px;color:#888">换装：</b>
   <button data-toggle="hat">帽子 开/脱</button>
-  <button data-toggle="coat">大衣 穿/脱</button>
+  <button data-body="coat">大衣</button>
+  <button data-body="vest">马甲</button>
+  <button data-body="hoodie">卫衣</button>
+  <button data-body="uniform">校服</button>
+  <button data-body="yukata">浴衣</button>
   <button data-toggle="scarf">围巾</button>
   <button data-toggle="glasses">眼镜</button>
 </div>
@@ -51,10 +55,10 @@
     const f = e.target.dataset.face; if(f) Puppet.setFace(f);
   });
   document.getElementById("wear").addEventListener("click", e => {
-    const t = e.target.dataset.toggle; if(!t) return;
+    const t = e.target.dataset.toggle, b = e.target.dataset.body;
     if(t === "hat") worn.head = worn.head === "hat" ? "none" : "hat";
-    else if(t === "coat") worn.body = worn.body === "coat" ? "vest" : "coat";
-    else worn.acc[t] = !worn.acc[t];
+    else if(t) worn.acc[t] = !worn.acc[t];
+    else if(b) worn.body = b;
     Puppet.setWorn(worn);
   });
   document.getElementById("acts").addEventListener("click", e => {
