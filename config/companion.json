@@ -1,7 +1,7 @@
 {
   "version": 1,
   "note": "中也伴侣配置。mode 字段控制右下角显示什么：art=旧版图片立绘（四张png，表情随事件切换）；puppet=代码手绘SVG小人（会做动作，支持衣橱换装）。想换显示方式改这个单词即可，台词/语音两种模式共用。",
-  "mode": "art",
+  "mode": "puppet",
   "fields": {
     "id": "唯一标识，同时是音频文件名（audio/companion/<id>.wav）",
     "event": "触发事件：greet=打开页面时自动打招呼 | answer-correct=答对 | answer-wrong=答错 | combo5=连对满5 | quest-clear=过关 | quest-perfect=完美通关 | quest-bad=低于60% | idle=闲置彩蛋。同一事件放多条，随机抽一条",
@@ -29,7 +29,7 @@
       "poke": "angry"
     },
     "eventAction": {
-      "greet": "wave",
+      "greet": "sway",
       "answer-correct": "jump",
       "combo5": "jump",
       "quest-clear": "jump",

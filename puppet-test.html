@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>puppet-custom 验收台</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  body{background:#f5efe4;padding:20px;font-family:sans-serif;}
+  .row{display:flex;gap:40px;align-items:flex-start;flex-wrap:wrap;}
+  .stage-wrap{border:1px dashed #999;padding:10px;}
+  button{margin:2px;padding:4px 10px;cursor:pointer;}
+  .note{font-size:12px;color:#666;margin-top:6px;}
+</style>
+</head>
+<body>
+<h3>官方图小人验收台（真实 css/style.css + js/puppet.js + assets/companion/puppet-custom.svg）</h3>
+<div class="row">
+  <div>
+    <div class="stage-wrap"><div id="stage" class="companion-puppet"></div></div>
+    <div class="note">显示高 200px（与站内一致）；左边按钮触发，右边放大检查</div>
+  </div>
+  <div class="stage-wrap"><div id="stage2" style="line-height:0"></div></div>
+</div>
+<div style="margin-top:14px">
+  <b>表情：</b>
+  <button onclick="Puppet.setFace('normal')">normal</button>
+  <button onclick="Puppet.setFace('happy')">happy</button>
+  <button onclick="Puppet.setFace('angry')">angry</button>
+  <button onclick="Puppet.setFace('idle')">idle</button>
+  <b>　动作：</b>
+  <button onclick="Puppet.play('jump')">jump</button>
+  <button onclick="Puppet.play('angry')">stomp</button>
+  <button onclick="Puppet.play('poke')">poke</button>
+  <button onclick="Puppet.play('sway')">sway</button>
+  <button onclick="Puppet.play('talk')">talk</button>
+  <button onclick="Puppet.play('sleep')">sleep</button>
+  <b>　眨眼：</b>
+  <button onclick="blinkOnce()">blink 140ms</button>
+  <b>　来源：</b><span id="src"></span>
+</div>
+<script src="js/puppet.js"></script>
+<script>
+  Puppet.mount(document.getElementById("stage")).then(r => {
+    document.getElementById("src").textContent = Puppet.source();
+    const s2 = document.getElementById("stage2");
+    s2.innerHTML = r.outerHTML;   // 放大副本（动画同样生效）
+    s2.querySelector("svg").style.height = "560px";
+  });
+  function blinkOnce(){
+    const svg = document.querySelector("#stage svg");
+    svg.classList.add("blink");
+    setTimeout(() => svg.classList.remove("blink"), 140);
+  }
+</script>
+</body>
+</html>
