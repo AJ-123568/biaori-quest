@@ -233,7 +233,8 @@
     idle:   { eyes: "sleepy", mouth: "sleepy", brows: "normal" }
   };
 
-  let root = null, face = "normal", blinkTimer = null, actTimer = null, sleepTimer = null, fidgetTimer = null;
+  let root = null, face = "normal", srcMode = "builtin";
+  let blinkTimer = null, actTimer = null, sleepTimer = null, fidgetTimer = null;
   const $ = id => root ? root.querySelector("#" + id) : null;
   /* SVG 元素不认 HTML 的 hidden 属性，用 display 属性控制显隐 */
   function show(id, on){
@@ -335,10 +336,38 @@
     }, 20000 + Math.random() * 20000);
   }
 
-  function mount(container){
-    if(!container || root) return root;
-    container.innerHTML = SVG;
+  /* 挂载：默认优先加载自定义画稿 assets/companion/puppet-custom.svg（调形编辑器导出/自己画），
+     没有或加载失败回落内置画稿。opts.builtin=true 强制用内置（编辑器"还原内置"用）。 */
+  async function mount(container, opts){
+    if(!container) return root;
+    clearTimeout(blinkTimer); clearTimeout(actTimer); clearTimeout(sleepTimer); clearTimeout(fidgetTimer);
+    root = null;
+    if(!(opts && opts.builtin)){
+      try{
+        const r = await fetch("assets/companion/puppet-custom.svg", { cache: "no-store" });
+        if(r.ok){
+          const txt = await r.text();
+          if(txt.includes("<svg")){
+            container.innerHTML = txt;
+            root = container.querySelector("svg");
+            if(root) srcMode = "custom";
+          }
+        }
+      }catch(e){}
+    }
+    if(!root){
+      container.innerHTML = SVG;
+      root = container.querySelector("svg");
+      srcMode = "builtin";
+    }
+    return reattach(container);
+  }
+
+  /* 把 container 里现成的 svg 重新接管（编辑器导入/替换画稿后调用） */
+  function reattach(container){
     root = container.querySelector("svg");
+    if(!root) return null;
+    root.classList.add("puppet");
     setFace("normal");
     setWorn({});
     scheduleBlink();
@@ -346,5 +375,5 @@
     return root;
   }
 
-  window.Puppet = { mount, setFace, setWorn, play };
+  window.Puppet = { mount, reattach, setFace, setWorn, play, source: () => srcMode };
 })();

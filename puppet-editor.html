@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>中也小人 · 调形编辑器</title>
+<style>
+  body{margin:0;display:flex;height:100vh;font-family:"Noto Sans SC",system-ui,sans-serif;background:#f3efe6;overflow:hidden;}
+  #left{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:auto;padding:14px;}
+  #stage svg{height:min(60vh,500px);width:auto;filter:drop-shadow(0 8px 16px rgba(35,40,43,.25));cursor:move;touch-action:none;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center;}
+  button{border:1px solid #ccc;background:#fff;border-radius:8px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit;}
+  button:hover{border-color:#EA7A45;color:#C65A2E;}
+  #panel{width:340px;background:#fff;border-left:1px solid #ddd;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;box-sizing:border-box;}
+  h2{font-size:13px;margin:6px 0 0;color:#8a5a3b;letter-spacing:1px;}
+  #parts{max-height:180px;overflow-y:auto;border:1px solid #eee;border-radius:8px;}
+  .pitem{padding:4px 10px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;}
+  .pitem:hover{background:#fdf1ea;}
+  .pitem.sel{background:#EA7A45;color:#fff;}
+  .pitem.grp{font-weight:700;color:#8a5a3b;background:#faf6f0;}
+  .pitem.child{padding-left:26px;}
+  .frow{display:flex;gap:8px;align-items:center;font-size:13px;}
+  .frow span{width:52px;color:#666;flex-shrink:0;}
+  .frow input[type=text]{flex:1;border:1px solid #ccc;border-radius:6px;padding:4px 8px;font-size:12px;min-width:0;}
+  .frow input[type=color]{width:36px;height:28px;padding:0;border:1px solid #ccc;border-radius:6px;background:none;}
+  #dataTa{width:100%;height:120px;font-size:11px;font-family:Consolas,monospace;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;resize:vertical;}
+  .tip{font-size:12px;color:#999;line-height:1.7;margin:2px 0;}
+  #crumb{font-size:12px;color:#8a5a3b;min-height:16px;}
+  #selinfo{font-size:12px;color:#666;}
+  .big{background:#2F7A6C;color:#fff !important;border-color:#2F7A6C !important;}
+</style>
+</head>
+<body>
+<div id="left">
+  <h1 style="font-size:16px;color:#5a5a5a;font-weight:500;margin:0">中也小人 · 调形编辑器</h1>
+  <div id="stage"></div>
+  <div class="row" id="faces">
+    <b style="font-size:13px;color:#888">表情：</b>
+    <button data-face="normal">平常</button>
+    <button data-face="happy">开心</button>
+    <button data-face="angry">生气</button>
+    <button data-face="idle">犯困</button>
+  </div>
+  <div class="row" id="wear">
+    <b style="font-size:13px;color:#888">试穿：</b>
+    <button data-toggle="hat">帽 开/脱</button>
+    <button data-body="coat">大衣</button>
+    <button data-body="vest">马甲</button>
+    <button data-body="hoodie">卫衣</button>
+    <button data-body="uniform">校服</button>
+    <button data-body="yukata">浴衣</button>
+    <button data-toggle="scarf">围巾</button>
+    <button data-toggle="glasses">眼镜</button>
+  </div>
+  <div class="row" id="acts">
+    <b style="font-size:13px;color:#888">动作：</b>
+    <button data-act="wave">挥手</button>
+    <button data-act="jump">小跳</button>
+    <button data-act="angry">跺脚</button>
+    <button data-act="poke">被戳</button>
+    <button data-act="look">张望</button>
+    <button data-act="hip">叉腰</button>
+    <button data-act="sway">摇摆</button>
+    <button data-act="sleep">打盹</button>
+  </div>
+  <p class="tip">点画布上的部件=选中（可从右侧列表选）· 拖动=移动 · 方向键微调（Shift=×10）· Ctrl+Z 撤销。改表情/衣服时选中的部件还在原位，随时切回来继续调。</p>
+</div>
+<div id="panel">
+  <b style="font-size:14px">画稿来源：<span id="srcBadge">…</span></b>
+  <h2>部件列表（点选）</h2>
+  <div id="parts"></div>
+  <div id="crumb"></div>
+  <h2>选中部件</h2>
+  <div id="selinfo">未选中</div>
+  <div class="frow"><span>填充色</span><input type="color" id="cFill"><input type="text" id="tFill" placeholder="none / rgba(...)"></div>
+  <div class="frow"><span>描边色</span><input type="color" id="cStroke"><input type="text" id="tStroke" placeholder="none / rgba(...)"></div>
+  <div class="frow"><span>描边宽</span><input type="number" id="nStrokeW" step="0.5" min="0" style="width:80px"><span style="width:auto;color:#999">不动的装饰件可填 0</span></div>
+  <div class="row">
+    <button id="btnUp">上移一层</button>
+    <button id="btnDown">下移一层</button>
+    <button id="btnParent">选中上一层</button>
+    <button id="btnDel">删除</button>
+  </div>
+  <h2>形状数据（进阶：直接改数字）</h2>
+  <textarea id="dataTa" spellcheck="false"></textarea>
+  <div class="row">
+    <button id="btnApply">应用到画布</button>
+    <button id="btnAddCircle">加圆形</button>
+    <button id="btnAddRect">加矩形</button>
+  </div>
+  <h2>撤销 / 导出</h2>
+  <div class="row">
+    <button id="btnUndo">撤销 (Ctrl+Z)</button>
+    <button id="btnReset">还原内置画稿</button>
+  </div>
+  <div class="row">
+    <button id="btnExport" class="big">⬇ 导出 puppet-custom.svg</button>
+    <button id="btnImport">导入画稿继续改</button>
+  </div>
+  <input type="file" id="fileIn" accept=".svg" hidden>
+  <p class="tip">
+    导出后把文件放进 <b>assets/companion/</b> 覆盖同名文件，游戏刷新后自动优先使用它；删掉这个文件就恢复内置画稿。<br>
+    想认真画：用免费矢量软件 <b>Inkscape</b>（有中文版）打开导出的 svg 画，画完存回同名文件即可。<b>别删除/改名 pp- 开头的分组</b>，游戏里的表情、动作、换装都靠它们驱动；新增的装饰件随意。
+  </p>
+</div>
+<script src="js/puppet.js"></script>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const SVGNS = "http://www.w3.org/2000/svg";
+  const LABELS = {
+    "pp-hat":"帽子","pp-chain":"帽链","pp-hair-front":"刘海和鬓发","pp-hair-back":"后发",
+    "pp-brows":"眉毛（组）","pp-b-normal":"平常眉","pp-b-happy":"开心眉","pp-b-angry":"生气眉",
+    "pp-eyes":"眼睛（组）","pp-eyes-open":"睁眼","pp-eyes-happy":"笑眼","pp-eyes-sleepy":"困眼",
+    "pp-mouths":"嘴（组）","pp-m-smile":"微笑嘴","pp-m-grin":"咧嘴","pp-m-grin-fang":"小虎牙","pp-m-angry":"怒吼嘴","pp-m-sleepy":"犯困嘴",
+    "pp-o-glasses":"圆框眼镜","pp-o-scarf":"红围巾","pp-o-coat":"黑长大衣","pp-o-hoodie":"连帽卫衣","pp-o-uniform":"学园校服","pp-o-yukata":"浴衣",
+    "pp-body":"身体（马甲）","pp-armL":"左臂（组）","pp-armR":"右臂（组）","pp-legs":"腿脚","pp-shadow":"影子",
+    "pp-armL-base":"左臂·基础袖","pp-armR-base":"右臂·基础袖",
+    "pp-armL-hoodie":"左臂·卫衣袖","pp-armR-hoodie":"右臂·卫衣袖",
+    "pp-armL-uniform":"左臂·校服袖","pp-armR-uniform":"右臂·校服袖",
+    "pp-armL-yukata":"左臂·浴衣袖","pp-armR-yukata":"右臂·浴衣袖",
+    "pp-head":"头（组）","pp-all":"全身（组）","pp-act":"动作层（慎改）","pp-zzz":"打盹 zzz"
+  };
+  const SHAPE_TAGS = ["path","rect","circle","ellipse","line","text","polygon","polyline"];
+  let sel = null, drag = null, undoStack = [];
+  const svg = () => document.querySelector("#stage svg");
+
+  function snapshot(){ undoStack.push(svg().innerHTML); if(undoStack.length > 80) undoStack.shift(); }
+  function undo(){
+    const s = undoStack.pop();
+    if(!s) return;
+    svg().innerHTML = s;
+    sel = null; fillPanel(); buildParts(); showSelBox();
+  }
+
+  function isShape(el){ return SHAPE_TAGS.includes(el.tagName.toLowerCase()); }
+  function elLabel(el){
+    if(LABELS[el.id]) return LABELS[el.id];
+    if(el.id) return el.id;
+    if(el.tagName === "g") return "（组）";
+    return "形状" + (el.dataset && el.dataset.n ? el.dataset.n : "");
+  }
+
+  function buildParts(){
+    const box = $("parts");
+    box.innerHTML = "";
+    const rootG = svg().querySelector("#pp-act") || svg();
+    const walk = (g, depth) => {
+      [...g.children].forEach(el => {
+        if(el.id === "ed-selbox" || el.classList.contains("ed-tmp")) return;
+        const isGrp = el.tagName.toLowerCase() === "g";
+        const div = document.createElement("div");
+        div.className = "pitem " + (isGrp && depth === 0 ? "grp" : "child");
+        div.textContent = elLabel(el);
+        div.__el = el;
+        div.addEventListener("click", () => select(el));
+        box.appendChild(div);
+        el.__pitem = div;
+        if(isGrp && depth < 2) walk(el, depth + 1);
+      });
+    };
+    walk(rootG, 0);
+    /* 选中项可能已被替换，重挂列表后清引用 */
+    if(sel && !svg().contains(sel)) sel = null;
+  }
+
+  function selBox(){
+    let box = svg().querySelector("#ed-selbox");
+    if(!box){
+      box = document.createElementNS(SVGNS, "rect");
+      box.id = "ed-selbox";
+      box.setAttribute("fill", "none");
+      box.setAttribute("stroke", "#ff5252");
+      box.setAttribute("stroke-width", "1.5");
+      box.setAttribute("stroke-dasharray", "4 3");
+      box.setAttribute("pointer-events", "none");
+      svg().appendChild(box);
+    }
+    return box;
+  }
+  function showSelBox(){
+    const box = selBox();
+    if(!sel){ box.setAttribute("display", "none"); return; }
+    try{
+      const b = sel.getBBox();
+      if(!b.width && !b.height) throw 0;
+      box.setAttribute("x", b.x - 2); box.setAttribute("y", b.y - 2);
+      box.setAttribute("width", b.width + 4); box.setAttribute("height", b.height + 4);
+      box.removeAttribute("display");
+    }catch(e){ box.setAttribute("display", "none"); }
+  }
+
+  function crumb(el){
+    const path = [];
+    let cur = el;
+    while(cur && cur.tagName && cur.tagName.toLowerCase() !== "svg"){ path.unshift(elLabel(cur)); cur = cur.parentNode; }
+    return path.join(" ＞ ");
+  }
+
+  function hexOf(v){
+    if(!v) return "";
+    const m = String(v).match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    return m ? v : "";
+  }
+  function fillPanel(){
+    const info = $("selinfo");
+    if(!sel){ info.textContent = "未选中"; $("crumb").textContent = ""; showSelBox(); return; }
+    info.textContent = elLabel(sel) + "（" + sel.tagName + "）";
+    $("crumb").textContent = crumb(sel);
+    const f = sel.getAttribute("fill") || "";
+    $("cFill").value = hexOf(f) || "#c0392b";
+    $("tFill").value = f;
+    const s = sel.getAttribute("stroke") || "";
+    $("cStroke").value = hexOf(s) || "#000000";
+    $("tStroke").value = s;
+    $("nStrokeW").value = sel.getAttribute("stroke-width") || "";
+    $("dataTa").value = sel.outerHTML;
+    showSelBox();
+  }
+
+  function select(el){
+    sel = el;
+    fillPanel();
+    [...$("parts").children].forEach(d => d.classList.toggle("sel", d.__el === el));
+    if(el && el.__pitem) el.__pitem.scrollIntoView({ block: "nearest" });
+  }
+
+  function svgPoint(e){
+    const pt = svg().createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    return pt.matrixTransform(svg().getScreenCTM().inverse());
+  }
+  function translate(el, dx, dy){
+    const base = el.__edBase !== undefined ? el.__edBase : (el.getAttribute("transform") || "");
+    el.setAttribute("transform", (base ? base + " " : "") + "translate(" + dx + " " + dy + ")");
+  }
+
+  /* 画布：点击选中 + 拖动移动 */
+  const stage = $("stage");
+  stage.addEventListener("pointerdown", e => {
+    const t = e.target;
+    if(!svg() || !svg().contains(t) || t.id === "ed-selbox") return;
+    select(t);
+    const p = svgPoint(e);
+    drag = { el: t, x: p.x, y: p.y };
+    t.__edBase = t.getAttribute("transform") || "";
+    snapshot();
+    stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener("pointermove", e => {
+    if(!drag) return;
+    const p = svgPoint(e);
+    translate(drag.el, +(p.x - drag.x).toFixed(1), +(p.y - drag.y).toFixed(1));
+    showSelBox();
+  });
+  stage.addEventListener("pointerup", () => { if(drag){ drag.el.__edBase = drag.el.getAttribute("transform") || ""; drag = null; } });
+  stage.addEventListener("pointercancel", () => { drag = null; });
+
+  /* 方向键微调 */
+  document.addEventListener("keydown", e => {
+    if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+    if(e.key === "z" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); undo(); return; }
+    const step = e.shiftKey ? 10 : 1;
+    const d = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step] }[e.key];
+    if(d && sel){
+      e.preventDefault();
+      snapshotOnce();
+      const base = sel.__edBase !== undefined ? sel.__edBase : (sel.getAttribute("transform") || "");
+      sel.__edKdx = (sel.__edKdx || 0) + d[0]; sel.__edKdy = (sel.__edKdy || 0) + d[1];
+      translate(sel, sel.__edKdx, sel.__edKdy);
+      showSelBox();
+    }
+  });
+
+  /* 面板：颜色 / 描边 / 层级 / 删除 / 数据 */
+  let keySnapDone = false;
+  function snapshotOnce(){   /* 连续小改动（拖色块/按键）只记一次撤销点 */
+    if(!keySnapDone){ snapshot(); keySnapDone = true; setTimeout(() => { keySnapDone = false; }, 2500); }
+  }
+  function setFill(v){ if(!sel) return; snapshot(); if(v) sel.setAttribute("fill", v); else sel.removeAttribute("fill"); fillPanel(); }
+  function setStroke(v){ if(!sel) return; snapshot(); if(v) sel.setAttribute("stroke", v); else sel.removeAttribute("stroke"); fillPanel(); }
+  $("cFill").addEventListener("input", e => { if(sel){ snapshotOnce(); sel.setAttribute("fill", e.target.value); $("tFill").value = e.target.value; showSelBox(); } });
+  $("tFill").addEventListener("change", e => setFill(e.target.value.trim()));
+  $("cStroke").addEventListener("input", e => { if(sel){ snapshotOnce(); sel.setAttribute("stroke", e.target.value); $("tStroke").value = e.target.value; } });
+  $("tStroke").addEventListener("change", e => setStroke(e.target.value.trim()));
+  $("tStroke").addEventListener("change", e => setStroke(e.target.value.trim()));
+  $("nStrokeW").addEventListener("change", e => {
+    if(!sel) return;
+    snapshot();
+    const v = parseFloat(e.target.value);
+    if(isNaN(v) || v <= 0) sel.removeAttribute("stroke-width"); else sel.setAttribute("stroke-width", v);
+    fillPanel();
+  });
+  $("btnUp").addEventListener("click", () => {
+    if(!sel || !sel.nextElementSibling) return;
+    snapshot();
+    sel.parentNode.insertBefore(sel.nextElementSibling, sel);
+    buildParts(); select(sel);
+  });
+  $("btnDown").addEventListener("click", () => {
+    if(!sel || !sel.previousElementSibling) return;
+    snapshot();
+    sel.parentNode.insertBefore(sel, sel.previousElementSibling);
+    buildParts(); select(sel);
+  });
+  $("btnParent").addEventListener("click", () => {
+    if(!sel) return;
+    const p = sel.parentNode;
+    if(p && p.tagName.toLowerCase() !== "svg") select(p);
+  });
+  $("btnDel").addEventListener("click", () => {
+    if(!sel) return;
+    if(!confirm("删除「" + elLabel(sel) + "」？（Ctrl+Z 可撤销）")) return;
+    snapshot();
+    sel.remove();
+    sel = null; fillPanel(); buildParts();
+  });
+  $("btnApply").addEventListener("click", () => {
+    if(!sel) return;
+    const t = document.createElement("template");
+    t.innerHTML = $("dataTa").value.trim();
+    const node = t.content.firstElementChild;
+    if(!node){ alert("数据格式不对，没法解析。"); return; }
+    snapshot();
+    sel.replaceWith(node);
+    select(node);
+    buildParts();
+  });
+  $("btnAddCircle").addEventListener("click", () => addShape("circle"));
+  $("btnAddRect").addEventListener("click", () => addShape("rect"));
+  function addShape(tag){
+    snapshot();
+    const parent = sel ? (sel.tagName.toLowerCase() === "g" ? sel : sel.parentNode) : (svg().querySelector("#pp-act") || svg());
+    const el = document.createElementNS(SVGNS, tag);
+    if(tag === "circle"){ el.setAttribute("cx", 100); el.setAttribute("cy", 100); el.setAttribute("r", 8); }
+    else { el.setAttribute("x", 90); el.setAttribute("y", 90); el.setAttribute("width", 20); el.setAttribute("height", 14); el.setAttribute("rx", 4); }
+    el.setAttribute("fill", "#EA7A45");
+    parent.appendChild(el);
+    buildParts(); select(el);
+  }
+  $("btnUndo").addEventListener("click", undo);
+  $("btnReset").addEventListener("click", async () => {
+    if(!confirm("放弃当前修改，还原成内置画稿？（导出文件不受影响）")) return;
+    await Puppet.mount($("stage"), { builtin: true });
+    sel = null; undoStack = [];
+    resetWorn(); fillPanel(); buildParts(); updateBadge();
+  });
+  $("btnExport").addEventListener("click", () => {
+    /* 克隆一份去掉选择框再导出 */
+    const clone = svg().cloneNode(true);
+    const box = clone.querySelector("#ed-selbox");
+    if(box) box.remove();
+    clone.classList.remove("blink");
+    const out = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n' + out], { type: "image/svg+xml" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "puppet-custom.svg";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  });
+  $("btnImport").addEventListener("click", () => $("fileIn").click());
+  $("fileIn").addEventListener("change", e => {
+    const f = e.target.files[0];
+    if(!f) return;
+    f.text().then(txt => {
+      snapshot();
+      $("stage").innerHTML = txt;
+      Puppet.reattach($("stage"));
+      sel = null; resetWorn(); fillPanel(); buildParts(); updateBadge();
+    });
+    e.target.value = "";
+  });
+
+  /* 表情 / 试穿 / 动作（编辑中随时预览效果） */
+  const worn = { head: "hat", body: "coat", acc: { scarf: false, glasses: false } };
+  function resetWorn(){ worn.head = "hat"; worn.body = "coat"; worn.acc = { scarf: false, glasses: false }; Puppet.setWorn(worn); }
+  $("faces").addEventListener("click", e => { const f = e.target.dataset.face; if(f) Puppet.setFace(f); });
+  $("wear").addEventListener("click", e => {
+    const t = e.target.dataset.toggle, b = e.target.dataset.body;
+    if(t === "hat") worn.head = worn.head === "hat" ? "none" : "hat";
+    else if(t) worn.acc[t] = !worn.acc[t];
+    else if(b) worn.body = b;
+    Puppet.setWorn(worn);
+  });
+  $("acts").addEventListener("click", e => { const a = e.target.dataset.act; if(a) Puppet.play(a); });
+  document.addEventListener("keydown", e => {
+    if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+    const a = { w: "wave", j: "jump", p: "poke", s: "sleep" }[e.key];
+    if(a) Puppet.play(a);
+  });
+
+  function updateBadge(){
+    const custom = Puppet.source() === "custom";
+    $("srcBadge").textContent = custom ? "自定义画稿（assets/companion/puppet-custom.svg）" : "内置画稿";
+    $("srcBadge").style.color = custom ? "#2F7A6C" : "#5a5a5a";
+  }
+
+  /* 启动：优先载入现有自定义画稿，方便接着改 */
+  Puppet.mount($("stage")).then(() => { buildParts(); fillPanel(); updateBadge(); });
+  window.Ed = { select, snapshot, undo };   /* 控制台可用；测试也用 */
+})();
+</script>
+</body>
+</html>
