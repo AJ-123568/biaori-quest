@@ -6,12 +6,19 @@
   const COOLDOWN_MS = 4000;          /* 答题类事件的最小间隔，防止刷屏 */
   const CORRECT_RATE = 0.35;         /* 答对台词的触发概率 */
   const IDLE_MS = 90000;             /* 无操作多久触发闲置彩蛋 */
+  /* 事件→动作默认表（可被 config/companion.json 的 puppet.eventAction 覆盖） */
+  const ACT_DEFAULTS = {
+    greet: "wave", "answer-correct": "jump", combo5: "jump",
+    "quest-clear": "jump", "quest-perfect": "jump",
+    "answer-wrong": "angry", "quest-bad": "angry", idle: "sleep", poke: "poke"
+  };
 
   let cfg = null, shown = false, curAudio = null, lastFired = 0, idleTimer = null;
   let hasGesture = false, pendingDeferred = null;
   let playing = false, playWaiters = [];   /* 说话状态 + 排队回调：读音等伴侣说完再播 */
   function notifyDone(){
     playing = false;
+    Puppet.play(null);   /* 说话结束，停掉弹头动作 */
     const ws = playWaiters; playWaiters = [];
     ws.forEach(f => f());
   }
@@ -51,6 +58,8 @@
       }
     });
     bubble.addEventListener("click", () => hideBubble());
+    /* 戳一下（非拖动的单击）：随机反应动作 + poke 台词 */
+    sprite.addEventListener("click", () => { Puppet.play("poke"); fire("poke"); });
     makeDraggable();
     restorePos();
   }
@@ -158,6 +167,7 @@
     bubble.textContent = line.text;
     bubble.classList.toggle("jp", line.lang === "ja");
     bubble.hidden = false;
+    Puppet.play("talk");   /* 说话时轻轻弹头（与事件动作分层，不冲突） */
     /* 音频优先：按 id 自动找 audio/companion/<id>.wav（audio 字段可覆盖路径），加载失败回落 TTS */
     const url = (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
     const a = new Audio(url);
@@ -179,7 +189,7 @@
 
   function fire(ev){
     if(!cfg || !shown || isOff()) return;
-    const soft = ev === "answer-correct" || ev === "answer-wrong" || ev === "combo5";
+    const soft = ev === "answer-correct" || ev === "answer-wrong" || ev === "combo5" || ev === "poke";
     const now = Date.now();
     if(soft && now - lastFired < COOLDOWN_MS) return;
     if(ev === "answer-correct" && Math.random() > CORRECT_RATE) return;
@@ -188,6 +198,8 @@
     lastFired = now;
     resetIdle();
     setExpression(ev);
+    const acts = Object.assign(ACT_DEFAULTS, (cfg.puppet && cfg.puppet.eventAction) || {});
+    Puppet.play(acts[ev] || null);
     playLine(line);
   }
 

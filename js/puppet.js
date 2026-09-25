@@ -5,6 +5,7 @@
   const SVG = `
 <svg class="puppet" viewBox="0 0 200 234" xmlns="http://www.w3.org/2000/svg" aria-label="中也">
   <ellipse id="pp-shadow" cx="100" cy="225" rx="44" ry="7" fill="rgba(35,40,43,.16)"/>
+  <g id="pp-act">
   <g id="pp-all">
 
     <g id="pp-o-coat" display="none">
@@ -144,6 +145,13 @@
       </g>
     </g>
 
+    <g id="pp-zzz" display="none">
+      <text x="148" y="52" font-size="15" font-weight="700" fill="#8a8a92">z</text>
+      <text x="159" y="41" font-size="12" font-weight="700" fill="#96969e">z</text>
+      <text x="168" y="32" font-size="10" font-weight="700" fill="#a2a2aa">z</text>
+    </g>
+
+  </g>
   </g>
 </svg>`;
 
@@ -155,7 +163,7 @@
     idle:   { eyes: "sleepy", mouth: "sleepy", brows: "normal" }
   };
 
-  let root = null, face = "normal", blinkTimer = null;
+  let root = null, face = "normal", blinkTimer = null, actTimer = null, sleepTimer = null, fidgetTimer = null;
   const $ = id => root ? root.querySelector("#" + id) : null;
   /* SVG 元素不认 HTML 的 hidden 属性，用 display 属性控制显隐 */
   function show(id, on){
@@ -200,6 +208,52 @@
     }, 2800 + Math.random() * 3200);
   }
 
+  /* ---------- 动作系统 ---------- */
+  const ACT_MS = { jump: 700, angry: 1100, poke: 420, wave: 1800, look: 1900, hip: 2200, sway: 2700 };
+  const ACT_KEYS = ["act-jump","act-angry","act-poke","act-wave","act-look","act-hip","act-sway","act-sleep"];
+  /* talk 与一次性动作并存（说话弹头+身体动作不冲突）；一次性动作互相顶替 */
+  function play(name){
+    if(!root) return;
+    if(name === "talk"){
+      root.classList.remove("act-talk");
+      void root.getBoundingClientRect();   /* 强制重排，让连播的动画能重新开始 */
+      root.classList.add("act-talk");
+      return;
+    }
+    if(name === null){
+      root.classList.remove("act-talk");
+      return;
+    }
+    clearTimeout(actTimer);
+    clearTimeout(sleepTimer);
+    root.classList.remove(...ACT_KEYS);
+    show("pp-zzz", false);
+    if(name === "sleep"){
+      root.classList.add("act-sleep");
+      show("pp-zzz", true);
+      sleepTimer = setTimeout(() => {
+        if(!root) return;
+        root.classList.remove("act-sleep");
+        show("pp-zzz", false);
+        if(face === "idle") setFace("normal");
+      }, 8000);
+      return;
+    }
+    root.classList.add("act-" + name);
+    actTimer = setTimeout(() => { if(root) root.classList.remove("act-" + name); }, ACT_MS[name] || 1000);
+  }
+
+  /* 待机小动作：每 20~40 秒随机来一个（说话/打盹时不打扰） */
+  function scheduleFidget(){
+    clearTimeout(fidgetTimer);
+    fidgetTimer = setTimeout(() => {
+      if(root && !root.classList.contains("act-talk") && !root.classList.contains("act-sleep")){
+        play(["look", "hip", "sway"][Math.floor(Math.random() * 3)]);
+      }
+      scheduleFidget();
+    }, 20000 + Math.random() * 20000);
+  }
+
   function mount(container){
     if(!container || root) return root;
     container.innerHTML = SVG;
@@ -207,8 +261,9 @@
     setFace("normal");
     setWorn({});
     scheduleBlink();
+    scheduleFidget();
     return root;
   }
 
-  window.Puppet = { mount, setFace, setWorn };
+  window.Puppet = { mount, setFace, setWorn, play };
 })();

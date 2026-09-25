@@ -15,7 +15,7 @@
     "日语台词里汉字读音容易念错时，把读音写成假名再合成（例：汚濁→おだく）"
   ],
   "puppet": {
-    "note": "右下角小人是代码手绘的 Q 版 SVG（js/puppet.js），不用图片文件；衣服配色以后走 config/wardrobe.json。这里只配事件→表情映射，可选值：normal=平常 | happy=开心 | angry=生气 | idle=犯困。",
+    "note": "右下角小人是代码手绘的 Q 版 SVG（js/puppet.js），不用图片文件；衣服配色以后走 config/wardrobe.json。eventFace=事件→表情（normal/happy/angry/idle），eventAction=事件→动作（wave=挥手 jump=小跳 angry=跺脚 poke=被戳 sleep=打盹 look/hip/sway=待机小动作（hip=叉腰）），两行都可以随意改。",
     "eventFace": {
       "greet": "normal",
       "answer-correct": "happy",
@@ -24,7 +24,19 @@
       "quest-perfect": "happy",
       "answer-wrong": "angry",
       "quest-bad": "angry",
-      "idle": "idle"
+      "idle": "idle",
+      "poke": "angry"
+    },
+    "eventAction": {
+      "greet": "wave",
+      "answer-correct": "jump",
+      "combo5": "jump",
+      "quest-clear": "jump",
+      "quest-perfect": "jump",
+      "answer-wrong": "angry",
+      "quest-bad": "angry",
+      "idle": "sleep",
+      "poke": "poke"
     }
   },
   "lines": [
@@ -53,6 +65,9 @@
     { "id": "bad-04", "event": "quest-bad", "text": "今回はこれくらいにしておこう。次で取り返せよ。", "lang": "ja" },
 
     { "id": "idle-03", "event": "idle", "text": "……暇だなあ。", "lang": "ja" },
-    { "id": "idle-04", "event": "idle", "text": "熱が出るぞ、ぼーっとしてると。……さあ、次。", "lang": "ja" }
+    { "id": "idle-04", "event": "idle", "text": "熱が出るぞ、ぼーっとしてると。……さあ、次。", "lang": "ja" },
+
+    { "id": "poke-01", "event": "poke", "text": "あ？　なんだよ、急に。", "lang": "ja" },
+    { "id": "poke-02", "event": "poke", "text": "触るなよ。……まあ、別にいいけど。", "lang": "ja" }
   ]
 }

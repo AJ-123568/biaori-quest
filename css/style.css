@@ -358,6 +358,32 @@ button{font:inherit;cursor:pointer;}
 @keyframes pp-breathe{from{transform:scaleY(1);}to{transform:scaleY(.982);}}
 #pp-eyes-open{transform-box:fill-box;transform-origin:50% 50%;transition:transform .07s ease;}
 .puppet.blink #pp-eyes-open{transform:scaleY(.12);}
+
+/* ---------- 小人动作 ---------- */
+#pp-act,#pp-head,#pp-armR,#pp-armL,#pp-zzz{transform-box:fill-box;}
+#pp-act{transform-origin:50% 100%;}
+#pp-head{transform-origin:50% 92%;}
+#pp-armR{transform-origin:82% 5%;}
+.puppet.act-talk #pp-head{animation:pp-talk .46s ease-in-out infinite alternate;}
+@keyframes pp-talk{from{transform:rotate(-2.5deg);}to{transform:rotate(2.5deg);}}
+.puppet.act-jump #pp-act{animation:pp-jump .7s ease-in-out;}
+@keyframes pp-jump{0%,55%,100%{transform:translateY(0);}30%{transform:translateY(-16px);}78%{transform:translateY(-9px);}}
+.puppet.act-angry #pp-act{animation:pp-angry .55s ease-in-out 2;}
+@keyframes pp-angry{20%{transform:translateX(-4px) rotate(-2deg);}60%{transform:translateX(4px) rotate(2deg);}}
+.puppet.act-poke #pp-act{animation:pp-poke .42s ease;}
+@keyframes pp-poke{40%{transform:scale(.93,.95);}70%{transform:scale(1.02,1.01);}}
+.puppet.act-wave #pp-armR{animation:pp-wave 1.8s ease-in-out;}
+@keyframes pp-wave{0%,100%{transform:rotate(0);}25%,65%{transform:rotate(-125deg);}45%{transform:rotate(-105deg);}}
+.puppet.act-look #pp-head{animation:pp-look 1.9s ease-in-out;}
+@keyframes pp-look{30%{transform:rotate(6deg);}65%{transform:rotate(-5deg);}}
+.puppet.act-hip #pp-armR{animation:pp-hip 2.2s ease-in-out;}
+@keyframes pp-hip{0%,100%{transform:rotate(0);}40%,70%{transform:rotate(-32deg);}}
+.puppet.act-sway #pp-act{animation:pp-sway 2.7s ease-in-out;}
+@keyframes pp-sway{30%{transform:rotate(2deg);}70%{transform:rotate(-2deg);}}
+.puppet.act-sleep #pp-head{animation:pp-nod 3s ease-in-out infinite alternate;}
+@keyframes pp-nod{from{transform:rotate(3deg);}to{transform:rotate(8deg);}}
+.puppet.act-sleep #pp-zzz{animation:pp-zfloat 2.4s ease-in-out infinite;}
+@keyframes pp-zfloat{0%,100%{opacity:.25;}50%{opacity:1;}}
 .companion-close{
   position:absolute;top:2px;right:2px;
   width:22px;height:22px;border-radius:50%;
@@ -380,4 +406,5 @@ button{font:inherit;cursor:pointer;}
 }
 @media (prefers-reduced-motion:reduce){
   #pp-all{animation:none;}
+  .puppet #pp-act,.puppet #pp-head,.puppet #pp-armR,.puppet #pp-armL,.puppet #pp-zzz{animation:none !important;}
 }

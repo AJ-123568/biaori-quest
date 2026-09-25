@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>中也小人 预览 · puppet preview</title>
+<link rel="stylesheet" href="css/style.css">
 <style>
   body{font-family:"Noto Sans SC",system-ui,sans-serif;background:#f3efe6;margin:0;padding:24px;display:flex;flex-direction:column;align-items:center;gap:18px;}
   h1{font-size:16px;color:#5a5a5a;font-weight:500;margin:0;}
@@ -30,6 +31,17 @@
   <button data-toggle="scarf">围巾</button>
   <button data-toggle="glasses">眼镜</button>
 </div>
+<div class="row" id="acts">
+  <b style="font-size:13px;color:#888">动作：</b>
+  <button data-act="wave">挥手</button>
+  <button data-act="jump">小跳</button>
+  <button data-act="angry">跺脚</button>
+  <button data-act="poke">被戳</button>
+  <button data-act="look">张望</button>
+  <button data-act="hip">叉腰</button>
+  <button data-act="sway">摇摆</button>
+  <button data-act="sleep">打盹</button>
+</div>
 <p class="tip">调试用预览页，不影响游戏；游戏内通过商店购买 + 侧边栏衣橱换装。</p>
 <script src="js/puppet.js"></script>
 <script>
@@ -44,6 +56,9 @@
     else if(t === "coat") worn.body = worn.body === "coat" ? "vest" : "coat";
     else worn.acc[t] = !worn.acc[t];
     Puppet.setWorn(worn);
+  });
+  document.getElementById("acts").addEventListener("click", e => {
+    const a = e.target.dataset.act; if(a) Puppet.play(a);
   });
 </script>
 </body>
