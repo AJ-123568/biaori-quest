@@ -13,6 +13,7 @@
 <!-- ============ 左侧功能边栏 ============ -->
 <aside class="sidebar" id="sideBar">
   <button class="side-item" id="shopBtn" title="商店"><span class="si-ico">🛍</span><span class="si-tx">商店</span></button>
+  <button class="side-item" id="wardrobeBtn" title="衣橱"><span class="si-ico">👗</span><span class="si-tx">衣橱</span></button>
 </aside>
 
 <div class="wrap">
@@ -123,7 +124,21 @@
       <div class="shop-info"><b>跳过券 🎫</b><span>跳过当前词（记为答错）</span></div>
       <button class="btn" id="buySkipBtn">🪙 30</button>
     </div>
-    <div class="shop-note" id="shopNote">主题商店稍后开放</div>
+    <div class="shop-sep"></div>
+    <div class="shop-item">
+      <div class="shop-info"><b>服装 👗</b><span>给右下角的小人添置几件吧</span></div>
+    </div>
+    <div id="shopClothes"></div>
+    <div class="shop-note" id="shopNote">衣服点击即买 · 买完自动上身</div>
+  </div>
+</div>
+
+<!-- ============ 衣橱 ============ -->
+<div class="shop-mask" id="wardrobeMask" hidden>
+  <div class="shop">
+    <div class="shop-head"><b>衣橱</b><button class="shop-close" id="wardrobeCloseBtn">✕</button></div>
+    <div id="wardrobeBody"></div>
+    <div class="shop-note">衣服在商店购买 · 换装立即生效</div>
   </div>
 </div>
 

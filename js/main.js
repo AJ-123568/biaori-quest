@@ -7095,7 +7095,7 @@ function buyTicket(kind, price){
   if(store.eco.coins < price){
     const note = $("shopNote");
     note.textContent = "金币不足（需要 " + price + "）";
-    setTimeout(() => { note.textContent = "主题商店稍后开放"; }, 1600);
+    setTimeout(() => { note.textContent = "衣服点击即买 · 买完自动上身"; }, 1600);
     return;
   }
   store.eco.coins -= price; store.eco[kind]++;
@@ -7109,6 +7109,134 @@ $("buySkipBtn").addEventListener("click", () => buyTicket("skip", 30));
 $("resetEcoBtn").addEventListener("click", () => {
   store.eco = Object.assign({}, ECO_DEFAULT);
   saveStore(); refreshEco();
+});
+
+/* ---------- 衣橱（P3.5）：config/wardrobe.json 驱动，商店购买 + 换装 ---------- */
+const WR_FREE = { head: "hat", body: "coat" };   /* 各槽位的免费默认穿戴 */
+let wrItems = null;   /* wardrobe.json 的 items；fetch 失败（如 file://）则衣橱入口隐藏 */
+function wrState(){
+  const w = store.wardrobe = store.wardrobe || {};
+  w.owned = Array.isArray(w.owned) ? w.owned : [];
+  w.worn = w.worn || {};
+  if(!w.worn.head) w.worn.head = WR_FREE.head;
+  if(!w.worn.body) w.worn.body = WR_FREE.body;
+  if(!Array.isArray(w.worn.acc)) w.worn.acc = [];
+  return w;
+}
+function wrOwned(id, st){
+  const it = wrItems.find(x => x.id === id);
+  return !!(it && (it.owned || st.owned.includes(id)));
+}
+function wrApply(){
+  if(!window.Puppet) return;
+  const st = wrState();
+  const acc = {};
+  st.worn.acc.forEach(id => acc[id] = true);
+  Puppet.setWorn({ head: st.worn.head, body: st.worn.body, acc });
+}
+function wrEquip(id){
+  const st = wrState();
+  const it = wrItems.find(x => x.id === id);
+  if(!it || !wrOwned(id, st)) return;
+  if(it.slot === "acc"){
+    const i = st.worn.acc.indexOf(id);
+    if(i >= 0) st.worn.acc.splice(i, 1); else st.worn.acc.push(id);
+  } else {
+    st.worn[it.slot] = id;
+  }
+  saveStore(); wrApply(); renderWardrobe();
+}
+function buyClothes(id){
+  const st = wrState();
+  const it = wrItems.find(x => x.id === id);
+  if(!it || wrOwned(id, st)) return;
+  if(store.eco.coins < it.price){
+    const note = $("shopNote");
+    note.textContent = "金币不足（需要 " + it.price + "）";
+    setTimeout(() => { note.textContent = "衣服点击即买 · 买完自动上身"; }, 1600);
+    return;
+  }
+  store.eco.coins -= it.price;
+  st.owned.push(id);
+  if(it.slot === "acc"){ if(!st.worn.acc.includes(id)) st.worn.acc.push(id); }
+  else st.worn[it.slot] = id;   /* 买完即上身 */
+  saveStore(); refreshEco("Coins"); wrApply();
+  renderShopClothes();
+}
+function renderShopClothes(){
+  const box = $("shopClothes");
+  if(!box) return;
+  box.innerHTML = "";
+  const st = wrState();
+  const onSale = wrItems.filter(it => it.ready && it.price > 0 && !wrOwned(it.id, st));
+  onSale.forEach(it => {
+    const row = document.createElement("div");
+    row.className = "shop-item";
+    row.innerHTML = '<div class="shop-info"><b>' + esc(it.name) + '</b><span>' + esc(it.desc || "") + '</span></div>';
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.textContent = "🪙 " + it.price;
+    btn.addEventListener("click", () => buyClothes(it.id));
+    row.appendChild(btn);
+    box.appendChild(row);
+  });
+  if(!onSale.length){
+    const p = document.createElement("p");
+    p.className = "shop-note";
+    p.textContent = wrItems.some(it => it.price > 0 && !wrOwned(it.id, wrState()))
+      ? "新装制作中，敬请期待" : "全部衣服都已入手，谢谢惠顾！";
+    box.appendChild(p);
+  }
+}
+function renderWardrobe(){
+  const box = $("wardrobeBody");
+  if(!box) return;
+  box.innerHTML = "";
+  const st = wrState();
+  [["head", "头部"], ["body", "服装"], ["acc", "配饰（可叠穿）"]].forEach(([slot, label]) => {
+    const items = wrItems.filter(it => it.slot === slot && (it.ready || wrOwned(it.id, st)));
+    if(!items.length) return;
+    const h = document.createElement("div");
+    h.className = "wr-slot"; h.textContent = label;
+    box.appendChild(h);
+    const chips = document.createElement("div");
+    chips.className = "wr-chips";
+    items.forEach(it => {
+      const c = document.createElement("button");
+      c.className = "wr-chip";
+      const owned = wrOwned(it.id, st);
+      const on = owned && (slot === "acc" ? st.worn.acc.includes(it.id) : st.worn[slot] === it.id);
+      if(on) c.classList.add("on");
+      if(!owned) c.classList.add("locked");
+      c.textContent = it.name + (it.price > 0 && !owned ? " · 🪙" + it.price : "");
+      c.title = owned ? (on ? "点击脱下" : "点击穿上") : "还没拥有：去商店购买";
+      c.addEventListener("click", () => {
+        if(owned){ wrEquip(it.id); }
+        else { $("wardrobeMask").hidden = true; $("shopMask").hidden = false; renderShopClothes(); }
+      });
+      chips.appendChild(c);
+    });
+    box.appendChild(chips);
+  });
+}
+$("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); $("wardrobeMask").hidden = false; });
+$("wardrobeCloseBtn").addEventListener("click", () => { $("wardrobeMask").hidden = true; });
+$("wardrobeMask").addEventListener("click", e => { if(e.target === $("wardrobeMask")) $("wardrobeMask").hidden = true; });
+
+fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
+  wrItems = json.items || [];
+  const st = wrState();
+  /* 上次存的穿戴若已不在架（ready 被关掉），回落到免费默认，避免小人隐形 */
+  ["head", "body"].forEach(slot => {
+    const cur = wrItems.find(x => x.id === st.worn[slot]);
+    if(!cur || !cur.ready) st.worn[slot] = WR_FREE[slot];
+  });
+  st.worn.acc = st.worn.acc.filter(id => { const it = wrItems.find(x => x.id === id); return it && it.ready; });
+  wrApply();
+  renderShopClothes();
+}).catch(() => {
+  const wb = $("wardrobeBtn");
+  if(wb) wb.style.display = "none";
 });
 
 /* ---------- 编辑单词 ---------- */

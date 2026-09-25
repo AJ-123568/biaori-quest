@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "衣橱配置：商店购买 + 侧边栏衣橱换装的唯一数据源（main.js 读，puppet.js 渲染）。加新衣服 = ① js/puppet.js 画对应图层 ② 这里加一条并把 ready 设为 true。price 填 0 或省略 owned:true 即免费自带。",
+  "items": [
+    { "id": "hat",     "slot": "head", "name": "黑帽",        "price": 0, "owned": true, "ready": true },
+    { "id": "nohat",   "slot": "head", "name": "脱帽",        "price": 0, "owned": true, "ready": true },
+    { "id": "coat",    "slot": "body", "name": "黑长大衣",    "price": 0, "owned": true, "ready": true },
+    { "id": "vest",    "slot": "body", "name": "马甲X带",     "price": 0, "owned": true, "ready": true },
+
+    { "id": "hoodie",  "slot": "body", "name": "红色连帽卫衣", "price": 800,  "desc": "私服风格，和黑大衣反差拉满", "ready": false },
+    { "id": "uniform", "slot": "body", "name": "学园校服",     "price": 1200, "desc": "西装外套+领带，呼应学园文野", "ready": false },
+    { "id": "yukata",  "slot": "body", "name": "浴衣",         "price": 1500, "desc": "夏祭り经典造型", "ready": false },
+
+    { "id": "scarf",   "slot": "acc",  "name": "红围巾",      "price": 400, "desc": "可叠在任何衣服上", "ready": true },
+    { "id": "glasses", "slot": "acc",  "name": "圆框眼镜",    "price": 400, "desc": "官方设定图同款，可叠穿", "ready": true }
+  ]
+}
