@@ -6620,27 +6620,47 @@ function startQuest(lesson, diff){
   $("diffMask").hidden = true;
   startSession(DATA.lessons[lesson - 1].words.slice(), { lesson, diff });
 }
+const QNODE_ICONS = {   /* 每关图标：填 课号:"表情/文字"，如 1:"🍣"；未填的关显示课号 */
+};
+function addTree(svg, x, y, s, dark){
+  const mk = (dx, dy, w, h, fill) => {
+    const p = document.createElementNS(SVG_NS, "polygon");
+    p.setAttribute("points", (x+dx)+","+(y+dy-h)+" "+(x+dx-w)+","+(y+dy)+" "+(x+dx+w)+","+(y+dy));
+    p.setAttribute("fill", fill);
+    svg.appendChild(p);
+  };
+  mk(-17*s, 8*s, 13*s, 22*s, dark ? "#63C1B0" : "#2E8B7E");
+  mk(2*s, 0, 17*s, 30*s, dark ? "#2E8B7E" : "#63C1B0");
+}
 function buildMap(){
   const box = $("qmapBox");
   box.innerHTML = "";
   const W = box.clientWidth || 640;
-  const xs = [0.18, 0.5, 0.82, 0.5], gap = 104, top = 30, size = 64;
-  const H = top + (DATA.lessons.length - 1) * gap + size + 90;
+  const gap = 116, top = 64;
+  const H = top + (DATA.lessons.length - 1) * gap + 90;
   box.style.height = H + "px";
-  const pts = DATA.lessons.map((L, i) => ({ x: W * xs[i % 4], y: top + i * gap + size / 2 }));
+  const pts = DATA.lessons.map((L, i) => ({ x: W * (i % 2 ? 0.78 : 0.22), y: top + i * gap }));
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("class", "qmap-path");
   svg.setAttribute("width", W);
   svg.setAttribute("height", H);
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  if(W >= 560){   /* 窄屏不画小树，避免压到节点 */
+    for(let i = 0; i < DATA.lessons.length - 1; i++){
+      addTree(svg, i % 2 ? W * 0.095 : W * 0.905, top + i * gap + gap / 2, i % 2 ? 0.8 : 1.05, i % 3 !== 0);
+    }
+  }
   let d = "M " + pts[0].x + " " + pts[0].y;
   for(let i = 1; i < pts.length; i++){
     const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
     d += " C " + a.x + " " + my + ", " + b.x + " " + my + ", " + b.x + " " + b.y;
   }
-  const p = document.createElementNS(SVG_NS, "path");
-  p.setAttribute("d", d);
-  svg.appendChild(p);
+  ["qmap-road", "qmap-dash"].forEach(cls => {
+    const p = document.createElementNS(SVG_NS, "path");
+    p.setAttribute("d", d);
+    p.setAttribute("class", cls);
+    svg.appendChild(p);
+  });
   box.appendChild(svg);
   let nowLesson = 0;
   DATA.lessons.forEach(L => { if(!nowLesson && questUnlocked(L.lesson) && !bestStars(L.lesson)) nowLesson = L.lesson; });
@@ -6648,11 +6668,17 @@ function buildMap(){
     const un = questUnlocked(L.lesson), best = bestStars(L.lesson);
     const wrap = document.createElement("div");
     wrap.className = "qnode " + (!un ? "locked" : best ? "done" : "open") + (L.lesson === nowLesson ? " now" : "") + (best === 3 ? " s3" : "");
-    wrap.style.left = (pts[i].x - size / 2) + "px";
-    wrap.style.top = (pts[i].y - size / 2) + "px";
+    wrap.style.left = pts[i].x + "px";
+    wrap.style.top = (pts[i].y - 56) + "px";
+    const label = document.createElement("span");
+    label.className = "qlabel";
+    label.textContent = "第" + L.lesson + "关";
     const c = document.createElement("button");
     c.className = "qc";
-    c.textContent = un ? L.lesson : "🔒";
+    const qi = document.createElement("span");
+    qi.className = "qi";
+    qi.textContent = un ? (QNODE_ICONS[L.lesson] || L.lesson) : "🔒";
+    c.appendChild(qi);
     c.addEventListener("click", () => {
       if(un){ openDiff(L.lesson); }
       else { wrap.classList.remove("shake"); void wrap.offsetWidth; wrap.classList.add("shake"); }
@@ -6660,6 +6686,7 @@ function buildMap(){
     const st = document.createElement("span");
     st.className = "st";
     st.textContent = un ? starStr(best) : "";
+    wrap.appendChild(label);
     wrap.appendChild(c);
     wrap.appendChild(st);
     box.appendChild(wrap);
@@ -6668,8 +6695,8 @@ function buildMap(){
   goal.className = "qgoal";
   goal.textContent = "🏁";
   const last = pts[pts.length - 1];
-  goal.style.left = (last.x - 16) + "px";
-  goal.style.top = (last.y + size / 2 + 10) + "px";
+  goal.style.left = last.x + "px";
+  goal.style.top = (last.y + 42) + "px";
   box.appendChild(goal);
   const cur = box.querySelector(".qnode.now");
   if(cur) setTimeout(() => cur.scrollIntoView({ block: "center" }), 60);

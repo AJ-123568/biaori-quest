@@ -195,26 +195,55 @@ button{font:inherit;cursor:pointer;}
 /* ---------- 闯关地图（P2） ---------- */
 .btn.quest-entry{color:#B07F1F;border-color:#E3C98F;}
 .btn.quest-entry:hover{border-color:#D9A441;color:#8F6A16;}
-.qmap{position:relative;margin:10px 0 8px;}
-.qmap-path{position:absolute;left:0;top:0;}
-.qmap-path path{fill:none;stroke:#C9D2CB;stroke-width:3;stroke-dasharray:1 10;stroke-linecap:round;}
-.qnode{position:absolute;width:64px;text-align:center;}
-.qnode .qc{
-  width:64px;height:64px;border-radius:50%;border:2px solid var(--line);
-  background:var(--panel);color:var(--ink);font-size:18px;font-weight:700;
-  cursor:pointer;box-shadow:0 3px 8px rgba(35,40,43,.10);font-family:inherit;
+#questMap{
+  background:linear-gradient(180deg,#58BBA7,#43A090);
+  border-radius:18px;padding:16px 14px 20px;
+  box-shadow:0 12px 28px rgba(38,64,95,.15);
 }
-.qnode.open .qc{border-color:var(--ai);color:var(--ai);}
-.qnode.now .qc{animation:qpulse 1.8s ease-in-out infinite;}
-.qnode.done .qc{border-color:var(--midori);background:var(--midori-soft);color:var(--midori);}
-.qnode.done.s3 .qc{border-color:#D9A441;background:#FBF3E1;color:#B07F1F;}
-.qnode.locked .qc{background:#F0F1F0;color:var(--muted);cursor:not-allowed;font-size:15px;}
-.qnode .st{display:block;margin-top:4px;font-size:11px;letter-spacing:1px;color:var(--line);}
-.qnode.done .st{color:#D9A441;}
+#questMap .drill-top{color:rgba(255,255,255,.95);font-weight:600;}
+#questMap .drill-top .quit{color:#fff;background:rgba(255,255,255,.16);border-radius:999px;padding:4px 12px;font-weight:600;}
+#questMap .drill-top .quit:hover{color:#fff;background:rgba(255,255,255,.28);}
+#questMap .note{color:rgba(255,255,255,.85);}
+.qmap{position:relative;margin:6px 0 4px;}
+.qmap-path{position:absolute;left:0;top:0;}
+.qmap-path .qmap-road{fill:none;stroke:#2E8B7E;stroke-width:34;stroke-linecap:round;stroke-linejoin:round;}
+.qmap-path .qmap-dash{fill:none;stroke:#8ED2C3;stroke-width:3;stroke-dasharray:2 12;stroke-linecap:round;}
+.qnode{
+  position:absolute;width:76px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.qnode .qlabel{
+  font-size:13px;font-weight:700;color:#fff;letter-spacing:.05em;
+  text-shadow:0 1px 3px rgba(21,64,56,.4);white-space:nowrap;
+}
+.qnode.locked .qlabel{color:rgba(255,255,255,.72);}
+.qnode .qc{
+  width:64px;height:64px;border-radius:50%;border:none;padding:0;
+  background:#fff;cursor:pointer;font-family:inherit;
+  box-shadow:0 5px 12px rgba(21,64,56,.25);
+  display:grid;place-items:center;
+}
+.qnode .qi{
+  width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+  font-size:17px;font-weight:700;background:#E9F1EC;color:#2F7A6C;
+}
+.qnode.done .qi{background:#FAD55E;color:#B07F1F;}
+.qnode.done.s3 .qc{box-shadow:0 0 0 3px #FFE9A8,0 5px 12px rgba(21,64,56,.25);}
+.qnode.locked .qi{background:#DCE6E0;color:#93A39B;}
+.qnode.locked .qc{cursor:not-allowed;}
+.qnode .st{
+  font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.65);
+  text-shadow:0 1px 2px rgba(21,64,56,.3);
+}
+.qnode.done .st{color:#FFDF8E;}
 .qnode.shake .qc{animation:qshake .4s ease;}
+.qnode.now .qc{animation:qpulse 1.8s ease-in-out infinite;}
 @keyframes qshake{25%{transform:translateX(-4px)}50%{transform:translateX(4px)}75%{transform:translateX(-3px)}}
-@keyframes qpulse{50%{box-shadow:0 0 0 9px var(--ai-soft);}}
-.qgoal{position:absolute;font-size:22px;}
+@keyframes qpulse{50%{box-shadow:0 0 0 10px rgba(255,255,255,.30),0 5px 12px rgba(21,64,56,.25);}}
+.qgoal{position:absolute;font-size:24px;transform:translateX(-50%);filter:drop-shadow(0 3px 5px rgba(21,64,56,.35));}
+@media (prefers-reduced-motion:reduce){
+  .qnode.now .qc,.qnode.shake .qc{animation:none;}
+}
 .qstars{text-align:center;font-size:30px;letter-spacing:6px;color:#D9A441;margin-top:14px;}
 .diff-right{display:flex;align-items:center;gap:10px;}
 .diff-right .dstars{font-size:13px;color:#D9A441;letter-spacing:1px;}
