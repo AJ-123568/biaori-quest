@@ -151,17 +151,17 @@ button{font:inherit;cursor:pointer;}
 .score{display:flex;gap:34px;align-items:baseline;padding:18px 4px;}
 .score .num{font-size:46px;font-weight:800;line-height:1;}
 .score .num.ok{color:var(--midori);}
-.score .lab{font-size:13px;color:var(--muted);margin-top:6px;}
+.score .lab{font-size:13px;color:var(--ink);margin-top:6px;}
 .wrong-list{margin-top:8px;}
 .wrong-list h3{font-size:14px;color:var(--shu);letter-spacing:.1em;margin-bottom:8px;}
 .wrow{
   display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;
   padding:9px 4px;border-bottom:1px solid var(--line);font-size:15px;
 }
-.wrow .l{font-size:11px;color:var(--muted);min-width:44px;}
+.wrow .l{font-size:11px;color:var(--ink);min-width:44px;}
 .wrow .k{font-weight:800;min-width:120px;}
-.wrow .m{color:var(--muted);font-size:13px;}
-.empty-note{color:var(--muted);font-size:14px;padding:10px 4px;}
+.wrow .m{color:var(--ink);font-size:13px;}
+.empty-note{color:var(--ink);font-size:14px;padding:10px 4px;}
 @media (max-width:480px){
   .masu .cell{width:44px;height:44px;font-size:22px;}
   .meaning{font-size:21px;}
