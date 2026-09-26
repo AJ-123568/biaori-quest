@@ -10,7 +10,11 @@
     "assets/chuuya/chuuya-05.jpg",
     "assets/chuuya/chuuya-06.jpg",
     "assets/chuuya/chuuya-07.jpg",
-    "assets/chuuya/chuuya-08.jpg"
+    "assets/chuuya/chuuya-08.jpg",
+    "assets/chuuya/chuuya-09.jpg",
+    "assets/chuuya/chuuya-10.jpg",
+    "assets/chuuya/chuuya-11.png",
+    "assets/chuuya/chuuya-12.png"
   ];
   const STAY = 6000;   /* 每张停留 */
   const OUT  = 1400;   /* 渐隐(0.35s延迟+0.95s过渡)+余量，之后移除旧图节点 */
@@ -27,7 +31,8 @@
     const im = new Image();
     im.src = IMGS[i]; im.alt = "";
     stack.appendChild(im);
-    requestAnimationFrame(() => requestAnimationFrame(() => im.classList.add("on")));
+    void im.offsetWidth;   /* 强制重排让 opacity:0 起步帧生效——后台标签页 rAF 不跑，不能用双 rAF 触发过渡 */
+    im.classList.add("on");
     if(cur){
       const old = cur;
       old.classList.remove("on"); old.classList.add("leaving");
