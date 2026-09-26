@@ -7007,12 +7007,14 @@ const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty"];
 function showView(sec){
   $("topbar").hidden = false; $("hud").hidden = false;
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
+  if(window.HomeStage) HomeStage.hide();
 }
 function showHome(){
   questRun = null; setWrong(false);   /* 回主界面即弃当前会话状态 */
   $("topbar").hidden = true; $("hud").hidden = true;
   SECTIONS.forEach(s => $(s).hidden = true);
   if(window.Companion) Companion.hide();
+  if(window.HomeStage) HomeStage.show();
 }
 $("backHomeBtn").addEventListener("click", showHome);
 function showPractice(){

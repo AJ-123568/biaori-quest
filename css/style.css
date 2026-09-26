@@ -306,6 +306,27 @@ button{font:inherit;cursor:pointer;}
   .side-item .si-tx{font-size:11px;}
 }
 
+/* ---------- 主页面图片轮播 ---------- */
+#homeStage{
+  position:fixed;top:0;bottom:0;left:var(--side-w);right:0;z-index:0;
+  overflow:hidden;cursor:pointer;background:var(--bg);
+  user-select:none;-webkit-user-select:none;
+}
+.hs-bg{
+  position:absolute;inset:-48px;background-size:cover;background-position:center;
+  filter:blur(36px);opacity:0;transition:opacity 1.3s ease;
+}
+.hs-bg.show{opacity:1;}
+.hs-stack{position:absolute;inset:2.5%;}
+.hs-stack img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+  opacity:0;transition:opacity 1.3s ease;
+  -webkit-user-drag:none;pointer-events:none;
+}
+.hs-stack img.on{opacity:1;}
+/* 旧图：新图先显，0.35s 后才开始渐隐（被盖住逐渐消失） */
+.hs-stack img.leaving{transition:opacity .95s ease .35s;}
+
 /* ---------- 闯关地图（P2） ---------- */
 #questMap{
   background:linear-gradient(180deg,#58BBA7,#43A090);
