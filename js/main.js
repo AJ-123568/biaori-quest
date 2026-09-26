@@ -7009,10 +7009,12 @@ function showView(sec){
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
 }
 function showHome(){
+  questRun = null; setWrong(false);   /* 回主界面即弃当前会话状态 */
   $("topbar").hidden = true; $("hud").hidden = true;
   SECTIONS.forEach(s => $(s).hidden = true);
   if(window.Companion) Companion.hide();
 }
+$("backHomeBtn").addEventListener("click", showHome);
 function showPractice(){
   setWrong(false);
   showView("setup"); refreshStart();
@@ -7039,7 +7041,7 @@ $("wrongClearBtn").addEventListener("click", function(){
 });
 $("quitBtn").addEventListener("click", () => {
   if(questRun){ questRun = null; showQuest(); }
-  else if(wrongMode){ wrongMode = false; showHome(); }
+  else if(wrongMode){ showHome(); }
   else showPractice();
 });
 $("hintBtn").addEventListener("click", hint);
@@ -7061,7 +7063,7 @@ $("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWr
 $("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
 $("backBtn").addEventListener("click", () => {
   if(questRun){ questRun = null; showQuest(); }
-  else if(wrongMode){ wrongMode = false; showHome(); }
+  else if(wrongMode){ showHome(); }
   else showPractice();
 });
 $("retryQuestBtn").addEventListener("click", () => { if(lastQuest) startQuest(lastQuest.lesson, lastQuest.diff); });

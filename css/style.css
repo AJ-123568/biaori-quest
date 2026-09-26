@@ -31,11 +31,19 @@ body{
   .wrap{margin-left:var(--side-w);max-width:none;}
 }
 header.top{
-  display:flex;align-items:baseline;justify-content:space-between;
+  display:flex;align-items:baseline;justify-content:flex-start;
   border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px;
 }
 header.top h1{font-size:20px;font-weight:700;letter-spacing:.02em;}
-header.top .sub{font-size:12px;color:var(--muted);}
+header.top .sub{font-size:12px;color:var(--muted);margin-left:auto;}
+/* 返回主页面箭头：无圆圈细线条，字号颜色与标题一致 */
+.home-back{
+  border:none;background:none;color:var(--ink);cursor:pointer;flex:none;
+  align-self:center;padding:2px 10px 2px 0;margin-right:2px;line-height:0;
+}
+.home-back svg{display:block;}
+.home-back:hover{color:var(--ai);}
+.home-back:focus-visible{outline:2px solid var(--ai);outline-offset:2px;}
 main section{margin-top:28px;}
 .note{font-size:13px;color:var(--muted);margin:10px 0 0;}
 
