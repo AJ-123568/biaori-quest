@@ -207,11 +207,10 @@ def main():
                 f'<path d="M{P(598,1058)[0]},{P(598,1058)[1]} Q{P(627,1070)[0]},{P(627,1070)[1]} '
                 f'{P(656,1058)[0]},{P(656,1058)[1]}" stroke="#7a3a30" stroke-width="{7*S:.0f}" fill="none" stroke-linecap="round"/>')
         if kind == "sleepy":
-            a0 = P(585, 1046); a1 = P(669, 1046)
+            # 小圆嘴(参考图): 小小的深色开口椭圆
+            ex, ey = P(627, 1050)
             return patch + (
-                f'<path d="M{a0[0]},{a0[1]} q{10*S:.0f},-{8*S:.0f} {20*S:.0f},0 q{10*S:.0f},{8*S:.0f} {20*S:.0f},0 '
-                f'q{10*S:.0f},-{8*S:.0f} {20*S:.0f},0 q{10*S:.0f},{8*S:.0f} {20*S:.0f},0" '
-                f'stroke="{LINE}" stroke-width="{8*S:.1f}" fill="none" stroke-linecap="round"/>')
+                f'<ellipse cx="{ex}" cy="{ey}" rx="{11*S:.1f}" ry="{8.5*S:.1f}" fill="#4a201a"/>')
         return ""
 
     zzz = "".join(
