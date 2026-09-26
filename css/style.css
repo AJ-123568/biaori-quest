@@ -306,7 +306,7 @@ button{font:inherit;cursor:pointer;}
   .side-item .si-tx{font-size:11px;}
 }
 
-/* ---------- 主页面图片轮播 ---------- */
+/* ---------- 主页面图片拼贴轮播 ---------- */
 #homeStage{
   position:fixed;top:0;bottom:0;left:var(--side-w);right:0;z-index:0;
   overflow:hidden;cursor:pointer;background:var(--bg);
@@ -317,15 +317,20 @@ button{font:inherit;cursor:pointer;}
   filter:blur(36px);opacity:0;transition:opacity 1.3s ease;
 }
 .hs-bg.show{opacity:1;}
-.hs-stack{position:absolute;inset:2.5%;}
-.hs-stack img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
-  opacity:0;transition:opacity 1.3s ease;
+.hs-stack{position:absolute;inset:0;}
+.hs-card{
+  position:absolute;display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity 1.1s ease;
+}
+.hs-card.on{opacity:1;}
+/* 被顶掉的旧卡：新图先显，0.3s 后才开始渐隐（被盖住逐渐消失） */
+.hs-card.leaving{transition:opacity .9s ease .3s;}
+.hs-card img{
+  display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+  background:#fff;padding:4px;border-radius:2px;
+  box-shadow:0 3px 14px rgba(35,40,43,.2);
   -webkit-user-drag:none;pointer-events:none;
 }
-.hs-stack img.on{opacity:1;}
-/* 旧图：新图先显，0.35s 后才开始渐隐（被盖住逐渐消失） */
-.hs-stack img.leaving{transition:opacity .95s ease .35s;}
 
 /* ---------- 闯关地图（P2） ---------- */
 #questMap{
