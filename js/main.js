@@ -7241,8 +7241,10 @@ function renderChuuya(){
     row.className = "shop-item";
     row.innerHTML = '<div class="shop-info"><b>' + esc(title) + '</b><span>' + esc(desc) + '</span></div>';
     const sw = document.createElement("button");
-    sw.className = "wr-chip" + (on ? " on" : "");
-    sw.textContent = on ? "开" : "关";
+    sw.type = "button";
+    sw.className = "chuuya-sw" + (on ? " on" : "");
+    sw.title = on ? "点击关闭" : "点击开启";
+    sw.setAttribute("aria-pressed", on ? "true" : "false");
     sw.addEventListener("click", () => { toggle(on); renderChuuya(); });
     row.appendChild(sw);
     box.appendChild(row);
