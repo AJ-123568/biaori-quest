@@ -2,6 +2,7 @@
 (function(){
   const CONFIG_URL = "config/companion.json";
   const OFF_KEY = "biaori1_companion_off";
+  const MUTE_KEY = "biaori1_companion_mute";
   const POS_KEY = "biaori1_companion_pos";
   const COOLDOWN_MS = 4000;          /* 答题类事件的最小间隔，防止刷屏 */
   const CORRECT_RATE = 0.35;         /* 答对台词的触发概率 */
@@ -134,6 +135,17 @@
   }
 
   function isOff(){ try{ return localStorage.getItem(OFF_KEY) === "1"; }catch(e){ return false; } }
+  /* 衣橱「中也」设置：开关 bot（✕按钮同款记忆位）与静音 */
+  function setOff(v){
+    try{ v ? localStorage.setItem(OFF_KEY, "1") : localStorage.removeItem(OFF_KEY); }catch(e){}
+    if(v){ hide(); }
+    else{ show(); if(cfg) fire("greet"); }   /* 召回时打个招呼 */
+  }
+  function isMute(){ try{ return localStorage.getItem(MUTE_KEY) === "1"; }catch(e){ return false; } }
+  function setMute(v){
+    try{ v ? localStorage.setItem(MUTE_KEY, "1") : localStorage.removeItem(MUTE_KEY); }catch(e){}
+    if(v) stopAudio();   /* 正说到一半时静音立即闭嘴 */
+  }
   function show(){ if(!cfg || isOff()) return; shown = true; box.hidden = false; resetIdle(); }
   function hide(){ shown = false; box.hidden = true; stopAudio(); hideBubble(); clearTimeout(idleTimer); }
   function stopAudio(){
@@ -183,6 +195,11 @@
     bubble.classList.toggle("jp", line.lang === "ja");
     bubble.hidden = false;
     Puppet.play("talk");   /* 说话时轻轻弹头（与事件动作分层，不冲突） */
+    if(isMute()){
+      /* 语音关：台词气泡照常，不出声；片刻后放行排队中的读音 */
+      setTimeout(() => { notifyDone(); hideBubble(); }, 900);
+      return;
+    }
     /* 音频优先：按 id 自动找 audio/companion/<id>.wav（audio 字段可覆盖路径），加载失败回落 TTS */
     const url = (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
     const a = new Audio(url);
@@ -245,5 +262,5 @@
     fire("greet");   /* 打开页面就打招呼；若还没点击过，语音被自动播放拦截 → afterGesture 等首次交互补播 */
   }).catch(() => {});   /* 配置拿不到（如 file:// 打开）→ 伴侣整体静默 */
 
-  window.Companion = { fire, show, hide, afterSpeak };
+  window.Companion = { fire, show, hide, afterSpeak, setOff, isOff, setMute, isMute };
 })();

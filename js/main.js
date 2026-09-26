@@ -7224,6 +7224,34 @@ $("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); 
 $("wardrobeCloseBtn").addEventListener("click", () => { $("wardrobeMask").hidden = true; });
 $("wardrobeMask").addEventListener("click", e => { if(e.target === $("wardrobeMask")) $("wardrobeMask").hidden = true; });
 
+/* ---------- 中也（P3.6）：侧边栏入口，开关 bot / 语音 ---------- */
+function renderChuuya(){
+  const box = $("chuuyaBody");
+  if(!box) return;
+  box.innerHTML = "";
+  const rows = [
+    /* 回调收到当前状态 on：点击 = 翻转，所以 set 的是 on 本身（开→关 / 关→开） */
+    ["使用中也 bot", window.Companion ? !Companion.isOff() : false,
+      on => Companion.setOff(on), "关掉后右下角不再显示，重新打开会打招呼"],
+    ["台词语音", window.Companion ? !Companion.isMute() : false,
+      on => Companion.setMute(on), "关掉后台词气泡照常，但不出声"]
+  ];
+  rows.forEach(([title, on, toggle, desc]) => {
+    const row = document.createElement("div");
+    row.className = "shop-item";
+    row.innerHTML = '<div class="shop-info"><b>' + esc(title) + '</b><span>' + esc(desc) + '</span></div>';
+    const sw = document.createElement("button");
+    sw.className = "wr-chip" + (on ? " on" : "");
+    sw.textContent = on ? "开" : "关";
+    sw.addEventListener("click", () => { toggle(on); renderChuuya(); });
+    row.appendChild(sw);
+    box.appendChild(row);
+  });
+}
+$("chuuyaBtn").addEventListener("click", () => { renderChuuya(); $("chuuyaMask").hidden = false; });
+$("chuuyaCloseBtn").addEventListener("click", () => { $("chuuyaMask").hidden = true; });
+$("chuuyaMask").addEventListener("click", e => { if(e.target === $("chuuyaMask")) $("chuuyaMask").hidden = true; });
+
 fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
   wrItems = json.items || [];
   const st = wrState();
