@@ -287,13 +287,13 @@ button{font:inherit;cursor:pointer;}
 /* ---------- 左侧功能边栏 ---------- */
 .sidebar{
   position:fixed;left:0;top:0;bottom:0;width:var(--side-w);z-index:40;
-  background:var(--panel);border-right:2px solid var(--ink);
+  background:#FFA341;border-right:2px solid var(--ink);
   display:flex;flex-direction:column;align-items:stretch;gap:6px;padding-top:14px;
 }
 .side-item{
   width:100%;border:none;background:none;cursor:pointer;font-family:inherit;
   display:flex;flex-direction:column;align-items:center;gap:3px;
-  padding:10px 2px;color:var(--muted);
+  padding:10px 2px;color:var(--ink);   /* 橙底上灰绿字看不清，改近黑 */
   transition:background .15s ease,color .15s ease;
 }
 .side-item .si-ico{font-size:20px;line-height:1;}
