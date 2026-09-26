@@ -1,1 +1,5 @@
 assets/companion/src/
+
+# 构建脚本调试产物与工具本地目录
+tmp-debug/
+.zcode/
