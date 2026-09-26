@@ -101,15 +101,17 @@
   }
   function stop(){
     stage.hidden = true;   /* 整层隐藏，避免透明层挡住 .wrap 的静态内容(如返回箭头) */
+    stage.classList.remove("dim");
     clearInterval(timer); timer = null;
     intro.forEach(clearTimeout); intro = [];
     stack.innerHTML = ""; slotCur.fill(null); shown.clear(); zTop = 1;
     bgs.forEach(b => b.classList.remove("show"));
   }
+  function dim(on){ stage.classList.toggle("dim", !!on); }   /* 功能页下调暗背景 */
   stage.addEventListener("click", () => {
     if(!timer || Date.now() - lastSwitch < 1200) return;   /* 过渡中防连点 */
     next();
   });
-  window.HomeStage = { show: start, hide: stop };
+  window.HomeStage = { show: start, hide: stop, dim };
   start();   /* 首次加载即主页面 */
 })();

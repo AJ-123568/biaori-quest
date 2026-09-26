@@ -7007,14 +7007,15 @@ const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty"];
 function showView(sec){
   $("topbar").hidden = false; $("hud").hidden = false;
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
-  if(window.HomeStage) HomeStage.hide();
+  /* 轮播保留为底层背景：内容层在其上方，调暗避免干扰答题 */
+  if(window.HomeStage){ HomeStage.show(); HomeStage.dim(true); }
 }
 function showHome(){
   questRun = null; setWrong(false);   /* 回主界面即弃当前会话状态 */
   $("topbar").hidden = true; $("hud").hidden = true;
   SECTIONS.forEach(s => $(s).hidden = true);
   if(window.Companion) Companion.hide();
-  if(window.HomeStage) HomeStage.show();
+  if(window.HomeStage){ HomeStage.show(); HomeStage.dim(false); }
 }
 $("backHomeBtn").addEventListener("click", showHome);
 function showPractice(){

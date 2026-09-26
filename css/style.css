@@ -26,7 +26,8 @@ body{
   min-height:100vh;
 }
 .jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
-.wrap{max-width:680px;margin:0 auto;padding:24px 16px 64px;}
+.wrap{max-width:680px;margin:0 auto;padding:24px 16px 64px;position:relative;z-index:1;pointer-events:none;}
+.wrap>*{pointer-events:auto;}   /* 容器本体穿透点击（空隙处点到轮播层），内容层浮在轮播上方 */
 @media (max-width:890px){   /* 窄屏：内容区从边栏右侧开始，不再居中 */
   .wrap{margin-left:var(--side-w);max-width:none;}
 }
@@ -311,7 +312,10 @@ button{font:inherit;cursor:pointer;}
   position:fixed;top:0;bottom:0;left:var(--side-w);right:0;z-index:0;
   overflow:hidden;cursor:pointer;background:var(--bg);
   user-select:none;-webkit-user-select:none;
+  transition:opacity .6s ease;
 }
+/* 功能页下调暗背景轮播，避免干扰文字与答题 */
+#homeStage.dim{opacity:.45;}
 .hs-bg{
   position:absolute;inset:-48px;background-size:cover;background-position:center;
   filter:blur(36px);opacity:0;transition:opacity 1.3s ease;
