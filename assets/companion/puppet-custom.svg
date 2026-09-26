@@ -16,9 +16,9 @@
       <path d="M158,383 Q194,401 230,383" stroke="#221a14" stroke-width="6.5" fill="none" stroke-linecap="round"/>
       <path d="M336,385 Q378,403 420,385" stroke="#221a14" stroke-width="6.5" fill="none" stroke-linecap="round"/>
     </g>
-    <g id="pp-m-grin" display="none"><path d="M262,456 h62 v35 h-62 Z" fill="#F6E2C9"/><path d="M260,468 Q293,457 326,493 Q324,491 293,497 Q262,491 260,468 Z" fill="#5C2A1E"/><path d="M280,470 L286,470 L283,477 Z" fill="#F6E2C9"/></g>
-    <g id="pp-m-angry" display="none"><path d="M262,456 h62 v35 h-62 Z" fill="#F6E2C9"/><path d="M268,467 Q293,459 318,467 L312,489 Q293,495 274,489 Z" fill="#4a201a"/><path d="M278,481 Q293,487 308,481" stroke="#7a3a30" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-    <g id="pp-m-sleepy" display="none"><path d="M262,456 h62 v35 h-62 Z" fill="#F6E2C9"/><path d="M272,475 q5,-4 10,0 q5,4 10,0 q5,-4 10,0 q5,4 10,0" stroke="#221a14" stroke-width="4.0" fill="none" stroke-linecap="round"/></g>
+    <g id="pp-m-grin" display="none"><rect x="266" y="460" width="54" height="27" rx="14" fill="#F6E2C9"/><path d="M260,471 Q294,479 328,465" stroke="#221a14" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M328,467 Q330,475 332,474" stroke="#221a14" stroke-width="4.0" fill="none" stroke-linecap="round"/></g>
+    <g id="pp-m-angry" display="none"><rect x="266" y="460" width="54" height="27" rx="14" fill="#F6E2C9"/><path d="M268,467 Q293,459 318,467 L312,489 Q293,495 274,489 Z" fill="#4a201a"/><path d="M278,481 Q293,487 308,481" stroke="#7a3a30" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+    <g id="pp-m-sleepy" display="none"><rect x="266" y="460" width="54" height="27" rx="14" fill="#F6E2C9"/><path d="M272,475 q5,-4 10,0 q5,4 10,0 q5,-4 10,0 q5,4 10,0" stroke="#221a14" stroke-width="4.0" fill="none" stroke-linecap="round"/></g>
     <g id="pp-zzz" display="none"><text x="520" y="25" font-size="55" font-weight="700" fill="#8a8a92">z</text><text x="545" y="0" font-size="44" font-weight="700" fill="#96969e">z</text><text x="570" y="-25" font-size="36" font-weight="700" fill="#a2a2aa">z</text></g>
   </g>
   </g>

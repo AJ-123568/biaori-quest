@@ -185,16 +185,19 @@ def main():
     arc = 30 * S                      # 眼弧高差
 
     def mouth_parts(kind):
-        patch = (f'<path d="M{px0-4},{py0-4} h{px1-px0+8} v{py1-py0+8} h-{px1-px0+8} Z" fill="#F6E2C9"/>')
+        patch = (f'<rect x="{px0}" y="{py0}" width="{px1-px0}" height="{py1-py0}" rx="14" '
+                 f'fill="#F6E2C9"/>')
         if kind == "grin":
-            x0, y0 = P(560, 1032); x1, y1 = P(694, 1082)
-            mid = P(627, 1010); bot = P(627, 1090)
+            # 闭嘴坏笑(参考用户给的官方图): 中段微垂、右嘴角上挑, 角落带一折痕
+            x0, y0 = P(560, 1038)
+            x1, y1 = P(696, 1026)
+            cx, cy = P(628, 1054)
+            t0, t1 = P(696, 1030), P(704, 1044)
             return patch + (
-                f'<path d="M{x0},{y0} Q{mid[0]},{mid[1]} {x1},{y1} '
-                f'Q{P(688,1078)[0]},{P(688,1078)[1]} {bot[0]},{bot[1]} '
-                f'Q{P(566,1078)[0]},{P(566,1078)[1]} {x0},{y0} Z" fill="#5C2A1E"/>'
-                f'<path d="M{P(600,1036)[0]},{P(600,1036)[1]} L{P(614,1036)[0]},{P(614,1036)[1]} '
-                f'L{P(607,1050)[0]},{P(607,1050)[1]} Z" fill="#F6E2C9"/>')
+                f'<path d="M{x0},{y0} Q{cx},{cy} {x1},{y1}" stroke="{LINE}" '
+                f'stroke-width="{11 * S:.1f}" fill="none" stroke-linecap="round"/>'
+                f'<path d="M{t0[0]},{t0[1]} Q{t0[0] + 2},{t0[1] + 8} {t1[0]},{t1[1]}" stroke="{LINE}" '
+                f'stroke-width="{8 * S:.1f}" fill="none" stroke-linecap="round"/>')
         if kind == "angry":
             x0, y0 = P(578, 1030); x1, y1 = P(676, 1030)
             b0, b1 = P(664, 1074), P(590, 1074)
