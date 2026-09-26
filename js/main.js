@@ -7014,18 +7014,15 @@ function showHome(){
   questRun = null; setWrong(false);   /* 回主界面即弃当前会话状态 */
   $("topbar").hidden = true; $("hud").hidden = true;
   SECTIONS.forEach(s => $(s).hidden = true);
-  if(window.Companion) Companion.hide();
   if(window.HomeStage){ HomeStage.show(); HomeStage.dim(false); }
 }
 $("backHomeBtn").addEventListener("click", showHome);
 function showPractice(){
   setWrong(false);
   showView("setup"); refreshStart();
-  if(window.Companion) Companion.hide();
 }
 function showQuest(){
   showView("questMap"); buildMap();
-  if(window.Companion) Companion.hide();
 }
 $("practiceBtn").addEventListener("click", showPractice);
 $("questSideBtn").addEventListener("click", showQuest);
