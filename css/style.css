@@ -15,6 +15,7 @@
   --side-w:102px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none !important}   /* 覆盖 header.top/.hud 等的 display:flex，保证 hidden 生效 */
 html{-webkit-text-size-adjust:100%}
 body{
   background:var(--bg);
@@ -68,8 +69,6 @@ button{font:inherit;cursor:pointer;}
   transition:border-color .12s, background .12s;
 }
 .btn:hover{border-color:var(--ai);color:var(--ai);}
-.btn.wrongbook{color:var(--shu);border-color:#E7C9C7;}
-.btn.wrongbook:hover{border-color:var(--shu);}
 .opt{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:14px;color:var(--muted);}
 .opt label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 .opt input{accent-color:var(--ai);width:15px;height:15px;}
@@ -288,8 +287,6 @@ button{font:inherit;cursor:pointer;}
 }
 
 /* ---------- 闯关地图（P2） ---------- */
-.btn.quest-entry{color:#B07F1F;border-color:#E3C98F;}
-.btn.quest-entry:hover{border-color:#D9A441;color:#8F6A16;}
 #questMap{
   background:linear-gradient(180deg,#58BBA7,#43A090);
   border-radius:18px;padding:16px 14px 20px;

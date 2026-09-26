@@ -6757,14 +6757,11 @@ function updateChipCounts(){   /* 单词增删后同步每课词数与总词数 
   });
   $("totalWords").textContent = DATA.lessons.reduce((s, L) => s + lessonWords(L).length, 0);
 }
-/* 课文与错题本互斥：setWrong 同步按钮状态 */
-function setWrong(on){
-  const b = $("wrongBtn");
-  b.dataset.on = on ? "1" : "0";
-  b.style.background = on ? "var(--shu-soft)" : "";
-}
+/* 错题本模式：从左边栏「错题」进入会话时置位，退出或回主界面时复位 */
+let wrongMode = false;
+function setWrong(on){ wrongMode = on; }
 function refreshStart(){
-  const onlyWrong = $("wrongBtn").dataset.on === "1";
+  const onlyWrong = wrongMode;
   const selCount = [...selected].reduce((s, l) => s + lessonWords(DATA.lessons[l - 1]).length, 0);
   const empty = onlyWrong ? store.wrong.length === 0 : (selected.size === 0 || selCount === 0);
   $("startBtn").disabled = empty;
@@ -6793,8 +6790,8 @@ function startSession(list, quest = null){
   if(!quest && $("optRandom").checked) shuffle(pool);
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
   runUsedTicket = false;
-  $("setup").hidden = true; $("questMap").hidden = true; $("result").hidden = true; $("drill").hidden = false;
-  $("wrongClearBtn").hidden = $("wrongBtn").dataset.on !== "1";   /* 只在错题本模式显示清空按钮 */
+  showView("drill");
+  $("wrongClearBtn").hidden = !wrongMode;   /* 只在错题本模式显示清空按钮 */
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
@@ -6802,7 +6799,7 @@ function startSession(list, quest = null){
 }
 
 function currentPool(){
-  if($("wrongBtn").dataset.on === "1"){
+  if(wrongMode){
     const set = new Set(store.wrong);
     const all = [];
     DATA.lessons.forEach(L => lessonWords(L).forEach(w => { if(set.has(wkey(w))) all.push(w); }));
@@ -6928,8 +6925,7 @@ if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => {};
 
 /* ---------- 结果页 ---------- */
 function showResult(){
-  $("drill").hidden = true;
-  $("result").hidden = false;
+  showView("result");
   $("scoreCorrect").textContent = correctCount;
   $("scoreTotal").textContent = pool.length;
   $("scoreStreak").textContent = bestStreak;
@@ -7006,34 +7002,45 @@ $("noneBtn").addEventListener("click", () => {
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
   refreshStart();
 });
-$("wrongBtn").addEventListener("click", function(){
-  const on = this.dataset.on === "1";
-  setWrong(!on);
-  if(!on){   /* 开错题本时清掉已选课文，保持互斥 */
-    selected.clear();
-    document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
-  }
-  refreshStart();
+/* ---------- 视图切换：home = 空主界面，功能全部从左边栏进入 ---------- */
+const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty"];
+function showView(sec){
+  $("topbar").hidden = false; $("hud").hidden = false;
+  SECTIONS.forEach(s => $(s).hidden = s !== sec);
+}
+function showHome(){
+  $("topbar").hidden = true; $("hud").hidden = true;
+  SECTIONS.forEach(s => $(s).hidden = true);
+  if(window.Companion) Companion.hide();
+}
+function showPractice(){
+  setWrong(false);
+  showView("setup"); refreshStart();
+  if(window.Companion) Companion.hide();
+}
+function showQuest(){
+  showView("questMap"); buildMap();
+  if(window.Companion) Companion.hide();
+}
+$("practiceBtn").addEventListener("click", showPractice);
+$("questSideBtn").addEventListener("click", showQuest);
+$("wrongSideBtn").addEventListener("click", () => {
+  if(!store.wrong.length){ showView("wrongEmpty"); return; }
+  setWrong(true);
+  startSession(currentPool());
 });
 $("wrongClearBtn").addEventListener("click", function(){
   if(!store.wrong.length) return;
   if(!confirm("清空错题本？所有错词记录将删除。")) return;
   store.wrong = [];
   saveStore();
-  $("wrongBtn").textContent = "只练错题本（0）";
-  refreshStart();
   this.textContent = "已清空";
   setTimeout(() => { this.textContent = "清空错题本"; }, 1500);
 });
 $("quitBtn").addEventListener("click", () => {
-  $("drill").hidden = true;
-  if(window.Companion) Companion.hide();
-  if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
-  else {
-    $("setup").hidden = false;
-    $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
-    refreshStart();
-  }
+  if(questRun){ questRun = null; showQuest(); }
+  else if(wrongMode){ wrongMode = false; showHome(); }
+  else showPractice();
 });
 $("hintBtn").addEventListener("click", hint);
 $("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
@@ -7053,18 +7060,12 @@ document.addEventListener("keydown", e => {
 $("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWrong.slice())));
 $("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
 $("backBtn").addEventListener("click", () => {
-  $("result").hidden = true;
-  if(window.Companion) Companion.hide();
-  if(questRun){ questRun = null; $("questMap").hidden = false; buildMap(); }
-  else {
-    $("setup").hidden = false;
-    $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";
-    refreshStart();
-  }
+  if(questRun){ questRun = null; showQuest(); }
+  else if(wrongMode){ wrongMode = false; showHome(); }
+  else showPractice();
 });
 $("retryQuestBtn").addEventListener("click", () => { if(lastQuest) startQuest(lastQuest.lesson, lastQuest.diff); });
-$("mapBtn").addEventListener("click", () => { $("setup").hidden = true; $("questMap").hidden = false; buildMap(); });
-$("mapBackBtn").addEventListener("click", () => { $("questMap").hidden = true; $("setup").hidden = false; refreshStart(); });
+$("mapBackBtn").addEventListener("click", showHome);
 $("diffCloseBtn").addEventListener("click", () => { $("diffMask").hidden = true; });
 $("questResetBtn").addEventListener("click", function(){
   if(!confirm("重置所有闯关进度？全部课程的星级与解锁将清空，自由练习不受影响。")) return;
@@ -7361,4 +7362,3 @@ buildChips();
 refreshStart();
 refreshEco();
 updateChipCounts();
-if(store.wrong.length) $("wrongBtn").textContent = "只练错题本（" + store.wrong.length + "）";

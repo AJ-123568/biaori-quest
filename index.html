@@ -12,17 +12,20 @@
 <body>
 <!-- ============ 左侧功能边栏 ============ -->
 <aside class="sidebar" id="sideBar">
+  <button class="side-item" id="wrongSideBtn" title="错题本"><span class="si-ico">❌</span><span class="si-tx">错题</span></button>
+  <button class="side-item" id="practiceBtn" title="练习"><span class="si-ico">✏️</span><span class="si-tx">练习</span></button>
+  <button class="side-item" id="questSideBtn" title="闯关地图"><span class="si-ico">🗺</span><span class="si-tx">闯关</span></button>
   <button class="side-item" id="shopBtn" title="商店"><span class="si-ico">🛍</span><span class="si-tx">商店</span></button>
   <button class="side-item" id="wardrobeBtn" title="衣橱"><span class="si-ico">👗</span><span class="si-tx">衣橱</span></button>
 </aside>
 
 <div class="wrap">
-  <header class="top">
+  <header class="top" id="topbar" hidden>
     <h1 class="jp">かな書き取り <span style="font-family:inherit">· 单词拼写练习</span></h1>
     <div class="sub">新版标准日本语 初级上册 · <span id="totalWords">1065</span> 词</div>
   </header>
 
-  <div class="hud" id="hud">
+  <div class="hud" id="hud" hidden>
     <span class="hud-item">Lv <b id="hudLv">1</b></span>
     <span class="hud-item" title="金币">🪙 <b id="hudCoins">10000</b></span>
     <span class="hud-item" title="提示券：揭示下一个假名，每词消耗 1 张">💡 <b id="hudHint">10</b></span>
@@ -32,14 +35,12 @@
   </div>
 
   <!-- ============ 选择范围 ============ -->
-  <section id="setup">
+  <section id="setup" hidden>
     <button class="word-edit" id="editWordsBtn" disabled title="先勾选下方课文，再点这里增删单词">✏️ 编辑单词</button>
     <div class="lessons" id="lessonChips"></div>
     <div class="row">
       <button class="btn" id="allBtn">全选</button>
       <button class="btn" id="noneBtn">清空</button>
-      <button class="btn wrongbook" id="wrongBtn">只练错题本（0）</button>
-      <button class="btn quest-entry" id="mapBtn">🗺 闯关地图</button>
     </div>
     <div class="opt">
       <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
@@ -48,6 +49,11 @@
     </div>
     <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
     <button class="start" id="startBtn" disabled>请先选择课文</button>
+  </section>
+
+  <!-- ============ 错题本为空 ============ -->
+  <section id="wrongEmpty" hidden>
+    <p class="empty-note">错题本还是空的 · 在「练习」里答错的词会自动收进来</p>
   </section>
 
   <!-- ============ 闯关地图 ============ -->
