@@ -23,7 +23,7 @@
     const ws = playWaiters; playWaiters = [];
     ws.forEach(f => f());
   }
-  let box, bubble, sprite, closeBtn;
+  let box, bubble, sprite;
 
   function makeEl(tag, cls, parent){
     const el = document.createElement(tag);
@@ -47,25 +47,8 @@
       sprite = makeEl("div", "companion-puppet", stage);   /* 代码手绘 Q 版 SVG 小人（puppet.js） */
       Puppet.mount(sprite);
     }
-    closeBtn = makeEl("button", "companion-close", stage);
-    closeBtn.textContent = "✕";
-    closeBtn.title = "关闭中也";
+    /* 开关统一走侧边栏「中也」面板（setOff），不再有 ✕/召回圆钮 */
     makeEl("div", "companion-credit", stage).textContent = "CV 谷山紀章 · 合成音声";
-    closeBtn.addEventListener("click", () => {
-      try{ localStorage.setItem(OFF_KEY, "1"); }catch(e){}
-      hide();
-      if(!document.getElementById("companionRestore")){
-        const chip = makeEl("button", "companion-restore", document.body);
-        chip.id = "companionRestore";
-        chip.textContent = "中也";
-        chip.title = "重新召唤中也";
-        chip.addEventListener("click", () => {
-          chip.remove();
-          try{ localStorage.removeItem(OFF_KEY); }catch(e){}
-          show();
-        });
-      }
-    });
     bubble.addEventListener("click", () => hideBubble());
     /* 戳一下（非拖动的单击）：随机反应动作 + poke 台词 */
     sprite.addEventListener("click", () => { Puppet.play("poke"); fire("poke"); });
@@ -121,7 +104,7 @@
     const onCancel = () => endDrag(true, false);
     box.addEventListener("dragstart", e => e.preventDefault());   /* 兜底：盒内任何元素都不许发起原生拖拽 */
     box.addEventListener("pointerdown", e => {
-      if(st || e.target === closeBtn || e.button !== 0) return;
+      if(st || e.button !== 0) return;
       const r = box.getBoundingClientRect();
       box.style.left = r.left + "px"; box.style.top = r.top + "px";
       box.style.right = "auto"; box.style.bottom = "auto";

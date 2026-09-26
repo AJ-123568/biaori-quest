@@ -414,21 +414,8 @@ button{font:inherit;cursor:pointer;}
 @keyframes pp-zfloat{0%,100%{opacity:.25;}50%{opacity:1;}}
 #pp-chain{transform-box:fill-box;transform-origin:50% 0%;animation:pp-chainsway 2.6s ease-in-out infinite alternate;}
 @keyframes pp-chainsway{from{transform:rotate(-7deg);}to{transform:rotate(7deg);}}
-.companion-close{
-  position:absolute;top:2px;right:2px;
-  width:22px;height:22px;border-radius:50%;
-  border:1px solid var(--line);background:var(--panel);
-  color:var(--muted);font-size:11px;cursor:pointer;line-height:1;
-}
-.companion-close:hover{color:var(--shu);border-color:var(--shu);}
 .companion-credit{
   text-align:right;font-size:10px;color:var(--muted);opacity:.75;margin-top:2px;
-}
-.companion-restore{
-  position:fixed;right:14px;bottom:14px;z-index:45;
-  width:44px;height:44px;border-radius:50%;
-  border:1px solid var(--ink);background:var(--panel);color:var(--ink);
-  font-size:12px;cursor:pointer;box-shadow:0 4px 10px rgba(35,40,43,.15);
 }
 @media (max-width:520px){
   .companion-puppet svg{height:140px;}
