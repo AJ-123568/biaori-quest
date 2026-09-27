@@ -11,13 +11,15 @@
     "assets/chuuya/chuuya-03.jpg",
     "assets/chuuya/chuuya-04.jpg",
     "assets/chuuya/chuuya-05.jpg",
-    "assets/chuuya/chuuya-06.jpg",
+    "assets/chuuya/chuuya-06.png",
     "assets/chuuya/chuuya-07.jpg",
     "assets/chuuya/chuuya-08.jpg",
     "assets/chuuya/chuuya-09.jpg",
     "assets/chuuya/chuuya-10.jpg",
     "assets/chuuya/chuuya-11.png",
-    "assets/chuuya/chuuya-12.png"
+    "assets/chuuya/chuuya-12.png",
+    "assets/chuuya/chuuya-13.png",
+    "assets/chuuya/chuuya-14.jpg"
   ];
   /* 槽位（右侧区域的百分比盒子）：相邻槽位边缘互相搭接，拼贴堆叠感来自这里 */
   const SLOTS = [
