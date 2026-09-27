@@ -4,3 +4,4 @@ assets/companion/src/
 tmp-debug/
 .zcode/
 dist/
+__pycache__/

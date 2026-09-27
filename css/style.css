@@ -466,3 +466,15 @@ button{font:inherit;cursor:pointer;}
   #pp-all{animation:none;}
   .puppet #pp-act,.puppet #pp-head,.puppet #pp-armR,.puppet #pp-armL,.puppet #pp-zzz,.puppet #pp-chain{animation:none !important;}
 }
+
+/* ============ 中也小狗光标 + 滑动拖尾(仅网站内生效, 不影响系统鼠标) ============ */
+/* 光标: 宽版小狗 48px 方图, 热点(22,4)在头顶中心; !important 压过各处 cursor:pointer */
+html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !important;}
+/* 拖尾: JS 沿鼠标轨迹每隔约30px生成一只, 0.8s 缩小下沉淡出 */
+.dog-trail{
+  position:fixed;left:0;top:0;pointer-events:none;z-index:9999;
+  opacity:.95;will-change:transform,opacity;
+  animation:dog-trail-fade .8s ease-out forwards;
+}
+.dog-trail img{width:100%;display:block;}
+@keyframes dog-trail-fade{to{opacity:0;transform:scale(.55) translateY(8px);}}
