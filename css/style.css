@@ -393,12 +393,14 @@ button{font:inherit;cursor:pointer;}
 /* ---------- 中也伴侣（P3） ---------- */
 .companion{
   position:fixed;right:14px;bottom:14px;z-index:9999;
-  display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+  display:flex;flex-direction:column;align-items:flex-end;
   pointer-events:none;
   cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;
 }
 .companion.dragging{cursor:grabbing;}
+/* 气泡悬浮在立绘上方、不占布局：出现/消失时立绘位置不动 */
 .companion-bubble{
+  position:absolute;right:0;bottom:calc(100% + 8px);
   pointer-events:auto;cursor:pointer;
   max-width:min(300px,72vw);
   background:var(--panel);border:1px solid var(--ink);border-radius:10px;
@@ -437,7 +439,7 @@ button{font:inherit;cursor:pointer;}
 .puppet.act-angry #pp-act{animation:pp-angry .55s ease-in-out 2;}
 @keyframes pp-angry{20%{transform:translateX(-4px) rotate(-2deg);}60%{transform:translateX(4px) rotate(2deg);}}
 .puppet.act-poke #pp-act{animation:pp-poke .42s ease;}
-@keyframes pp-poke{40%{transform:scale(.93,.95);}70%{transform:scale(1.02,1.01);}}
+@keyframes pp-poke{40%{transform:scale(.96,.97);}70%{transform:scale(1.02,1.01);}}
 .puppet.act-wave #pp-armR{animation:pp-wave 1.8s ease-in-out;}
 @keyframes pp-wave{0%,100%{transform:rotate(0);}25%,65%{transform:rotate(-125deg);}45%{transform:rotate(-105deg);}}
 .puppet.act-look #pp-head{animation:pp-look 1.9s ease-in-out;}
