@@ -19,7 +19,9 @@
     "assets/chuuya/chuuya-11.png",
     "assets/chuuya/chuuya-12.png",
     "assets/chuuya/chuuya-13.png",
-    "assets/chuuya/chuuya-14.jpg"
+    "assets/chuuya/chuuya-14.jpg",
+    "assets/chuuya/chuuya-15.jpg",
+    "assets/chuuya/chuuya-16.jpg"
   ];
   /* 槽位（右侧区域的百分比盒子）：相邻槽位边缘互相搭接，拼贴堆叠感来自这里 */
   const SLOTS = [
