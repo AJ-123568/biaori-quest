@@ -88,7 +88,7 @@
     { "id": "bad-04", "event": "quest-bad", "text": "今回はこれくらいにしておこう。次で取り返せよ。", "lang": "ja" },
 
     { "id": "idle-03", "event": "idle", "text": "……暇だなあ。", "lang": "ja" },
-    { "id": "idle-04", "event": "idle", "text": "熱が出るぞ、ぼーっとしてると。……さあ、次。", "lang": "ja" },
+    { "id": "idle-04", "event": "idle", "text": "ぼーっとするな。……次、いこう。", "lang": "ja" },
 
     { "id": "poke-01", "event": "poke", "text": "あ？　なんだよ、急に。", "lang": "ja" },
     { "id": "poke-02", "event": "poke", "text": "触るなよ。……まあ、別にいいけど。", "lang": "ja" }
