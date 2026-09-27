@@ -81,7 +81,7 @@
     { "id": "clear-03", "event": "quest-clear", "text": "見たか。これが俺の実力ってやつだ。", "lang": "ja" },
     { "id": "clear-04", "event": "quest-clear", "text": "一課終了。次も同じ調子でいけ。", "lang": "ja" },
 
-    { "id": "perfect-03", "event": "quest-perfect", "text": "全部正解だよ。……悪くないな。", "lang": "ja" },
+    { "id": "perfect-03", "event": "quest-perfect", "text": "全部正解だ。悪くないな。", "lang": "ja" },
     { "id": "perfect-04", "event": "quest-perfect", "text": "完璧だ。……ちょっと見直したぞ。", "lang": "ja" },
 
     { "id": "bad-03", "event": "quest-bad", "text": "なんだその成績。……おい、逃げんな。もう一回だ。", "lang": "ja" },
