@@ -1,6 +1,7 @@
 /* ---------- 中也伴侣（P3）：config/companion.json 驱动，音频优先 / 系统 TTS 回落 ---------- */
 (function(){
   const CONFIG_URL = "config/companion.json";
+  const ASSET = p => (window.__ASSET_DATA__ && window.__ASSET_DATA__[p]) || p;   /* standalone 内联位图表（build-standalone 注入），线上无此表走原相对路径 */
   const OFF_KEY = "biaori1_companion_off";
   const MUTE_KEY = "biaori1_companion_mute";
   const POS_KEY = "biaori1_companion_pos";
@@ -143,7 +144,7 @@
       const a = (cfg && cfg.art) || {};
       const face = (a.eventExpression && a.eventExpression[key]) || key;   /* 事件名→表情名（greet→normal 等） */
       const file = (a.expressions && a.expressions[face]) || a.fallback;
-      if(sprite && sprite.tagName === "IMG" && file) sprite.src = (a.dir || "") + file;
+      if(sprite && sprite.tagName === "IMG" && file) sprite.src = ASSET((a.dir || "") + file);
       return;
     }
     const faces = (cfg && (cfg.puppet || cfg.art) && (cfg.puppet || cfg.art).eventFace) || {};
@@ -238,7 +239,7 @@
   function init(json){
     cfg = json;
     if(isArt() && cfg.art && cfg.art.expressions){
-      Object.values(cfg.art.expressions).forEach(f => { new Image().src = (cfg.art.dir || "") + f; });   /* 预载表情图 */
+      Object.values(cfg.art.expressions).forEach(f => { new Image().src = ASSET((cfg.art.dir || "") + f); });   /* 预载表情图 */
     }
     buildDom();
     setExpression("normal");

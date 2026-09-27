@@ -6540,6 +6540,7 @@ const DATA = {
   ]
 };
 DATA.lessons.forEach(L => L.words.forEach(w => { w.lesson = L.lesson; }));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));   /* 放顶部：standalone 衣橱配置同步初始化（wrInit→renderShopClothes）早于原 esc 声明位置，会 TDZ 炸掉整段顶层 */
 const LS_KEY = "biaori1_kana_v2";   /* v2：wrong/stats + 经济 eco */
 const LS_KEY_V1 = "biaori1_kana_v1";
 const ECO_DEFAULT = { lv: 1, coins: 10000, hint: 10, skip: 10 };
@@ -7289,7 +7290,6 @@ else fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(
 });
 
 /* ---------- 编辑单词 ---------- */
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let editData = null;   /* 弹窗打开期间的工作副本：[{lesson, base, removed:Set, added:[]}]，保存才写回 store */
 function openEditor(){
   const lessons = [...selected].sort((a, b) => a - b);
