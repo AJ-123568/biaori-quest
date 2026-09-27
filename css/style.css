@@ -70,6 +70,9 @@ main section{margin-top:28px;}
 .chip:hover{border-color:var(--ai);}
 .chip.on{background:var(--ai);border-color:var(--ai);color:#fff;}
 .chip.on .ct{color:#C9D4E8;}
+/* 悬停彩蛋：移入课程按钮随机出一张图，contain 完整显示、文字隐藏（规则须在 .chip.on 后，否则选中态蓝底盖掉白底衬） */
+.chip.peek{background-color:#fff;background-size:contain;background-position:center;background-repeat:no-repeat;}
+.chip.peek .no,.chip.peek .ct{visibility:hidden;}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;}
 button{font:inherit;cursor:pointer;}
 .btn{

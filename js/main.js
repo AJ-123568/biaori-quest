@@ -6735,6 +6735,12 @@ const $ = id => document.getElementById(id);
 /* ---------- 范围选择 ---------- */
 const selected = new Set();
 const chipEls = {};
+/* 悬停彩蛋：移入课程按钮随机出一张图（每次移入重新随机，预热缓存避免首次闪烁） */
+const PEEK_IMGS = [
+  "assets/chuuya/chuuya-22.jpg", "assets/chuuya/chuuya-23.jpg", "assets/chuuya/chuuya-24.jpg",
+  "assets/chuuya/chuuya-25.jpg", "assets/chuuya/chuuya-26.jpg",
+];
+PEEK_IMGS.forEach(u => { const i = new Image(); i.src = u; });
 function buildChips(){
   const box = $("lessonChips");
   DATA.lessons.forEach(L => {
@@ -6747,6 +6753,14 @@ function buildChips(){
       else { selected.add(L.lesson); setWrong(false); }   /* 选课文与错题本互斥 */
       b.classList.toggle("on", selected.has(L.lesson));
       refreshStart();
+    });
+    b.addEventListener("mouseenter", () => {
+      b.style.backgroundImage = "url(" + PEEK_IMGS[Math.floor(Math.random() * PEEK_IMGS.length)] + ")";
+      b.classList.add("peek");
+    });
+    b.addEventListener("mouseleave", () => {
+      b.classList.remove("peek");
+      b.style.backgroundImage = "";
     });
     box.appendChild(b);
   });
