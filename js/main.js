@@ -7256,7 +7256,7 @@ $("chuuyaBtn").addEventListener("click", () => { renderChuuya(); $("chuuyaMask")
 $("chuuyaCloseBtn").addEventListener("click", () => { $("chuuyaMask").hidden = true; });
 $("chuuyaMask").addEventListener("click", e => { if(e.target === $("chuuyaMask")) $("chuuyaMask").hidden = true; });
 
-fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
+function wrInit(json){
   wrItems = json.items || [];
   const st = wrState();
   /* 上次存的穿戴若已不在架（ready 被关掉），回落到免费默认，避免小人隐形 */
@@ -7267,7 +7267,9 @@ fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); })
   st.worn.acc = st.worn.acc.filter(id => { const it = wrItems.find(x => x.id === id); return it && it.ready; });
   wrApply();
   renderShopClothes();
-}).catch(() => {
+}
+if(window.__WARDROBE_CONFIG__){ wrInit(window.__WARDROBE_CONFIG__); }   /* standalone：配置已内联 */
+else fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(wrInit).catch(() => {
   const wb = $("wardrobeBtn");
   if(wb) wb.style.display = "none";
 });

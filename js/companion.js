@@ -183,8 +183,9 @@
       setTimeout(() => { notifyDone(); hideBubble(); }, 900);
       return;
     }
-    /* 音频优先：按 id 自动找 audio/companion/<id>.wav（audio 字段可覆盖路径），加载失败回落 TTS */
-    const url = (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
+    /* 音频优先：standalone 内联映射 → 按 id 找 audio/companion/<id>.wav（audio 字段可覆盖路径），加载失败回落 TTS */
+    const amap = window.__COMPANION_AUDIO__;
+    const url = (amap && amap[line.id]) || (cfg.audioDir || "audio/companion/") + (line.audio || line.id + ".wav");
     const a = new Audio(url);
     curAudio = a;
     a.addEventListener("error", () => { if(curAudio === a){ curAudio = null; hasGesture ? speak(line) : afterGesture(() => speak(line)); } });
@@ -234,7 +235,7 @@
   ["pointerdown", "keydown"].forEach(evName =>
     document.addEventListener(evName, () => { hasGesture = true; if(shown) resetIdle(); }, { passive: true }));
 
-  fetch(CONFIG_URL).then(r => { if(!r.ok) throw 0; return r.json(); }).then(json => {
+  function init(json){
     cfg = json;
     if(isArt() && cfg.art && cfg.art.expressions){
       Object.values(cfg.art.expressions).forEach(f => { new Image().src = (cfg.art.dir || "") + f; });   /* 预载表情图 */
@@ -243,7 +244,9 @@
     setExpression("normal");
     show();
     fire("greet");   /* 打开页面就打招呼；若还没点击过，语音被自动播放拦截 → afterGesture 等首次交互补播 */
-  }).catch(() => {});   /* 配置拿不到（如 file:// 打开）→ 伴侣整体静默 */
+  }
+  if(window.__COMPANION_CONFIG__){ init(window.__COMPANION_CONFIG__); }   /* standalone：配置已内联，file:// 下 fetch 会失败 */
+  else fetch(CONFIG_URL).then(r => { if(!r.ok) throw 0; return r.json(); }).then(init).catch(() => {});   /* 配置拿不到 → 伴侣整体静默 */
 
   window.Companion = { fire, show, hide, afterSpeak, setOff, isOff, setMute, isMute };
 })();

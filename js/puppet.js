@@ -344,14 +344,15 @@
     root = null;
     if(!(opts && opts.builtin)){
       try{
-        const r = await fetch("assets/companion/puppet-custom.svg", { cache: "no-store" });
-        if(r.ok){
-          const txt = await r.text();
-          if(txt.includes("<svg")){
-            container.innerHTML = txt;
-            root = container.querySelector("svg");
-            if(root) srcMode = "custom";
-          }
+        let txt = window.__PUPPET_CUSTOM_SVG__;   /* standalone：自定义画稿已内联 */
+        if(txt === undefined){
+          const r = await fetch("assets/companion/puppet-custom.svg", { cache: "no-store" });
+          if(r.ok) txt = await r.text();
+        }
+        if(txt && txt.includes("<svg")){
+          container.innerHTML = txt;
+          root = container.querySelector("svg");
+          if(root) srcMode = "custom";
         }
       }catch(e){}
     }
