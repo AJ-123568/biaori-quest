@@ -215,6 +215,7 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+.shop.lvup{width:min(410px,92vw);}   /* 升级弹窗：奖励一行内容较长，加宽防折行 */
 
 /* ---------- 衣橱 ---------- */
 .shop-sep{border-top:1px dashed var(--line);margin:6px 0;}

@@ -6613,6 +6613,21 @@ function useTicket(kind){   /* kind: "hint" | "skip"，成功扣 1 张 */
 }
 function denyTicket(msg){ $("feedback").innerHTML = '<div class="enter-tip">' + msg + "</div>"; }
 
+/* ---------- 升级（练习每课≥90% +1，闯关全对 +2） ---------- */
+const LV_REWARD = { coins: 5000, hint: 10, skip: 10 };
+function gainLevels(n){   /* 每升 1 级发一份奖励，弹窗告知升了几级与奖励总数 */
+  if(n <= 0) return;
+  const from = store.eco.lv;
+  store.eco.lv += n;
+  store.eco.coins += LV_REWARD.coins * n;
+  store.eco.hint += LV_REWARD.hint * n;
+  store.eco.skip += LV_REWARD.skip * n;
+  saveStore(); refreshEco();
+  $("lvUpLine").textContent = "Lv." + from + " → Lv." + store.eco.lv + "，升了 " + n + " 级";
+  $("lvUpDetail").textContent = "本次共获得：金币 +" + (LV_REWARD.coins * n) + " · 提示券 +" + (LV_REWARD.hint * n) + " · 跳过券 +" + (LV_REWARD.skip * n);
+  $("lvUpMask").hidden = false;
+}
+
 /* ---------- 闯关（P2） ---------- */
 const SVG_NS = "http://www.w3.org/2000/svg";
 const starStr = n => "★".repeat(n) + "☆".repeat(3 - n);
@@ -6980,7 +6995,7 @@ function showResult(){
     saveStore();
     const reward = [0, 20, 30, 50][stars] * (firstClear ? 2 : 1);
     addCoins(reward + (sessionWrong.length === 0 ? 20 : 0));
-    if(sessionWrong.length === 0) notes.push("全部答对，漂亮！");
+    if(sessionWrong.length === 0){ notes.push("全部答对，漂亮！"); gainLevels(2); }   /* 闯关全对升 2 级 */
     notes.push("过关 " + starStr(stars) + "，奖励 +" + reward + (firstClear ? "（首通翻倍）" : ""));
     if(sessionWrong.length === 0) notes.push("完美 +20");
     $("allRightNote").hidden = true;
@@ -6992,6 +7007,13 @@ function showResult(){
       addCoins(20);
       notes.push("完美奖励 +20 金币");
       $("allRightNote").textContent = "全部答对，漂亮！";
+    }
+    if(!wrongMode && pool.length){   /* 自由练习按课算正确率 ≥90% 每课升 1 级（错题本不计级） */
+      const per = {};
+      pool.forEach(w => { const o = per[w.lesson] || (per[w.lesson] = { t: 0, w: 0 }); o.t++; });
+      sessionWrong.forEach(w => per[w.lesson].w++);
+      const ups = Object.keys(per).filter(k => (per[k].t - per[k].w) * 10 >= per[k].t * 9).length;
+      if(ups) gainLevels(ups);
     }
   }
   $("qRewardNote").hidden = !notes.length;
@@ -7106,6 +7128,8 @@ $("diffResetBtn").addEventListener("click", () => {
   $("diffAStars").textContent = starStr(0);
 });
 $("diffMask").addEventListener("click", e => { if(e.target === $("diffMask")) $("diffMask").hidden = true; });
+$("lvUpOkBtn").addEventListener("click", () => { $("lvUpMask").hidden = true; });
+$("lvUpMask").addEventListener("click", e => { if(e.target === $("lvUpMask")) $("lvUpMask").hidden = true; });
 $("diffNBtn").addEventListener("click", () => startQuest(pendingLesson, "n"));
 $("diffABtn").addEventListener("click", () => startQuest(pendingLesson, "adv"));
 window.addEventListener("resize", () => { if(!$("questMap").hidden) buildMap(); });
