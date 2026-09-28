@@ -6613,8 +6613,17 @@ function useTicket(kind){   /* kind: "hint" | "skip"，成功扣 1 张 */
 }
 function denyTicket(msg){ $("feedback").innerHTML = '<div class="enter-tip">' + msg + "</div>"; }
 
-/* ---------- 升级（练习每课≥90% +1，闯关全对 +2） ---------- */
+/* ---------- 升级（练习每课≥90% +1，闯关全对 +2；闯关≤50% 降 1） ---------- */
 const LV_REWARD = { coins: 5000, hint: 10, skip: 10 };
+const LV_DEMOTE = { coins: 2000, hint: 3, skip: 2 };
+function lvPopup(title, line, detail, note, btn){   /* 升降共用同一弹窗，文案全套换 */
+  $("lvUpTitle").textContent = title;
+  $("lvUpLine").textContent = line;
+  $("lvUpDetail").textContent = detail;
+  $("lvUpNote").textContent = note;
+  $("lvUpOkBtn").textContent = btn;
+  $("lvUpMask").hidden = false;
+}
 function gainLevels(n){   /* 每升 1 级发一份奖励，弹窗告知升了几级与奖励总数 */
   if(n <= 0) return;
   const from = store.eco.lv;
@@ -6623,9 +6632,21 @@ function gainLevels(n){   /* 每升 1 级发一份奖励，弹窗告知升了几
   store.eco.hint += LV_REWARD.hint * n;
   store.eco.skip += LV_REWARD.skip * n;
   saveStore(); refreshEco();
-  $("lvUpLine").textContent = "Lv." + from + " → Lv." + store.eco.lv + "，升了 " + n + " 级";
-  $("lvUpDetail").textContent = "本次共获得：金币 +" + (LV_REWARD.coins * n) + " · 提示券 +" + (LV_REWARD.hint * n) + " · 跳过券 +" + (LV_REWARD.skip * n);
-  $("lvUpMask").hidden = false;
+  lvPopup("🎉 恭喜升级！", "Lv." + from + " → Lv." + store.eco.lv + "，升了 " + n + " 级",
+    "本次共获得：金币 +" + (LV_REWARD.coins * n) + " · 提示券 +" + (LV_REWARD.hint * n) + " · 跳过券 +" + (LV_REWARD.skip * n),
+    "每升 1 级：金币 +" + LV_REWARD.coins + " · 提示券 +" + LV_REWARD.hint + " · 跳过券 +" + LV_REWARD.skip, "收下奖励");
+}
+function loseLevel(){   /* 闯关正确率 ≤50%：降 1 级并扣奖励；Lv1 已到底不降不扣 */
+  if(store.eco.lv <= 1) return;
+  const from = store.eco.lv;
+  store.eco.lv--;
+  store.eco.coins = Math.max(0, store.eco.coins - LV_DEMOTE.coins);
+  store.eco.hint = Math.max(0, store.eco.hint - LV_DEMOTE.hint);
+  store.eco.skip = Math.max(0, store.eco.skip - LV_DEMOTE.skip);
+  saveStore(); refreshEco();
+  lvPopup("📉 降级…", "Lv." + from + " → Lv." + store.eco.lv,
+    "本次扣除：金币 -" + LV_DEMOTE.coins + " · 提示券 -" + LV_DEMOTE.hint + " · 跳过券 -" + LV_DEMOTE.skip,
+    "闯关正确率 ≤50% 触发降级", "知道了");
 }
 
 /* ---------- 闯关（P2） ---------- */
@@ -6996,6 +7017,7 @@ function showResult(){
     const reward = [0, 20, 30, 50][stars] * (firstClear ? 2 : 1);
     addCoins(reward + (sessionWrong.length === 0 ? 20 : 0));
     if(sessionWrong.length === 0){ notes.push("全部答对，漂亮！"); gainLevels(2); }   /* 闯关全对升 2 级 */
+    else if(correctCount * 2 <= pool.length) loseLevel();   /* 正确率 ≤50% 降 1 级 */
     notes.push("过关 " + starStr(stars) + "，奖励 +" + reward + (firstClear ? "（首通翻倍）" : ""));
     if(sessionWrong.length === 0) notes.push("完美 +20");
     $("allRightNote").hidden = true;
