@@ -6865,6 +6865,7 @@ function nextWord(){
   if(idx >= pool.length){ showResult(); return; }
   cur = pool[idx]; answered = false; hintUsed = false; forceWrong = false; advanced = false;
   $("progress").textContent = "第 " + (idx + 1) + " / " + pool.length + " 题";
+  $("questModeTag").hidden = !questRun;   /* 闯关模式在题号右侧亮字，区分于自由练习 */
   $("streakNum").textContent = streak;
   $("posTag").textContent = cur.pos;
   $("lessonTag").textContent = "第" + cur.lesson + "课";

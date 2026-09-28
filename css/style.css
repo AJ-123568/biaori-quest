@@ -94,6 +94,7 @@ button{font:inherit;cursor:pointer;}
 
 /* ---------- drill ---------- */
 .drill-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:12px;}
+.drill-mid{display:flex;align-items:center;gap:10px;}   /* 第x/x题+闯关模式标记成对居中，不参与两端分布 */
 .drill-top .quit{border:none;background:none;color:var(--muted);font-size:13px;padding:4px 2px;}
 .drill-top .quit:hover{color:var(--shu);}
 .streak{font-variant-numeric:tabular-nums;}
