@@ -6902,7 +6902,9 @@ function check(){
   fb.querySelector(".kana").textContent = cur.kana;
   fb.querySelector(".kanji").textContent = cur.writing !== cur.kana ? cur.writing : "";
   fb.querySelector(".say").addEventListener("click", speak);
-  if(window.Companion){ Companion.afterSpeak(speak); } else speak();   /* 伴侣在说话时排后面，避免抢声道/被 cancel 掐断 */
+  if(!ok){   /* 答对只播伴侣语音不读词（跳下一题后保持安静）；答错才读正确答案发音 */
+    if(window.Companion){ Companion.afterSpeak(speak); } else speak();   /* 伴侣在说话时排后面，避免抢声道/被 cancel 掐断 */
+  }
   if(ok) setTimeout(advance, 900);
 }
 
