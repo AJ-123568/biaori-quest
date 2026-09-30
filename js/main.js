@@ -6949,7 +6949,7 @@ function hint(){
   if(answered) return;
   const a = cur.kana, v = $("ans").value;
   if(v.length < a.length){
-    if(!hintUsed && !useTicket("hint")){ denyTicket("提示券不足，可点上方「商店」购买"); return; }
+    if(!useTicket("hint")){ denyTicket("提示券不足，可点上方「商店」购买"); return; }
     hintUsed = true; runUsedTicket = true;
     $("ans").value = v + a[v.length]; renderMasu();
   }
@@ -7065,7 +7065,7 @@ $("noneBtn").addEventListener("click", () => {
   refreshStart();
 });
 /* ---------- 视图切换：home = 空主界面，功能全部从左边栏进入 ---------- */
-const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty"];
+const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty", "shopView", "wardrobeView"];
 function showView(sec){
   $("topbar").hidden = false; $("hud").hidden = false;
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
@@ -7168,9 +7168,8 @@ function buyTicket(kind, price){
   store.eco.coins -= price; store.eco[kind]++;
   saveStore(); refreshEco();
 }
-$("shopBtn").addEventListener("click", () => { $("shopMask").hidden = false; });
-$("shopCloseBtn").addEventListener("click", () => { $("shopMask").hidden = true; });
-$("shopMask").addEventListener("click", e => { if(e.target === $("shopMask")) $("shopMask").hidden = true; });
+$("shopBtn").addEventListener("click", () => { showView("shopView"); renderShopClothes(); });
+$("shopBackBtn").addEventListener("click", showHome);
 $("buyHintBtn").addEventListener("click", () => buyTicket("hint", 15));
 $("buySkipBtn").addEventListener("click", () => buyTicket("skip", 30));
 $("resetEcoBtn").addEventListener("click", () => {
@@ -7279,16 +7278,15 @@ function renderWardrobe(){
       c.title = owned ? (on ? "点击脱下" : "点击穿上") : "还没拥有：去商店购买";
       c.addEventListener("click", () => {
         if(owned){ wrEquip(it.id); }
-        else { $("wardrobeMask").hidden = true; $("shopMask").hidden = false; renderShopClothes(); }
+        else { showView("shopView"); renderShopClothes(); }
       });
       chips.appendChild(c);
     });
     box.appendChild(chips);
   });
 }
-$("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); $("wardrobeMask").hidden = false; });
-$("wardrobeCloseBtn").addEventListener("click", () => { $("wardrobeMask").hidden = true; });
-$("wardrobeMask").addEventListener("click", e => { if(e.target === $("wardrobeMask")) $("wardrobeMask").hidden = true; });
+$("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); showView("wardrobeView"); });
+$("wardrobeBackBtn").addEventListener("click", showHome);
 
 /* ---------- 中也（P3.6）：侧边栏入口，开关 bot / 语音 ---------- */
 function renderChuuya(){

@@ -216,6 +216,9 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
+/* 主页面内嵌视图（商店/衣橱）：内容窄栏不铺满，视觉与原弹窗面板衔接；卡片自衬底色（不再有弹窗白面板） */
+.page-narrow{max-width:520px;}
+.page-narrow .shop-item{background:var(--panel);}
 .shop.lvup{width:min(410px,92vw);}   /* 升级弹窗：奖励一行内容较长，加宽防折行 */
 
 /* ---------- 衣橱 ---------- */
