@@ -7074,7 +7074,24 @@ function showResult(){
     if(sessionWrong.length === 0) notes.push("完美 +20");
     $("allRightNote").hidden = true;
     $("qStars").hidden = false;
-    $("qStars").textContent = starStr(stars);
+    const qs = $("qStars");
+    qs.textContent = "";
+    const starEls = [];
+    for(let i = 0; i < 3; i++){
+      const s = document.createElement("span");
+      s.className = "qstar";
+      s.textContent = "☆";
+      qs.appendChild(s);
+      starEls.push(s);
+    }
+    for(let i = 0; i < stars; i++){   /* 逐颗点亮：350ms 一颗，金色 pop + star 音 */
+      setTimeout(() => {
+        starEls[i].textContent = "★";
+        starEls[i].classList.add("lit");
+        if(window.Sfx) Sfx.play("star");
+      }, i * 350);
+    }
+    if(stars === 3 && window.Sfx) setTimeout(() => Sfx.play("clear"), 350 * 3 + 250);   /* 满星后补一声号角 */
   } else {
     $("qStars").hidden = true;
     if(pool.length && sessionWrong.length === 0){

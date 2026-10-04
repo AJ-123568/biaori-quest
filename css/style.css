@@ -507,3 +507,8 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 
 .particle{position:absolute;left:20px;top:6px;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:particleFly .6s ease-out forwards;}
 @keyframes particleFly{from{opacity:1;transform:translate(0,0) scale(1)}to{opacity:0;transform:translate(var(--dx,0),var(--dy,-30px)) scale(.4)}}
+
+/* ---------- 结算星级逐颗点亮 ---------- */
+.qstars .qstar{display:inline-block;color:#C8CEC8;}   /* 未亮的灰星；inline-block 让 pop 动画吃得到 transform */
+.qstars .qstar.lit{color:#D9A441;animation:starPop .35s ease;}
+@keyframes starPop{40%{transform:scale(1.45)}}
