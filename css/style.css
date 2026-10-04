@@ -120,6 +120,7 @@ button{font:inherit;cursor:pointer;}
   display:flex;align-items:center;justify-content:center;
   font-size:26px;font-weight:700;color:var(--ink);
   border-radius:2px;
+  position:relative;   /* 扫光 ::after 的定位锚 */
 }
 .masu .cell.filled{border-color:#B9C4B0;}
 .masu.ok .cell{background:var(--midori-soft);border-color:var(--midori);color:var(--midori);}
@@ -134,7 +135,7 @@ button{font:inherit;cursor:pointer;}
 #ans:focus{border-color:var(--ai);}
 .actions{display:flex;gap:8px;margin-top:12px;}
 .actions .btn{font-size:13px;padding:6px 12px;}
-.feedback{margin-top:16px;min-height:30px;}
+.feedback{margin-top:16px;min-height:30px;position:relative;}   /* relative=答对粒子的定位锚 */
 .fb-msg{font-size:14px;font-weight:700;}
 .fb-msg.ok{color:var(--midori);}
 .fb-msg.bad{color:var(--shu);}
@@ -485,3 +486,24 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 }
 .dog-trail img{width:100%;display:block;}
 @keyframes dog-trail-fade{to{opacity:0;transform:scale(.55) translateY(8px);}}
+
+/* ---------- 游戏反馈层：金币飘字 / 连击弹跳 / 格子扫光 / 答对粒子 ---------- */
+.coin-float{position:fixed;z-index:3000;pointer-events:none;font-size:15px;font-weight:700;transform:translate(-50%,0);animation:coinFloatUp .9s ease-out forwards;}
+.coin-float.plus{color:#D9A441;}
+.coin-float.minus{color:var(--shu);}
+@keyframes coinFloatUp{0%{opacity:0;transform:translate(-50%,8px)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-40px)}}
+
+#streakNum{display:inline-block;}   /* inline 元素不吃 transform，弹跳动画需要 */
+#streakNum.pop{animation:streakPop .25s ease;}
+#streakNum.big{animation:streakBigPop .3s ease;color:#D9A441;}
+@keyframes streakPop{40%{transform:scale(1.4)}}
+@keyframes streakBigPop{40%{transform:scale(1.7)}}
+
+.wrap.shake-quick{animation:shakeQuick .15s ease;}
+@keyframes shakeQuick{25%{transform:translateX(-2px)}50%{transform:translateX(2px)}75%{transform:translateX(-1px)}}
+
+.masu.flash .cell::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:linear-gradient(135deg,#fff,var(--midori));animation:masuSweep .5s ease-out both;animation-delay:calc(var(--i,0)*45ms);}
+@keyframes masuSweep{0%{opacity:0}25%{opacity:.85}100%{opacity:0}}   /* 白→绿扫光，.cell.hit 原样式保留 */
+
+.particle{position:absolute;left:20px;top:6px;width:6px;height:6px;border-radius:50%;pointer-events:none;animation:particleFly .6s ease-out forwards;}
+@keyframes particleFly{from{opacity:1;transform:translate(0,0) scale(1)}to{opacity:0;transform:translate(var(--dx,0),var(--dy,-30px)) scale(.4)}}

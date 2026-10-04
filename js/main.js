@@ -6602,9 +6602,22 @@ function refreshEco(which){
     box.classList.remove("bump"); void box.offsetWidth; box.classList.add("bump");
   }
 }
+function ecoFx(n){   /* 金币飘字：#hudCoins 附近 +n/-n 上浮淡出；绕过 addCoins 直改 store.eco 的入口需显式补调 */
+  const hud = $("hudCoins");
+  if(!hud) return;
+  const r = hud.getBoundingClientRect();
+  const el = document.createElement("span");
+  el.className = "coin-float " + (n >= 0 ? "plus" : "minus");
+  el.textContent = (n >= 0 ? "+" : "-") + Math.abs(n);
+  el.style.left = (r.left + r.width / 2) + "px";
+  el.style.top = r.top + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
 function addCoins(n){
   store.eco.coins = Math.max(0, store.eco.coins + n);
   saveStore(); refreshEco("Coins");
+  ecoFx(n);
 }
 function useTicket(kind){   /* kind: "hint" | "skip"，成功扣 1 张 */
   if(store.eco[kind] <= 0) return false;
@@ -6646,6 +6659,7 @@ function loseLevel(){   /* 闯关正确率 ≤50%：降 1 级并扣奖励；Lv1 
   store.eco.hint = Math.max(0, store.eco.hint - LV_DEMOTE.hint);
   store.eco.skip = Math.max(0, store.eco.skip - LV_DEMOTE.skip);
   saveStore(); refreshEco();
+  ecoFx(-LV_DEMOTE.coins);
   lvPopup("📉 降级…", "Lv." + from + " → Lv." + store.eco.lv,
     "本次扣除：金币 -" + LV_DEMOTE.coins + " · 提示券 -" + LV_DEMOTE.hint + " · 跳过券 -" + LV_DEMOTE.skip,
     "闯关正确率 ≤50% 触发降级", "知道了");
@@ -6894,6 +6908,7 @@ function renderMasu(){
   for(let i = 0; i < n; i++){
     const c = document.createElement("div");
     c.className = "cell";
+    c.style.setProperty("--i", i);   /* 扫光逐格 delay 用 */
     const ch = typed[i];
     if(ch !== undefined){ c.textContent = ch; c.classList.add("filled"); }
     if(answered && i < cur.kana.length && ch === cur.kana[i]) c.classList.add("hit");
@@ -6930,9 +6945,23 @@ function check(){
     if(window.Companion) Companion.fire("answer-wrong");
   }
   saveStore();
-  $("streakNum").textContent = streak;
+  const sn = $("streakNum");
+  sn.textContent = streak;
+  sn.classList.remove("pop", "big"); void sn.offsetWidth;   /* 重启动画 */
+  sn.classList.add(streak > 0 && streak % 5 === 0 ? "big" : "pop");
+  sn.addEventListener("animationend", () => sn.classList.remove("pop", "big"), { once: true });
+  if(streak > 0 && streak % 5 === 0){   /* 整五连击：数字放大变色 + 页面微震一下 */
+    const wr = document.querySelector(".wrap");
+    wr.classList.remove("shake-quick"); void wr.offsetWidth; wr.classList.add("shake-quick");
+    setTimeout(() => wr.classList.remove("shake-quick"), 250);
+  }
   $("hintBtn").disabled = true; $("skipBtn").disabled = true;
   renderMasu();
+  if(ok){
+    const masu = $("masu");
+    masu.classList.remove("flash"); void masu.offsetWidth; masu.classList.add("flash");
+    setTimeout(() => masu.classList.remove("flash"), 1000);
+  }
   const fb = $("feedback");
   fb.innerHTML = '<div class="fb-msg ' + (ok ? "ok" : "bad") + '"></div>'
     + '<div class="reveal"><button class="say" title="发音">🔊</button>'
@@ -6943,10 +6972,28 @@ function check(){
   fb.querySelector(".kana").textContent = cur.kana;
   fb.querySelector(".kanji").textContent = cur.writing !== cur.kana ? cur.writing : "";
   fb.querySelector(".say").addEventListener("click", speak);
+  if(ok) burstParticles();   /* 从 feedback 区迸小彩点 */
   if(!ok){   /* 答对只播伴侣语音不读词（跳下一题后保持安静）；答错才读正确答案发音 */
     if(window.Companion){ Companion.afterSpeak(speak); } else speak();   /* 伴侣在说话时排后面，避免抢声道/被 cancel 掐断 */
   }
   if(ok) setTimeout(advance, 900);
+}
+
+function burstParticles(){   /* 答对小彩点：仅精确指针且未开"减少动态"时启用（写法照抄 cursor-dog.js） */
+  if(!matchMedia("(pointer: fine)").matches) return;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const fb = $("feedback");
+  const colors = ["#D9A441", "var(--midori)", "var(--ai)"];
+  for(let i = 0; i < 5; i++){
+    const p = document.createElement("i");
+    p.className = "particle";
+    const ang = Math.random() * Math.PI * 2, dist = 26 + Math.random() * 38;
+    p.style.setProperty("--dx", (Math.cos(ang) * dist).toFixed(1) + "px");
+    p.style.setProperty("--dy", (Math.sin(ang) * dist - 16).toFixed(1) + "px");
+    p.style.background = colors[i % colors.length];
+    fb.appendChild(p);
+    setTimeout(() => p.remove(), 650);
+  }
 }
 
 function hint(){
@@ -7171,7 +7218,7 @@ function buyTicket(kind, price){
   }
   store.eco.coins -= price; store.eco[kind]++;
   saveStore(); refreshEco();
-  if(window.Sfx) Sfx.play("buy");
+  ecoFx(-price); if(window.Sfx) Sfx.play("buy");
 }
 $("shopBtn").addEventListener("click", () => { showView("shopView"); renderShopClothes(); });
 $("shopBackBtn").addEventListener("click", showHome);
@@ -7232,7 +7279,7 @@ function buyClothes(id){
   if(it.slot === "acc"){ if(!st.worn.acc.includes(id)) st.worn.acc.push(id); }
   else st.worn[it.slot] = id;   /* 买完即上身 */
   saveStore(); refreshEco("Coins"); wrApply();
-  if(window.Sfx) Sfx.play("buy");
+  ecoFx(-it.price); if(window.Sfx) Sfx.play("buy");
   renderShopClothes();
 }
 function renderShopClothes(){
