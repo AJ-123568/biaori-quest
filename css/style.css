@@ -512,3 +512,6 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .qstars .qstar{display:inline-block;color:#C8CEC8;}   /* 未亮的灰星；inline-block 让 pop 动画吃得到 transform */
 .qstars .qstar.lit{color:#D9A441;animation:starPop .35s ease;}
 @keyframes starPop{40%{transform:scale(1.45)}}
+
+/* ---------- 闯关地图：走过的路段金色亮线（叠在灰点线之上） ---------- */
+.qmap-path .qseg-lit{fill:none;stroke:#D9A441;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}

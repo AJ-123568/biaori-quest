@@ -6728,6 +6728,15 @@ function buildMap(){
     p.setAttribute("class", cls);
     svg.appendChild(p);
   });
+  /* 走过的路点亮：第 i 课任一难度 ≥1★，第 i→i+1 段叠一条金色实线（未通关不画，状态随存档自动跟随） */
+  for(let i = 1; i < pts.length; i++){
+    if(bestStars(i) < 1) continue;
+    const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
+    const seg = document.createElementNS(SVG_NS, "path");
+    seg.setAttribute("d", "M " + a.x + " " + a.y + " C " + a.x + " " + my + ", " + b.x + " " + my + ", " + b.x + " " + b.y);
+    seg.setAttribute("class", "qseg-lit");
+    svg.appendChild(seg);
+  }
   box.appendChild(svg);
   let nowLesson = 0;
   DATA.lessons.forEach(L => { if(!nowLesson && questUnlocked(L.lesson) && !bestStars(L.lesson)) nowLesson = L.lesson; });
