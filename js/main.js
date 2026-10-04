@@ -6626,6 +6626,7 @@ function lvPopup(title, line, detail, note, btn){   /* 升降共用同一弹窗�
 }
 function gainLevels(n){   /* 每升 1 级发一份奖励，弹窗告知升了几级与奖励总数 */
   if(n <= 0) return;
+  if(window.Sfx) Sfx.play("levelup");
   const from = store.eco.lv;
   store.eco.lv += n;
   store.eco.coins += LV_REWARD.coins * n;
@@ -6638,6 +6639,7 @@ function gainLevels(n){   /* 每升 1 级发一份奖励，弹窗告知升了几
 }
 function loseLevel(){   /* 闯关正确率 ≤50%：降 1 级并扣奖励；Lv1 已到底不降不扣 */
   if(store.eco.lv <= 1) return;
+  if(window.Sfx) Sfx.play("demote");
   const from = store.eco.lv;
   store.eco.lv--;
   store.eco.coins = Math.max(0, store.eco.coins - LV_DEMOTE.coins);
@@ -6911,8 +6913,9 @@ function check(){
   if(ok){
     correctCount++; streak++; bestStreak = Math.max(bestStreak, streak);
     st.c++;
+    if(window.Sfx) Sfx.play("correct");
     addCoins(2);
-    if(streak % 5 === 0) addCoins(5);
+    if(streak % 5 === 0){ addCoins(5); if(window.Sfx) Sfx.play("combo"); }
     if(window.Companion) Companion.fire("answer-correct");
     if(streak % 5 === 0 && window.Companion) Companion.fire("combo5");
     if(!hintUsed){
@@ -6921,6 +6924,7 @@ function check(){
     }
   } else {
     streak = 0; st.w++;
+    if(window.Sfx) Sfx.play("wrong");
     if(!store.wrong.includes(k)) store.wrong.push(k);
     sessionWrong.push(cur);
     if(window.Companion) Companion.fire("answer-wrong");
@@ -7167,6 +7171,7 @@ function buyTicket(kind, price){
   }
   store.eco.coins -= price; store.eco[kind]++;
   saveStore(); refreshEco();
+  if(window.Sfx) Sfx.play("buy");
 }
 $("shopBtn").addEventListener("click", () => { showView("shopView"); renderShopClothes(); });
 $("shopBackBtn").addEventListener("click", showHome);
@@ -7227,6 +7232,7 @@ function buyClothes(id){
   if(it.slot === "acc"){ if(!st.worn.acc.includes(id)) st.worn.acc.push(id); }
   else st.worn[it.slot] = id;   /* 买完即上身 */
   saveStore(); refreshEco("Coins"); wrApply();
+  if(window.Sfx) Sfx.play("buy");
   renderShopClothes();
 }
 function renderShopClothes(){
@@ -7298,7 +7304,9 @@ function renderChuuya(){
     ["使用中也 bot", window.Companion ? !Companion.isOff() : false,
       on => Companion.setOff(on), "关掉后右下角不再显示，重新打开会打招呼"],
     ["台词语音", window.Companion ? !Companion.isMute() : false,
-      on => Companion.setMute(on), "关掉后台词气泡照常，但不出声"]
+      on => Companion.setMute(on), "关掉后台词气泡照常，但不出声"],
+    ["音效音", !(window.Sfx && Sfx.isOff()),
+      on => window.Sfx && Sfx.setOff(on), "关掉后答对/过关等提示音不再播放"]
   ];
   rows.forEach(([title, on, toggle, desc]) => {
     const row = document.createElement("div");
