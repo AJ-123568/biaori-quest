@@ -12,6 +12,8 @@
   --midori-soft:#E1EFE6;
   --line:#D7DDD8;
   --masu-line:#E4E1D6;
+  --grad-h:linear-gradient(90deg,#CDFF97,#F0D1FF);   /* 绿→紫横向渐变：编辑单词/全选/清空、错题行、券/时长档框 */
+  --grad-v:linear-gradient(180deg,#CDFF97,#F0D1FF);  /* 同色纵向：中也弹窗面板 */
   --side-w:102px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -58,7 +60,7 @@ main section{margin-top:28px;}
 /* ---------- setup ---------- */
 /* 编辑单词入口按钮：细描边胶囊，悬停淡靛底 */
 .word-edit{
-  border:1.5px solid var(--ai);background:var(--panel);color:var(--ai);
+  border:1.5px solid var(--ai);background:var(--grad-h);color:var(--ai);
   border-radius:999px;padding:7px 20px;font-size:14px;font-weight:600;
   font-family:inherit;letter-spacing:.04em;cursor:pointer;
   display:inline-flex;align-items:center;gap:7px;margin-bottom:12px;
@@ -68,7 +70,7 @@ main section{margin-top:28px;}
 .word-edit:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
 .setup-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}   /* 编辑单词 + 全选/清空 同一行；12px 行距=原 .word-edit 的 margin-bottom */
 .setup-top .word-edit{margin-bottom:0;}
-.setup-top .btn{font-size:13px;padding:4px 12px;}   /* 比编辑单词小一点、比右上角重置大一点 */
+.setup-top .btn{font-size:13px;padding:4px 12px;background:var(--grad-h);}   /* 比编辑单词小一点、比右上角重置大一点 */
 .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
 /* 练习页移出 .wrap 独立全宽（与 header.top 同层）：铺满边栏右侧主区，不再挤居中列 */
 #setup{
@@ -247,9 +249,9 @@ button{font:inherit;cursor:pointer;}
 .shop-info b{font-size:14px;display:block;}
 .shop-info span{font-size:12px;color:var(--muted);}
 .shop-note{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;}
-/* 主页面内嵌视图（商店/衣橱）：内容窄栏不铺满，视觉与原弹窗面板衔接；卡片自衬底色（不再有弹窗白面板） */
-.page-narrow{max-width:520px;}
-.page-narrow .shop-item{background:var(--panel);}
+/* 主页面内嵌视图（商店/约会基金）：内容窄栏不铺满但在主区居中；卡片自衬底色（不再有弹窗白面板） */
+.page-narrow{max-width:520px;margin-inline:auto;}
+.page-narrow .shop-item{background:var(--grad-h);}
 .shop.lvup{width:min(410px,92vw);}   /* 升级弹窗：奖励一行内容较长，加宽防折行 */
 
 /* ---------- 衣橱 ---------- */
@@ -397,7 +399,7 @@ button{font:inherit;cursor:pointer;}
 .wrong-stats{max-width:560px;margin:10px auto 0;}
 .ws-row{
   display:flex;align-items:baseline;gap:18px;
-  background:var(--panel);border-radius:10px;padding:10px 16px;margin-bottom:6px;
+  background:var(--grad-h);border-radius:10px;padding:10px 16px;margin-bottom:6px;
   font-size:14px;box-shadow:0 2px 8px rgba(21,64,56,.08);
 }
 .ws-row .l{font-weight:700;min-width:52px;}
@@ -596,3 +598,16 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .stop-shop .s-ok b{color:var(--midori);}
 .stop-shop .s-bad b{color:var(--shu);}
 .stop-shop .stop-foot{justify-content:space-between;padding:0 4px;}
+
+/* ---------- 中也的约会基金：三板块时长兑金币（替换衣橱入口） ---------- */
+.bank-head{margin-bottom:10px;text-align:center;}
+.bank-title{display:block;font-size:17px;}
+.bank-sub{font-size:12px;color:var(--muted);}
+.bank-stats{display:flex;gap:10px;margin-bottom:12px;}
+.bank-stat{flex:1;background:var(--grad-h);border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
+.bank-stat .lab{display:block;font-size:12px;color:var(--muted);}
+.bank-stat b{font-size:16px;font-variant-numeric:tabular-nums;}
+#chuuyaMask .shop{background:var(--grad-v);}   /* 中也弹窗纵向渐变；编辑/难度/升降弹窗保持白面板 */
+/* 条目卡内部保持原横排（文字左、按钮右、框不变高），居中只作用于整栏与标题 */
+.bank-claim:disabled{opacity:.45;cursor:not-allowed;color:var(--muted);}
+.bank-claim:disabled:hover{border-color:var(--line);color:var(--muted);}   /* 压掉 .btn:hover 的变靛蓝 */
