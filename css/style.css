@@ -230,7 +230,7 @@ button{font:inherit;cursor:pointer;}
 }
 .shop-mask[hidden]{display:none;}
 .shop{
-  width:min(340px,92vw);background:var(--panel);border:1px solid var(--line);
+  width:min(340px,92vw);background:var(--grad-v);border:1px solid var(--line);
   border-radius:10px;padding:16px;box-shadow:0 12px 32px rgba(35,40,43,.18);
 }
 .shop-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
@@ -253,7 +253,7 @@ button{font:inherit;cursor:pointer;}
 .page-narrow{max-width:520px;margin-inline:auto;}
 .page-narrow .shop-item{background:var(--grad-h);}
 /* 券/时长档内的操作按钮：磨砂半透白，透出所在卡的渐变底（商店买券+约会兑换） */
-.shop-item .btn,.card .btn,#ans{
+.shop-item .btn,.card .btn,.shop .btn,#ans{
   background:rgba(255,255,255,.42);
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
 }
@@ -612,7 +612,6 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .bank-stat{flex:1;background:var(--grad-h);border:1px solid var(--line);border-radius:8px;padding:8px 12px;}
 .bank-stat .lab{display:block;font-size:12px;color:var(--muted);}
 .bank-stat b{font-size:16px;font-variant-numeric:tabular-nums;}
-#chuuyaMask .shop{background:var(--grad-v);}   /* 中也弹窗纵向渐变；编辑/难度/升降弹窗保持白面板 */
 /* 条目卡内部保持原横排（文字左、按钮右、框不变高），居中只作用于整栏与标题 */
 .bank-claim:disabled{opacity:.45;cursor:not-allowed;color:var(--muted);}
 .bank-claim:disabled:hover{border-color:var(--line);color:var(--muted);}   /* 压掉 .btn:hover 的变靛蓝 */
