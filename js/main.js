@@ -6553,6 +6553,7 @@ function loadStore(){
       s.eco = Object.assign({}, ECO_DEFAULT, s.eco);
       s.quest = s.quest || {};
       s.custom = s.custom || {};
+      s.wc = s.wc || {};   /* 错次记忆：每词自 2026-11-07 起的答错次数，旧存档没有则从空开始（以前的错不计） */
       /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
       if(!Array.isArray(s.questUnlocked)){
         s.questUnlocked = [1];
@@ -6573,6 +6574,7 @@ function loadStore(){
   base.quest = {};
   base.questUnlocked = [1];
   base.custom = {};
+  base.wc = {};
   return base;
 }
 const store = loadStore();
@@ -6920,7 +6922,6 @@ function startSession(list, quest = null){
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0; wrongStreak = 0;
   runUsedTicket = false;
   showView("drill");
-  $("wrongClearBtn").hidden = !wrongMode;   /* 只在错题本模式显示清空按钮 */
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
   nextWord();
@@ -7004,6 +7005,7 @@ function check(){
     }
   } else {
     streak = 0; st.w++;
+    store.wc[k] = (store.wc[k] || 0) + 1;   /* 错次记忆：所有模式（含跳过/闯关）答错统一 +1，答对出本不清零 */
     wrongStreak++;
     if(window.Sfx) Sfx.play("wrong");
     if(!questRun){   /* 罚币：错题本每错一道 -5；练习连错第 1/2 道 -2，第 3 道起第 n 道 -2n；闯关不罚（已有降级罚则） */
@@ -7203,8 +7205,37 @@ $("noneBtn").addEventListener("click", () => {
   document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
   refreshStart();
 });
+/* ---------- 错题本过渡页：先看统计再决定，点「败部复活」才进答题 ---------- */
+function renderWrongBook(){
+  const total = store.wrong.length;
+  $("wrongBookTitle").textContent = "错题本 · 共错 " + total + " 道";
+  const per = {};
+  store.wrong.forEach(k => {   /* 本子 key 形如 l3:かぞく，取前缀即课号 */
+    const n = +k.slice(1, k.indexOf(":"));
+    const o = per[n] || (per[n] = { c: 0, w: 0 });
+    o.c++;
+  });
+  DATA.lessons.forEach(L => {   /* 错次 = 该课全部词（含已答对出本的）的 wc 总和——记忆不随出本丢失 */
+    if(!per[L.lesson]) return;
+    lessonWords(L).forEach(w => { per[L.lesson].w += store.wc[wkey(w)] || 0; });
+  });
+  const box = $("wrongStatsBox");
+  box.innerHTML = "";
+  Object.keys(per).map(Number).sort((a, b) => a - b).forEach(n => {
+    const o = per[n];
+    const d = document.createElement("div");
+    d.className = "ws-row";
+    d.innerHTML = '<span class="l"></span><span class="c"></span><span class="p"></span><span class="t"></span>';
+    d.querySelector(".l").textContent = "第" + n + "课";
+    d.querySelector(".c").textContent = o.c + " 道";
+    d.querySelector(".p").textContent = "占比 " + (o.c * 100 / total).toFixed(2) + "%";
+    d.querySelector(".t").textContent = "错 " + o.w + " 次";
+    box.appendChild(d);
+  });
+}
+
 /* ---------- 视图切换：home = 空主界面，功能全部从左边栏进入 ---------- */
-const SECTIONS = ["setup", "questMap", "drill", "result", "wrongEmpty", "shopView", "wardrobeView"];
+const SECTIONS = ["setup", "questMap", "wrongBook", "drill", "result", "wrongEmpty", "shopView", "wardrobeView"];
 function showView(sec){
   $("topbar").hidden = false; $("hud").hidden = false;
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
@@ -7229,16 +7260,19 @@ $("practiceBtn").addEventListener("click", showPractice);
 $("questSideBtn").addEventListener("click", showQuest);
 $("wrongSideBtn").addEventListener("click", () => {
   if(!store.wrong.length){ showView("wrongEmpty"); return; }
+  renderWrongBook();
+  showView("wrongBook");
+});
+$("reviveBtn").addEventListener("click", () => {
   setWrong(true);
   startSession(currentPool());
 });
-$("wrongClearBtn").addEventListener("click", function(){
+$("wrongClearBtn").addEventListener("click", () => {
   if(!store.wrong.length) return;
-  if(!confirm("清空错题本？所有错词记录将删除。")) return;
+  if(!confirm("清空错题本？错词名单将删除（错次数记忆保留）。")) return;
   store.wrong = [];
   saveStore();
-  this.textContent = "已清空";
-  setTimeout(() => { this.textContent = "清空错题本"; }, 1500);
+  showView("wrongEmpty");
 });
 $("hintBtn").addEventListener("click", hint);
 $("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
@@ -7555,6 +7589,22 @@ $("editSaveBtn").addEventListener("click", () => {
 
 buildChips();
 buildStageTests();
+/* 开始按钮彩蛋：hover 显示星粹合绘（图 840×104 与按钮 420×52 同为 8:1，contain 完整显示无裁切）；
+   未选课文（disabled）时不出图，文字隐藏走 .start.peek */
+const startBtnEl = $("startBtn");
+startBtnEl.addEventListener("mouseenter", () => {
+  if(startBtnEl.disabled) return;
+  startBtnEl.style.backgroundImage = "url(assets/chuuya/chuuya-27.png)";
+  startBtnEl.style.backgroundSize = "contain";
+  startBtnEl.style.backgroundPosition = "center";
+  startBtnEl.style.backgroundRepeat = "no-repeat";
+  startBtnEl.classList.add("peek");
+});
+startBtnEl.addEventListener("mouseleave", () => {
+  startBtnEl.classList.remove("peek");
+  startBtnEl.style.backgroundImage = startBtnEl.style.backgroundSize = startBtnEl.style.backgroundPosition = startBtnEl.style.backgroundRepeat = "";
+});
+new Image().src = "assets/chuuya/chuuya-27.png";   /* 预热 */
 refreshStart();
 refreshEco();
 updateChipCounts();
