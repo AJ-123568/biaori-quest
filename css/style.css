@@ -12,8 +12,8 @@
   --midori-soft:#E1EFE6;
   --line:#D7DDD8;
   --masu-line:#E4E1D6;
-  --grad-h:linear-gradient(90deg,#CDFF97,#F0D1FF);   /* 绿→紫横向渐变：编辑单词/全选/清空、错题行、券/时长档框 */
-  --grad-v:linear-gradient(180deg,#CDFF97,#F0D1FF);  /* 同色纵向：中也弹窗面板 */
+  --grad-h:linear-gradient(90deg,#A1D6A5,#F0D1FF);   /* 绿→紫横向渐变：编辑单词/全选/清空、错题行、券/时长档框 */
+  --grad-v:linear-gradient(180deg,#A1D6A5,#F0D1FF);  /* 同色纵向：中也弹窗面板 */
   --side-w:102px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
