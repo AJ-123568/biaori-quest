@@ -118,7 +118,7 @@ button{font:inherit;cursor:pointer;}
 }
 .start:hover{background:var(--ai-deep);}
 .start:disabled{background:#A8B2C4;cursor:not-allowed;}
-.start.peek{color:transparent;transform:scale(2);background-color:#fff;z-index:6;}   /* hover 放大 2 倍到 840×104 恰好装下星粹图原尺寸，白底衬透明区 */
+.start.peek{color:transparent;background-color:#fff;}   /* hover 彩蛋：图紧裁 contain 居中（人物 1.6:1 竖比例，按钮 8:1 横框内显示 ~85×50），白底衬透明区 */
 
 /* ---------- drill ---------- */
 .drill-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:12px;}
@@ -404,6 +404,13 @@ button{font:inherit;cursor:pointer;}
 .ws-row .p{color:var(--muted);font-size:13px;}
 .ws-row .t{margin-left:auto;color:var(--shu);font-weight:700;}
 #wrongBook .start{display:block;width:min(420px,100%);margin:22px auto 0;}   /* 与练习页开始按钮同款居中 */
+/* 败部复活悬停彩蛋：固定单图 contain 居中，棋盘已抠成真透明直接浮在靛蓝底上；
+   只挂 #reviveBtn 本体不碰其他按钮；contain=人物完整不裁（420×52 里约 58px 高居中） */
+#reviveBtn.peek{
+  background-image:url("../assets/chuuya/revive-peek.png");
+  background-size:contain;background-position:center;background-repeat:no-repeat;
+  color:transparent;
+}
 .qmap{position:relative;margin:6px 0 4px;}
 .qmap-path{position:absolute;left:0;top:0;}
 .qmap-path .qmap-road{fill:none;stroke:rgba(255,255,255,.55);stroke-width:34;stroke-linecap:round;stroke-linejoin:round;filter:blur(.6px) drop-shadow(0 4px 10px rgba(21,64,56,.28));}   /* 白色磨砂半透明悬浮路+投影 */

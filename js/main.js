@@ -7267,6 +7267,11 @@ $("reviveBtn").addEventListener("click", () => {
   setWrong(true);
   startSession(currentPool());
 });
+/* 败部复活悬停彩蛋：固定单图（区别于课程卡 attachPeek 的随机池），机制相同——移入出图藏文字、移出恢复 */
+const REVIVE_PEEK = "assets/chuuya/revive-peek.png";
+new Image().src = REVIVE_PEEK;   /* 预热防首次悬停闪 */
+$("reviveBtn").addEventListener("mouseenter", () => $("reviveBtn").classList.add("peek"));
+$("reviveBtn").addEventListener("mouseleave", () => $("reviveBtn").classList.remove("peek"));
 $("wrongClearBtn").addEventListener("click", () => {
   if(!store.wrong.length) return;
   if(!confirm("清空错题本？错词名单将删除（错次数记忆保留）。")) return;
