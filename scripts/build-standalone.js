@@ -12,9 +12,9 @@ const readTxt = f => read(f).toString("utf8");
 
 let html = readTxt("index.html");
 
-/* 本地样式表内联（href 非 http 开头的才内联） */
+/* 本地样式表内联（href 非 http 开头的才内联）；href 可带 ?v= 缓存参数，读盘前剥掉 */
 html = html.replace(/<link rel="stylesheet" href="(?!https?:)([^"]+)">/g, (m, href) =>
-  "<style>\n" + readTxt(href) + "\n</style>");
+  "<style>\n" + readTxt(href.split("?")[0]) + "\n</style>");
 
 /* standalone 注入数据：伴侣配置 / 语音 base64 映射 / 衣橱配置 / 自定义画稿（若存在） */
 const audio = {};
@@ -54,9 +54,9 @@ const injectTag = "<script>window." + Object.entries(inject)
   .map(([k, v]) => k + "=" + JSON.stringify(v)).join(";window.") + ";</script>";
 html = html.replace(/<script src="js\/puppet.js">/, () => "\x01ASSET_INJECT\x01\n<script src=\"js/puppet.js\">");
 
-/* 全部本地脚本内联（函数形式的 replace 避免内容里的 $ 触发替换模式） */
+/* 全部本地脚本内联（函数形式的 replace 避免内容里的 $ 触发替换模式）；src 可带 ?v= 缓存参数，读盘前剥掉 */
 html = html.replace(/<script src="(?!https?:)([^"]+)"><\/script>/g, (m, src) =>
-  "<script>\n" + readTxt(src) + "\n</script>");
+  "<script>\n" + readTxt(src.split("?")[0]) + "\n</script>");
 
 if(html.includes('<script src="') || html.includes('href="css/')) {
   console.error("警告：仍有未内联的本地资源，请检查 index.html");

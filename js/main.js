@@ -6862,8 +6862,8 @@ function buildChips(){
     box.appendChild(b);
   });
 }
-/* 阶段测试：每 5 课一组（1-5/6-10/…/21-24），从该组词里随机抽 75% 开一场练习——
-   quest=null 走自由练习分支，金币/错题本/分课升级与普通练习完全同一套结算 */
+/* 阶段连选：每 5 课一组（1-5/6-10/…/21-24），点击=整组勾选/取消（交互与点单课一致，不直接进答题），
+   由开始按钮进入后走自由练习分支，金币/错题本/分课升级同一套结算 */
 function buildStageTests(){
   const box = $("stageTests");
   for(let s = 1; s < DATA.lessons.length + 1; s += 5){
@@ -6872,13 +6872,13 @@ function buildStageTests(){
     const b = document.createElement("button");
     b.className = "chip stage";
     b.innerHTML = '<span class="no">' + label + '</span>';
-    b.title = "从这 " + group.length + " 课里随机抽 75% 的词测试 · 金币与练习相同";
+    b.title = "一键勾选/取消这 " + group.length + " 课 · 点下方开始进入练习";
     b.addEventListener("click", () => {
-      const all = [];
-      group.forEach(n => lessonWords(DATA.lessons[n - 1]).forEach(w => all.push(w)));
-      shuffle(all);
+      const allIn = group.every(n => selected.has(n));   /* 组内已全选则整组取消，否则整组勾上 */
+      group.forEach(n => allIn ? selected.delete(n) : selected.add(n));
+      group.forEach(n => chipEls[n].classList.toggle("on", selected.has(n)));
       setWrong(false);
-      startSession(all.slice(0, Math.round(all.length * 0.75)));
+      refreshStart();
     });
     attachPeek(b);
     box.appendChild(b);
