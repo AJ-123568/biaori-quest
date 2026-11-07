@@ -59,7 +59,7 @@ main section{margin-top:28px;}
 }
 .word-edit:hover:not(:disabled){background:var(--ai-soft);box-shadow:0 2px 8px rgba(51,81,142,.14);}
 .word-edit:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
-.setup-top{display:flex;align-items:center;gap:12px;}   /* 编辑单词 + 全选/清空 同一行 */
+.setup-top{display:flex;align-items:center;gap:12px;margin-bottom:12px;}   /* 编辑单词 + 全选/清空 同一行；12px 行距=原 .word-edit 的 margin-bottom */
 .setup-top .word-edit{margin-bottom:0;}
 .setup-top .btn{font-size:13px;padding:4px 12px;}   /* 比编辑单词小一点、比右上角重置大一点 */
 .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
