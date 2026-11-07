@@ -61,6 +61,7 @@ main section{margin-top:28px;}
 .word-edit:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
 .setup-top{display:flex;align-items:center;gap:12px;}   /* 编辑单词 + 全选/清空 同一行 */
 .setup-top .word-edit{margin-bottom:0;}
+.setup-top .btn{font-size:13px;padding:4px 12px;}   /* 比编辑单词小一点、比右上角重置大一点 */
 .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
 .chip{
   border:1px solid var(--line);background:var(--panel);border-radius:6px;
