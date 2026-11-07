@@ -36,7 +36,6 @@ header.top{   /* 顶栏：边栏右侧整个主区全宽；箭头贴左、标题
   display:flex;align-items:center;justify-content:space-between;
   margin:24px 0 6px var(--side-w);
   padding:0 20px 10px 16px;
-  border-bottom:2px solid var(--ink);
 }
 header.top h1{   /* 绝对居中（flex:1 会因左右元素宽度不等而偏心）；纯展示不挡箭头/词数点击 */
   position:absolute;top:0;bottom:10px;left:0;right:0;
