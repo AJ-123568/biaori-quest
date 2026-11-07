@@ -7187,11 +7187,6 @@ $("wrongClearBtn").addEventListener("click", function(){
   this.textContent = "已清空";
   setTimeout(() => { this.textContent = "清空错题本"; }, 1500);
 });
-$("quitBtn").addEventListener("click", () => {
-  if(questRun){ questRun = null; showQuest(); }
-  else if(wrongMode){ showHome(); }
-  else showPractice();
-});
 $("hintBtn").addEventListener("click", hint);
 $("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
 $("skipBtn").addEventListener("click", skip);
@@ -7215,7 +7210,7 @@ $("backBtn").addEventListener("click", () => {
   else showPractice();
 });
 $("retryQuestBtn").addEventListener("click", () => { if(lastQuest) startQuest(lastQuest.lesson, lastQuest.diff); });
-$("mapBackBtn").addEventListener("click", showHome);
+/* 退出/返回按钮已删（与 header 箭头重复）：quitBtn/mapBackBtn/shopBackBtn/wardrobeBackBtn */
 $("diffCloseBtn").addEventListener("click", () => { $("diffMask").hidden = true; });
 $("questResetBtn").addEventListener("click", function(){
   if(!confirm("重置所有闯关进度？全部课程的星级与解锁将清空，自由练习不受影响。")) return;
@@ -7256,7 +7251,6 @@ function buyTicket(kind, price){
   ecoFx(-price); if(window.Sfx) Sfx.play("buy");
 }
 $("shopBtn").addEventListener("click", () => showView("shopView"));
-$("shopBackBtn").addEventListener("click", showHome);
 $("buyHintBtn").addEventListener("click", () => buyTicket("hint", 15));
 $("buySkipBtn").addEventListener("click", () => buyTicket("skip", 30));
 $("resetEcoBtn").addEventListener("click", () => {
@@ -7328,7 +7322,6 @@ function renderWardrobe(){
   });
 }
 $("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); showView("wardrobeView"); });
-$("wardrobeBackBtn").addEventListener("click", showHome);
 
 /* ---------- 中也（P3.6）：侧边栏入口，开关 bot / 语音 ---------- */
 function renderChuuya(){
