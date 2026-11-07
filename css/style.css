@@ -59,6 +59,8 @@ main section{margin-top:28px;}
 }
 .word-edit:hover:not(:disabled){background:var(--ai-soft);box-shadow:0 2px 8px rgba(51,81,142,.14);}
 .word-edit:disabled{border-color:var(--line);color:var(--muted);cursor:not-allowed;}
+.setup-top{display:flex;align-items:center;gap:12px;}   /* 编辑单词 + 全选/清空 同一行 */
+.setup-top .word-edit{margin-bottom:0;}
 .lessons{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;}
 .chip{
   border:1px solid var(--line);background:var(--panel);border-radius:6px;
