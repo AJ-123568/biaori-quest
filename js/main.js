@@ -6554,6 +6554,7 @@ function loadStore(){
       s.quest = s.quest || {};
       s.custom = s.custom || {};
       s.wc = s.wc || {};   /* 错次记忆：每词自 2026-11-07 起的答错次数，旧存档没有则从空开始（以前的错不计） */
+      s.wt = s.wt || {};   /* 各模式累计答题时长（秒）：{ practice, wrong, quest }，旧存档没有则从零开始 */
       /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
       if(!Array.isArray(s.questUnlocked)){
         s.questUnlocked = [1];
@@ -6575,6 +6576,7 @@ function loadStore(){
   base.questUnlocked = [1];
   base.custom = {};
   base.wc = {};
+  base.wt = {};
   return base;
 }
 const store = loadStore();
@@ -6906,6 +6908,7 @@ function refreshStart(){
 let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0, wrongStreak = 0;   /* wrongStreak=连错计数（答对清零，练习罚币用） */
 let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced = false;
 let runUsedTicket = false;   /* 本场用过券：闯关模式下星级封顶 2 星（P2 消费） */
+let hintUsedCount = 0, skipUsedCount = 0;   /* 本场已用券数（停止弹窗统计显示用） */
 let questRun = null;         /* null = 自由练习，否则 { lesson, diff: "n"|"adv" } */
 function advance(){
   if(advanced) return;
@@ -6921,6 +6924,8 @@ function startSession(list, quest = null){
   if(!quest && $("optRandom").checked) shuffle(pool);
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0; wrongStreak = 0;
   runUsedTicket = false;
+  hintUsedCount = 0; skipUsedCount = 0;
+  timerReset();   /* 每场进题回 00:00 不自动走，等手动「开始计时」 */
   showView("drill");
   $("diffTag").hidden = !quest;
   if(quest) $("diffTag").textContent = quest.diff === "adv" ? "进阶" : "普通";
@@ -6938,6 +6943,54 @@ function currentPool(){
   const all = [];
   DATA.lessons.forEach(L => { if(selected.has(L.lesson)) lessonWords(L).forEach(w => all.push(w)); });
   return all;
+}
+
+/* ---------- 答题计时：手动开始/暂停/停止，退出后按模式累进 store.wt ---------- */
+let tmAcc = 0, tmRun = false, tmTs = 0, tmTimer = null;   /* 秒表：elapsed = tmAcc + (tmRun ? now-tmTs : 0)，暂停不清零 */
+function tmElapsed(){ return tmAcc + (tmRun ? (Date.now() - tmTs) / 1000 : 0); }
+function fmtDur(sec){
+  sec = Math.floor(sec);
+  const h = Math.floor(sec / 3600), mm = String(Math.floor(sec % 3600 / 60)).padStart(2, "0"), ss = String(sec % 60).padStart(2, "0");
+  return h ? h + ":" + mm + ":" + ss : mm + ":" + ss;
+}
+function tmPaint(){ $("timerDisp").textContent = fmtDur(tmElapsed()); }
+function timerStart(){   /* 开始/续走同一入口，不清零 */
+  if(tmRun) return;
+  tmTs = Date.now(); tmRun = true;
+  clearInterval(tmTimer); tmTimer = setInterval(tmPaint, 500);
+  $("timerPauseBtn").classList.add("running");   /* 走动才显示两竖杠，静止态（含进场）是黑三角 */
+  $("timerPauseBtn").title = "暂停";
+}
+function timerPause(){
+  if(!tmRun) return;
+  tmAcc += (Date.now() - tmTs) / 1000; tmRun = false;
+  clearInterval(tmTimer); tmPaint();
+  $("timerPauseBtn").classList.remove("running");
+  $("timerPauseBtn").title = "继续计时";
+}
+function timerReset(){
+  clearInterval(tmTimer); tmTimer = null;
+  tmAcc = 0; tmRun = false;
+  $("timerDisp").textContent = "00:00";
+  $("timerPauseBtn").classList.remove("running");
+  $("timerPauseBtn").title = "开始计时";
+}
+function modeKey(){ return wrongMode ? "wrong" : (questRun ? "quest" : "practice"); }
+function bankSessionTime(){   /* 会话收尾统一结算：任何方式离开答题页，都把已计时长累进该模式总数 */
+  if($("drill").hidden || !pool.length) return;
+  const sec = Math.round(tmElapsed());
+  if(sec > 0){
+    const k = modeKey();
+    store.wt[k] = (store.wt[k] || 0) + sec;
+    saveStore();
+  }
+  timerReset();
+  refreshWt();
+}
+function refreshWt(){   /* 三个落地页的总时长角标（练习清空右侧 / 错题本共错x道右侧 / 闯关24课右侧） */
+  $("wtPractice").textContent = "总时长 " + fmtDur(store.wt.practice || 0);
+  $("wtWrong").textContent = "总时长 " + fmtDur(store.wt.wrong || 0);
+  $("wtQuest").textContent = "总时长 " + fmtDur(store.wt.quest || 0);
 }
 
 function nextWord(){
@@ -7072,7 +7125,7 @@ function hint(){
   const a = cur.kana, v = $("ans").value;
   if(v.length < a.length){
     if(!useTicket("hint")){ denyTicket("提示券不足，可点上方「商店」购买"); return; }
-    hintUsed = true; runUsedTicket = true;
+    hintUsed = true; runUsedTicket = true; hintUsedCount++;
     $("ans").value = v + a[v.length]; renderMasu();
   }
   $("ans").focus();
@@ -7081,7 +7134,7 @@ function hint(){
 function skip(){
   if(answered) return;
   if(!useTicket("skip")){ denyTicket("跳过券不足，可点上方「商店」购买"); return; }
-  hintUsed = true; runUsedTicket = true;
+  hintUsed = true; runUsedTicket = true; skipUsedCount++;
   forceWrong = true;
   $("ans").value = cur.kana;
   check();
@@ -7209,6 +7262,7 @@ $("noneBtn").addEventListener("click", () => {
 function renderWrongBook(){
   const total = store.wrong.length;
   $("wrongBookTitle").textContent = "错题本 · 共错 " + total + " 道";
+  refreshWt();
   const per = {};
   store.wrong.forEach(k => {   /* 本子 key 形如 l3:かぞく，取前缀即课号 */
     const n = +k.slice(1, k.indexOf(":"));
@@ -7237,12 +7291,14 @@ function renderWrongBook(){
 /* ---------- 视图切换：home = 空主界面，功能全部从左边栏进入 ---------- */
 const SECTIONS = ["setup", "questMap", "wrongBook", "drill", "result", "wrongEmpty", "shopView", "wardrobeView"];
 function showView(sec){
+  if(sec !== "drill") bankSessionTime();   /* 离开答题页即结算：答完自动结算/停止退出/侧栏切页全走这一处 */
   $("topbar").hidden = false; $("hud").hidden = false;
   SECTIONS.forEach(s => $(s).hidden = s !== sec);
   /* 轮播保留为底层背景：内容层在其上方，调暗避免干扰答题 */
   if(window.HomeStage){ HomeStage.show(); HomeStage.dim(true); }
 }
 function showHome(){
+  bankSessionTime();   /* 先结算再清模式标志（modeKey 依赖 wrongMode/questRun） */
   questRun = null; setWrong(false);   /* 回主界面即弃当前会话状态 */
   $("topbar").hidden = true; $("hud").hidden = true;
   SECTIONS.forEach(s => $(s).hidden = true);
@@ -7250,11 +7306,14 @@ function showHome(){
 }
 $("backHomeBtn").addEventListener("click", showHome);
 function showPractice(){
+  bankSessionTime();   /* 先结算：侧栏切练习可能发生在错题本/闯关会话中途，此时 setWrong(false) 还不能先执行 */
   setWrong(false);
   showView("setup"); refreshStart();
+  refreshWt();
 }
 function showQuest(){
   showView("questMap"); buildMap();
+  refreshWt();
 }
 $("practiceBtn").addEventListener("click", showPractice);
 $("questSideBtn").addEventListener("click", showQuest);
@@ -7282,6 +7341,28 @@ $("wrongClearBtn").addEventListener("click", () => {
 $("hintBtn").addEventListener("click", hint);
 $("clearBtn").addEventListener("click", () => { $("ans").value = ""; renderMasu(); $("ans").focus(); });
 $("skipBtn").addEventListener("click", skip);
+/* ---------- 计时器：三角/竖杠一键两态管起停，停止弹本场统计确认 ---------- */
+$("timerPauseBtn").addEventListener("click", () => { tmRun ? timerPause() : timerStart(); });   /* 三角=起表/续走（含进场直点），竖杠=暂停 */
+$("timerStopBtn").addEventListener("click", () => {
+  timerPause();   /* 点停止即停表；不退出保持暂停等续走，退出由 bankSessionTime 结算 */
+  $("stopTitle").textContent = { practice: "练习", wrong: "错题", quest: "闯关" }[modeKey()];
+  $("stopOk").textContent = correctCount;
+  $("stopBad").textContent = sessionWrong.length;
+  const n = correctCount + sessionWrong.length;
+  $("stopAcc").textContent = n ? (correctCount * 100 / n).toFixed(2) + "%" : "—";
+  $("stopHint").textContent = hintUsedCount;
+  $("stopSkip").textContent = skipUsedCount;
+  $("stopMask").hidden = false;
+});
+$("stopStayBtn").addEventListener("click", () => { $("stopMask").hidden = true; });   /* 不退出：时钟保持暂停 */
+$("stopMask").addEventListener("click", e => { if(e.target === $("stopMask")) $("stopMask").hidden = true; });
+$("stopExitBtn").addEventListener("click", () => {
+  $("stopMask").hidden = true;
+  bankSessionTime();   /* 显式结算：questRun/wrongMode 置空前按本会话模式入账（导航挂钩再触发时已清零不重复计） */
+  if(questRun){ questRun = null; showQuest(); }
+  else if(wrongMode){ showHome(); }
+  else showPractice();
+});
 $("ans").addEventListener("input", renderMasu);
 $("ans").addEventListener("keydown", e => {
   if(e.key !== "Enter") return;

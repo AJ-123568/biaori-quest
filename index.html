@@ -48,6 +48,7 @@
     <button class="word-edit" id="editWordsBtn" disabled title="先勾选下方课文，再点这里增删单词">✏️ 编辑单词</button>
     <button class="btn" id="allBtn">全选</button>
     <button class="btn" id="noneBtn">清空</button>
+    <span class="wt-total" id="wtPractice"></span>
   </div>
   <div class="lessons" id="lessonChips"></div>
   <div class="stage-tests" id="stageTests"></div>
@@ -64,7 +65,7 @@
 <section id="questMap" hidden>
   <div class="drill-top">
     <div></div>
-    <div class="map-title">闯关地图 · 初级上册 24 课</div>
+    <div class="map-title">闯关地图 · 初级上册 24 课<span class="wt-total" id="wtQuest"></span></div>
     <div><button class="quit" id="questResetBtn">重置进度</button></div>
   </div>
   <div class="qmap" id="qmapBox"></div>
@@ -75,7 +76,7 @@
 <section id="wrongBook" hidden>
   <div class="drill-top">
     <div></div>
-    <div class="map-title" id="wrongBookTitle">错题本</div>
+    <div class="map-title"><span id="wrongBookTitle">错题本</span><span class="wt-total" id="wtWrong"></span></div>
     <div><button class="quit" id="wrongClearBtn">清空错题本</button></div>
   </div>
   <div class="wrong-stats" id="wrongStatsBox"></div>
@@ -111,6 +112,12 @@
         <button class="btn" id="skipBtn">跳过（记为答错）</button>
       </div>
       <div class="feedback" id="feedback"></div>
+    </div>
+    <!-- 手动计时：进场不走，开始/暂停/停止三键 + 时长显示，卡片下面左对齐 -->
+    <div class="timer-row">
+      <span id="timerDisp">00:00</span>
+      <button id="timerPauseBtn" title="开始计时"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><g class="ic-pause"><rect x="6" y="4" width="4.5" height="16" rx="1" fill="currentColor"/><rect x="13.5" y="4" width="4.5" height="16" rx="1" fill="currentColor"/></g><g class="ic-play"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></g></svg></button>
+      <button id="timerStopBtn" title="停止"><span class="stop-sq"></span></button>
     </div>
   </section>
 
@@ -207,6 +214,25 @@
     </div>
     <p class="shop-note" id="lvUpNote">每升 1 级：金币 +5000 · 提示券 +10 · 跳过券 +10</p>
     <div class="edit-foot"><button class="btn save" id="lvUpOkBtn">收下奖励</button></div>
+  </div>
+</div>
+
+<!-- ============ 计时停止确认：本场统计 + 退出/不退出 ============ -->
+<div class="shop-mask" id="stopMask" hidden>
+  <div class="shop stop-shop">
+    <div class="shop-head"><b id="stopTitle">练习</b></div>
+    <div class="stop-stats">
+      <div class="stop-line">
+        <span class="s-ok">✅ <b id="stopOk">0</b>道</span>
+        <span class="s-bad">❌ <b id="stopBad">0</b>道</span>
+        <span class="s-acc">正确率 <b id="stopAcc">—</b></span>
+      </div>
+      <div class="stop-line"><span>💡 <b id="stopHint">0</b></span><span>🎫 <b id="stopSkip">0</b></span></div>
+    </div>
+    <div class="edit-foot stop-foot">
+      <button class="btn" id="stopExitBtn">退出</button>
+      <button class="btn save" id="stopStayBtn">不退出</button>
+    </div>
   </div>
 </div>
 
