@@ -6938,8 +6938,11 @@ function check(){
     correctCount++; streak++; bestStreak = Math.max(bestStreak, streak); wrongStreak = 0;
     st.c++;
     if(window.Sfx) Sfx.play("correct");
-    addCoins(2);
-    if(streak % 5 === 0){ addCoins(5); if(window.Sfx) Sfx.play("combo"); }
+    if(!questRun){   /* 闯关答题不发币：奖励只在过关结算发 */
+      addCoins(2);
+      if(streak % 5 === 0) addCoins(5);
+    }
+    if(streak % 5 === 0 && window.Sfx) Sfx.play("combo");
     if(window.Companion) Companion.fire("answer-correct");
     if(streak % 5 === 0 && window.Companion) Companion.fire("combo5");
     if(!hintUsed){
@@ -7108,9 +7111,11 @@ function showResult(){
   } else {
     $("qStars").hidden = true;
     if(pool.length && sessionWrong.length === 0){
-      addCoins(20);
-      notes.push("完美奖励 +20 金币");
       $("allRightNote").textContent = "全部答对，漂亮！";
+      if(!wrongMode){   /* 错题本不发完美奖励 */
+        addCoins(20);
+        notes.push("完美奖励 +20 金币");
+      }
     }
     if(!wrongMode && pool.length){   /* 自由练习按课算正确率 ≥90% 每课升 1 级（错题本不计级） */
       const per = {};
