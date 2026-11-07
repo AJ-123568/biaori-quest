@@ -6803,6 +6803,17 @@ const PEEK_IMGS = [
   "assets/chuuya/chuuya-25.jpg", "assets/chuuya/chuuya-26.jpg",
 ];
 PEEK_IMGS.forEach(u => { const i = new Image(); i.src = u; });
+/* 彩蛋挂载：课程卡与阶段测试按钮共用（随机图 + 文字隐藏，CSS 走 .chip.peek） */
+function attachPeek(el){
+  el.addEventListener("mouseenter", () => {
+    el.style.backgroundImage = "url(" + PEEK_IMGS[Math.floor(Math.random() * PEEK_IMGS.length)] + ")";
+    el.classList.add("peek");
+  });
+  el.addEventListener("mouseleave", () => {
+    el.classList.remove("peek");
+    el.style.backgroundImage = "";
+  });
+}
 function buildChips(){
   const box = $("lessonChips");
   DATA.lessons.forEach(L => {
@@ -6816,16 +6827,31 @@ function buildChips(){
       b.classList.toggle("on", selected.has(L.lesson));
       refreshStart();
     });
-    b.addEventListener("mouseenter", () => {
-      b.style.backgroundImage = "url(" + PEEK_IMGS[Math.floor(Math.random() * PEEK_IMGS.length)] + ")";
-      b.classList.add("peek");
-    });
-    b.addEventListener("mouseleave", () => {
-      b.classList.remove("peek");
-      b.style.backgroundImage = "";
-    });
+    attachPeek(b);
     box.appendChild(b);
   });
+}
+/* 阶段测试：每 5 课一组（1-5/6-10/…/21-24），从该组词里随机抽 75% 开一场练习——
+   quest=null 走自由练习分支，金币/错题本/分课升级与普通练习完全同一套结算 */
+function buildStageTests(){
+  const box = $("stageTests");
+  for(let s = 1; s < DATA.lessons.length + 1; s += 5){
+    const group = DATA.lessons.slice(s - 1, s + 4).map(L => L.lesson);
+    const label = group[0] + "-" + group[group.length - 1] + "课";
+    const b = document.createElement("button");
+    b.className = "chip stage";
+    b.innerHTML = '<span class="no">' + label + '</span>';
+    b.title = "从这 " + group.length + " 课里随机抽 75% 的词测试 · 金币与练习相同";
+    b.addEventListener("click", () => {
+      const all = [];
+      group.forEach(n => lessonWords(DATA.lessons[n - 1]).forEach(w => all.push(w)));
+      shuffle(all);
+      setWrong(false);
+      startSession(all.slice(0, Math.round(all.length * 0.75)));
+    });
+    attachPeek(b);
+    box.appendChild(b);
+  }
 }
 function updateChipCounts(){   /* 单词增删后同步每课词数与总词数 */
   DATA.lessons.forEach(L => {
@@ -7501,6 +7527,7 @@ $("editSaveBtn").addEventListener("click", () => {
 });
 
 buildChips();
+buildStageTests();
 refreshStart();
 refreshEco();
 updateChipCounts();

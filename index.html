@@ -33,33 +33,34 @@
   <div class="sub">新版标准日本语 初级上册 · <span id="totalWords">1065</span> 词</div>
 </header>
 
-<div class="wrap">
-  <div class="hud" id="hud" hidden>
-    <span class="hud-item">Lv <b id="hudLv">1</b></span>
-    <span class="hud-item" title="金币">🪙 <b id="hudCoins">10000</b></span>
-    <span class="hud-item" title="提示券：揭示下一个假名，每按一次消耗 1 张">💡 <b id="hudHint">10</b></span>
-    <span class="hud-item" title="跳过券：跳过当前词，每词消耗 1 张">🎫 <b id="hudSkip">10</b></span>
-    <span class="hud-spacer"></span>
-    <button class="hud-btn dev" id="resetEcoBtn" title="开发者：重置等级/金币/券为默认值">重置</button>
+<div class="hud" id="hud" hidden>
+  <span class="hud-item">Lv <b id="hudLv">1</b></span>
+  <span class="hud-item" title="金币">🪙 <b id="hudCoins">10000</b></span>
+  <span class="hud-item" title="提示券：揭示下一个假名，每按一次消耗 1 张">💡 <b id="hudHint">10</b></span>
+  <span class="hud-item" title="跳过券：跳过当前词，每词消耗 1 张">🎫 <b id="hudSkip">10</b></span>
+  <span class="hud-spacer"></span>
+  <button class="hud-btn dev" id="resetEcoBtn" title="开发者：重置等级/金币/券为默认值">重置</button>
+</div>
+
+<!-- ============ 选择范围（练习页：主区全宽，与顶栏同层） ============ -->
+<section id="setup" hidden>
+  <div class="setup-top">
+    <button class="word-edit" id="editWordsBtn" disabled title="先勾选下方课文，再点这里增删单词">✏️ 编辑单词</button>
+    <button class="btn" id="allBtn">全选</button>
+    <button class="btn" id="noneBtn">清空</button>
   </div>
+  <div class="lessons" id="lessonChips"></div>
+  <div class="stage-tests" id="stageTests"></div>
+  <div class="opt">
+    <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
+    <label><input type="checkbox" id="optKanji">题面显示汉字写法</label>
+    <label><input type="checkbox" id="optLen" checked>显示字数格子</label>
+  </div>
+  <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
+  <button class="start" id="startBtn" disabled>请先选择课文</button>
+</section>
 
-  <!-- ============ 选择范围 ============ -->
-  <section id="setup" hidden>
-    <div class="setup-top">
-      <button class="word-edit" id="editWordsBtn" disabled title="先勾选下方课文，再点这里增删单词">✏️ 编辑单词</button>
-      <button class="btn" id="allBtn">全选</button>
-      <button class="btn" id="noneBtn">清空</button>
-    </div>
-    <div class="lessons" id="lessonChips"></div>
-    <div class="opt">
-      <label><input type="checkbox" id="optRandom" checked>乱序出题</label>
-      <label><input type="checkbox" id="optKanji">题面显示汉字写法</label>
-      <label><input type="checkbox" id="optLen" checked>显示字数格子</label>
-    </div>
-    <p class="note">看中文释义，用日语输入法把这个词的假名拼出来，回车判定。答错的词会自动进错题本。</p>
-    <button class="start" id="startBtn" disabled>请先选择课文</button>
-  </section>
-
+<div class="wrap">
   <!-- ============ 错题本为空 ============ -->
   <section id="wrongEmpty" hidden>
     <p class="empty-note">错题本还是空的 · 在「练习」里答错的词会自动收进来</p>
