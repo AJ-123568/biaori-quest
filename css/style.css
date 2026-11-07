@@ -26,16 +26,24 @@ body{
   min-height:100vh;
 }
 .jp{font-family:"Shippori Mincho","Yu Mincho","MS Mincho",serif;}
-.wrap{max-width:680px;margin:0 auto;padding:24px 16px 64px;position:relative;z-index:1;pointer-events:none;}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px 64px;position:relative;z-index:1;pointer-events:none;}   /* 顶部间距由移出的 header 自带 */
 .wrap>*{pointer-events:auto;}   /* 容器本体穿透点击（空隙处点到轮播层），内容层浮在轮播上方 */
 @media (max-width:890px){   /* 窄屏：内容区从边栏右侧开始，不再居中 */
   .wrap{margin-left:var(--side-w);max-width:none;}
 }
-header.top{
-  display:flex;align-items:baseline;justify-content:flex-start;
-  border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:6px;
+header.top{   /* 顶栏：边栏右侧整个主区全宽；箭头贴左、标题绝对居中、词数贴右 */
+  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:space-between;
+  margin:24px 0 6px var(--side-w);
+  padding:0 20px 10px 16px;
+  border-bottom:2px solid var(--ink);
 }
-header.top h1{font-size:20px;font-weight:700;letter-spacing:.02em;}
+header.top h1{   /* 绝对居中（flex:1 会因左右元素宽度不等而偏心）；纯展示不挡箭头/词数点击 */
+  position:absolute;top:0;bottom:10px;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  margin:0;pointer-events:none;white-space:nowrap;
+  font-size:20px;font-weight:700;letter-spacing:.02em;
+}
 header.top .sub{font-size:12px;color:var(--muted);margin-left:auto;}
 /* 返回主页面箭头：无圆圈细线条，字号颜色与标题一致 */
 .home-back{
