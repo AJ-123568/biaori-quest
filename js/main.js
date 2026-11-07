@@ -7261,6 +7261,7 @@ $("noneBtn").addEventListener("click", () => {
   refreshStart();
 });
 /* ---------- 错题本过渡页：先看统计再决定，点「败部复活」才进答题 ---------- */
+const wrongExpand = new Set();   /* 过渡页展开的课号：重渲染后保持展开态 */
 function renderWrongBook(){
   const total = store.wrong.length;
   $("wrongBookTitle").textContent = "错题本 · 共错 " + total + " 道";
@@ -7268,25 +7269,48 @@ function renderWrongBook(){
   const per = {};
   store.wrong.forEach(k => {   /* 本子 key 形如 l3:かぞく，取前缀即课号 */
     const n = +k.slice(1, k.indexOf(":"));
-    const o = per[n] || (per[n] = { c: 0, w: 0 });
-    o.c++;
+    per[n] = per[n] || { c: 0, words: [] };
+    per[n].c++;
   });
-  DATA.lessons.forEach(L => {   /* 错次 = 该课全部词（含已答对出本的）的 wc 总和——记忆不随出本丢失 */
+  DATA.lessons.forEach(L => {   /* 本内词对象挂到对应课（假名/写法/释义），供展开列表逐词显示错次 */
     if(!per[L.lesson]) return;
-    lessonWords(L).forEach(w => { per[L.lesson].w += store.wc[wkey(w)] || 0; });
+    lessonWords(L).forEach(w => {
+      if(store.wrong.includes(wkey(w))) per[L.lesson].words.push(w);
+    });
   });
   const box = $("wrongStatsBox");
   box.innerHTML = "";
   Object.keys(per).map(Number).sort((a, b) => a - b).forEach(n => {
     const o = per[n];
+    o.words.sort((x, y) => (store.wc[wkey(y)] || 0) - (store.wc[wkey(x)] || 0));   /* 错次降序，0 次沉底（排序稳定） */
+    const open = wrongExpand.has(n);
     const d = document.createElement("div");
-    d.className = "ws-row";
+    d.className = "ws-row" + (open ? " open" : "");
+    d.dataset.lesson = n;
     d.innerHTML = '<span class="l"></span><span class="c"></span><span class="p"></span><span class="t"></span>';
     d.querySelector(".l").textContent = "第" + n + "课";
     d.querySelector(".c").textContent = o.c + " 道";
     d.querySelector(".p").textContent = "占比 " + (o.c * 100 / total).toFixed(2) + "%";
-    d.querySelector(".t").textContent = "错 " + o.w + " 次";
+    d.querySelector(".t").textContent = open ? "▾" : "▸";
     box.appendChild(d);
+    /* 展开面板：紧跟课行的兄弟节点，与课行同宽同居中（同列 100% 宽，点开零左右位移），预渲染靠 hidden 切换 */
+    const panel = document.createElement("div");
+    panel.className = "ws-words";
+    panel.hidden = !open;
+    panel.dataset.lesson = n;
+    o.words.forEach(w => {
+      const cnt = store.wc[wkey(w)] || 0;
+      const row = document.createElement("div");
+      row.className = "ws-word";
+      row.innerHTML = '<span class="k"></span><span class="m"></span><span class="t"></span>';
+      row.querySelector(".k").textContent = w.kana + (w.writing !== w.kana ? "（" + w.writing + "）" : "");
+      row.querySelector(".m").textContent = w.meaning;
+      const t = row.querySelector(".t");
+      if(cnt > 0){ t.textContent = "错 " + cnt + " 次"; }
+      else { t.textContent = "—"; t.classList.add("zero"); }
+      panel.appendChild(row);
+    });
+    box.appendChild(panel);
   });
 }
 
@@ -7333,6 +7357,16 @@ const REVIVE_PEEK = "assets/chuuya/revive-peek.png";
 new Image().src = REVIVE_PEEK;   /* 预热防首次悬停闪 */
 $("reviveBtn").addEventListener("mouseenter", () => $("reviveBtn").classList.add("peek"));
 $("reviveBtn").addEventListener("mouseleave", () => $("reviveBtn").classList.remove("peek"));
+$("wrongStatsBox").addEventListener("click", e => {   /* 课行点开/收起词列表（委托，重渲染不叠监听） */
+  const row = e.target.closest(".ws-row");
+  if(!row) return;
+  const n = +row.dataset.lesson;
+  const open = !wrongExpand.has(n);
+  if(open) wrongExpand.add(n); else wrongExpand.delete(n);
+  row.classList.toggle("open", open);
+  row.querySelector(".t").textContent = open ? "▾" : "▸";
+  $("wrongStatsBox").querySelector('.ws-words[data-lesson="' + n + '"]').hidden = !open;
+});
 $("wrongClearBtn").addEventListener("click", () => {
   if(!store.wrong.length) return;
   if(!confirm("清空错题本？错词名单将删除（错次数记忆保留）。")) return;

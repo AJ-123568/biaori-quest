@@ -403,13 +403,23 @@ button{font:inherit;cursor:pointer;}
 /* 错题本统计行：白卡横排四段（课号/道数/占比/错次），错次红色醒目靠右 */
 .wrong-stats{max-width:560px;margin:10px auto 0;}
 .ws-row{
-  display:flex;align-items:baseline;gap:18px;
+  display:flex;align-items:baseline;gap:18px;cursor:pointer;
   background:var(--grad-h);border-radius:10px;padding:10px 16px;margin-bottom:6px;
   font-size:14px;box-shadow:0 2px 8px rgba(21,64,56,.08);
 }
+.ws-row:hover{filter:brightness(1.03);}
+.ws-row.open{border-radius:10px 10px 0 0;margin-bottom:0;}   /* 展开时与面板连成一张卡 */
 .ws-row .l{font-weight:700;min-width:52px;}
 .ws-row .p{color:var(--muted);font-size:13px;}
-.ws-row .t{margin-left:auto;color:var(--shu);font-weight:700;}
+.ws-row .t{margin-left:auto;color:var(--ink);font-size:12px;}   /* 原红色错次槽位改成开合箭头 */
+/* 展开面板：紧跟课行的兄弟节点，与课行同宽同列居中（点开零左右位移），纵向渐变无缝贴住课行 */
+.ws-words{background:var(--grad-v);border-radius:0 0 10px 10px;margin-bottom:6px;padding:2px 16px 8px;box-shadow:0 2px 8px rgba(21,64,56,.08);}
+.ws-word{display:flex;align-items:baseline;gap:12px;font-size:13px;padding:6px 0;}
+.ws-word + .ws-word{border-top:1px dashed rgba(35,40,43,.14);}
+.ws-word .k{font-weight:700;color:var(--ink);}
+.ws-word .m{flex:1;min-width:0;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ws-word .t{color:var(--shu);font-weight:700;white-space:nowrap;}
+.ws-word .t.zero{color:var(--muted);font-weight:400;}
 #wrongBook .start{display:block;width:min(420px,100%);margin:22px auto 0;}   /* 与练习页开始按钮同款居中 */
 /* 败部复活悬停彩蛋：固定单图 contain 居中，棋盘已抠成真透明直接浮在橙底上；
    只挂 #reviveBtn 本体不碰其他按钮；contain=人物完整不裁（420×52 里约 58px 高居中） */
