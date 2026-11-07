@@ -6848,7 +6848,7 @@ function refreshStart(){
 }
 
 /* ---------- 会话状态 ---------- */
-let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0;
+let pool = [], idx = 0, correctCount = 0, sessionWrong = [], streak = 0, bestStreak = 0, wrongStreak = 0;   /* wrongStreak=连错计数（答对清零，练习罚币用） */
 let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced = false;
 let runUsedTicket = false;   /* 本场用过券：闯关模式下星级封顶 2 星（P2 消费） */
 let questRun = null;         /* null = 自由练习，否则 { lesson, diff: "n"|"adv" } */
@@ -6864,7 +6864,7 @@ function startSession(list, quest = null){
   if(quest) lastQuest = quest;
   pool = list.slice();
   if(!quest && $("optRandom").checked) shuffle(pool);
-  idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0;
+  idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0; wrongStreak = 0;
   runUsedTicket = false;
   showView("drill");
   $("wrongClearBtn").hidden = !wrongMode;   /* 只在错题本模式显示清空按钮 */
@@ -6935,7 +6935,7 @@ function check(){
   const k = wkey(cur);
   const st = store.stats[k] || (store.stats[k] = { c: 0, w: 0 });
   if(ok){
-    correctCount++; streak++; bestStreak = Math.max(bestStreak, streak);
+    correctCount++; streak++; bestStreak = Math.max(bestStreak, streak); wrongStreak = 0;
     st.c++;
     if(window.Sfx) Sfx.play("correct");
     addCoins(2);
@@ -6948,7 +6948,11 @@ function check(){
     }
   } else {
     streak = 0; st.w++;
+    wrongStreak++;
     if(window.Sfx) Sfx.play("wrong");
+    if(!questRun && !wrongMode){   /* 练习连错罚币：第 1/2 道 -2，第 3 道起第 n 道 -2n（闯关/错题本不罚） */
+      addCoins(-(wrongStreak <= 2 ? 2 : wrongStreak * 2));
+    }
     if(!store.wrong.includes(k)) store.wrong.push(k);
     sessionWrong.push(cur);
     if(window.Companion) Companion.fire("answer-wrong");
