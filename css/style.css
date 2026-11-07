@@ -146,7 +146,7 @@ button{font:inherit;cursor:pointer;}
   display:flex;flex-wrap:wrap;gap:6px;margin:22px 0 4px;
 }
 .masu .cell{
-  width:52px;height:52px;border:1.5px solid var(--masu-line);background:#FDFCF9;
+  width:52px;height:52px;border:1.5px solid var(--masu-line);background:rgba(255,255,255,.42);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
   display:flex;align-items:center;justify-content:center;
   font-size:26px;font-weight:700;color:var(--ink);
   border-radius:2px;
