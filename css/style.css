@@ -394,11 +394,11 @@ button{font:inherit;cursor:pointer;}
   pointer-events:none;white-space:nowrap;
   text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);
 }
-#questMap .drill-top .quit,#wrongBook .drill-top .quit{   /* 重置进度/清空错题本贴右：半透明白胶囊保可读 */
-  color:var(--ink);background:rgba(255,255,255,.55);border-radius:999px;padding:4px 12px;font-weight:600;
+#questMap .drill-top .quit,#wrongBook .drill-top .quit{   /* 重置进度/清空错题本贴右：绿紫渐变胶囊 */
+  color:var(--ink);background:var(--grad-h);border-radius:999px;padding:4px 12px;font-weight:600;
 }
 #questMap .note{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}
-#questMap .drill-top .quit:hover,#wrongBook .drill-top .quit:hover{color:#fff;background:rgba(255,255,255,.28);}
+#questMap .drill-top .quit:hover,#wrongBook .drill-top .quit:hover{filter:brightness(.93);}
 #questMap .note{color:rgba(255,255,255,.85);}
 /* 错题本统计行：白卡横排四段（课号/道数/占比/错次），错次红色醒目靠右 */
 .wrong-stats{max-width:560px;margin:10px auto 0;}
@@ -603,6 +603,8 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .stop-shop .s-ok b{color:var(--midori);}
 .stop-shop .s-bad b{color:var(--shu);}
 .stop-shop .stop-foot{justify-content:space-between;padding:0 4px;}
+#stopStayBtn{background:#FFA341;border-color:#FFA341;color:var(--ink);}   /* 不退出=主操作橙，同开始/败部复活 */
+#stopStayBtn:hover{background:#F08900;border-color:#F08900;}
 
 /* ---------- 中也的约会基金：三板块时长兑金币（替换衣橱入口） ---------- */
 .bank-head{margin-bottom:10px;text-align:center;}
