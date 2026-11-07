@@ -7489,6 +7489,17 @@ $("editSaveBtn").addEventListener("click", () => {
   closeEditor();
 });
 
+/* 练习选项记忆：改动即存档，回到本页/退出重进恢复上次所选（无记录时用 HTML 默认值） */
+["optRandom", "optKanji", "optLen"].forEach(id => {
+  const el = $(id);
+  if(store.opt && id in store.opt) el.checked = !!store.opt[id];
+  el.addEventListener("change", () => {
+    store.opt = store.opt || {};
+    ["optRandom", "optKanji", "optLen"].forEach(k => { store.opt[k] = $(k).checked; });
+    saveStore();
+  });
+});
+
 buildChips();
 refreshStart();
 refreshEco();
