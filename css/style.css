@@ -130,7 +130,7 @@ button{font:inherit;cursor:pointer;}
 .streak{font-variant-numeric:tabular-nums;}
 .streak b{color:var(--midori);font-size:15px;}
 .card{
-  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  background:var(--grad-h);border:1px solid var(--line);border-radius:10px;
   padding:28px 26px 24px;position:relative;
 }
 .card .tags{position:absolute;top:-11px;left:20px;display:flex;gap:6px;}
@@ -159,7 +159,7 @@ button{font:inherit;cursor:pointer;}
 
 #ans{
   width:100%;margin-top:10px;padding:10px 12px;font-size:18px;
-  border:1.5px solid var(--line);border-radius:6px;background:var(--panel);
+  border:1.5px solid var(--line);border-radius:6px;
   font-family:inherit;color:var(--ink);outline:none;
 }
 #ans:focus{border-color:var(--ai);}
@@ -253,7 +253,7 @@ button{font:inherit;cursor:pointer;}
 .page-narrow{max-width:520px;margin-inline:auto;}
 .page-narrow .shop-item{background:var(--grad-h);}
 /* 券/时长档内的操作按钮：磨砂半透白，透出所在卡的渐变底（商店买券+约会兑换） */
-.shop-item .btn{
+.shop-item .btn,.card .btn,#ans{
   background:rgba(255,255,255,.42);
   backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
 }
