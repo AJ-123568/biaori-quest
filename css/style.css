@@ -114,11 +114,11 @@ button{font:inherit;cursor:pointer;}
 .start{
   width:100%;margin-top:22px;padding:13px;border:none;border-radius:8px;
   background:var(--ai);color:#fff;font-size:16px;font-weight:700;letter-spacing:.08em;
-  transition:background .12s;
+  transition:background .12s, transform .18s ease;position:relative;
 }
 .start:hover{background:var(--ai-deep);}
 .start:disabled{background:#A8B2C4;cursor:not-allowed;}
-.start.peek{color:transparent;}   /* hover 彩蛋出图时隐藏文字（图为 inline background-image） */
+.start.peek{color:transparent;transform:scale(2);background-color:#fff;z-index:6;}   /* hover 放大 2 倍到 840×104 恰好装下星粹图原尺寸，白底衬透明区 */
 
 /* ---------- drill ---------- */
 .drill-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:12px;}
@@ -390,9 +390,9 @@ button{font:inherit;cursor:pointer;}
 #questMap .drill-top .quit,#wrongBook .drill-top .quit{   /* 重置进度/清空错题本贴右：半透明白胶囊保可读 */
   color:var(--ink);background:rgba(255,255,255,.55);border-radius:999px;padding:4px 12px;font-weight:600;
 }
-#questMap .note,#wrongBook .note{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}
+#questMap .note{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}
 #questMap .drill-top .quit:hover,#wrongBook .drill-top .quit:hover{color:#fff;background:rgba(255,255,255,.28);}
-#questMap .note,#wrongBook .note{color:rgba(255,255,255,.85);}
+#questMap .note{color:rgba(255,255,255,.85);}
 /* 错题本统计行：白卡横排四段（课号/道数/占比/错次），错次红色醒目靠右 */
 .wrong-stats{max-width:560px;margin:10px auto 0;}
 .ws-row{
@@ -403,7 +403,6 @@ button{font:inherit;cursor:pointer;}
 .ws-row .l{font-weight:700;min-width:52px;}
 .ws-row .p{color:var(--muted);font-size:13px;}
 .ws-row .t{margin-left:auto;color:var(--shu);font-weight:700;}
-#wrongBook .note{text-align:center;}   /* 统计行已居中，说明文字随之居中 */
 #wrongBook .start{display:block;width:min(420px,100%);margin:22px auto 0;}   /* 与练习页开始按钮同款居中 */
 .qmap{position:relative;margin:6px 0 4px;}
 .qmap-path{position:absolute;left:0;top:0;}
