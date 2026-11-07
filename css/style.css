@@ -118,7 +118,7 @@ button{font:inherit;cursor:pointer;}
 }
 .start:hover{background:var(--ai-deep);}
 .start:disabled{background:#A8B2C4;cursor:not-allowed;}
-.start.peek{color:transparent;background-color:#fff;}   /* hover 彩蛋：图紧裁 contain 居中（人物 1.6:1 竖比例，按钮 8:1 横框内显示 ~85×50），白底衬透明区 */
+#startBtn.peek{color:transparent;background-color:#fff;}   /* hover 彩蛋：图紧裁 contain 居中（人物 1.6:1 竖比例，按钮 8:1 横框内显示 ~85×50），白底衬透明区；收窄到开始按钮本体，防殃及同样挂 .peek 的败部复活 */
 
 /* ---------- drill ---------- */
 .drill-top{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:12px;}
