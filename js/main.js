@@ -6540,7 +6540,7 @@ const DATA = {
   ]
 };
 DATA.lessons.forEach(L => L.words.forEach(w => { w.lesson = L.lesson; }));
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));   /* 放顶部：standalone 衣橱配置同步初始化（wrInit→renderShopClothes）早于原 esc 声明位置，会 TDZ 炸掉整段顶层 */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));   /* 顶部 helper：standalone 的衣橱配置在顶层同步初始化，helper 必须先就位 */
 const LS_KEY = "biaori1_kana_v2";   /* v2：wrong/stats + 经济 eco */
 const LS_KEY_V1 = "biaori1_kana_v1";
 const ECO_DEFAULT = { lv: 1, coins: 10000, hint: 10, skip: 10 };
@@ -7248,14 +7248,14 @@ function buyTicket(kind, price){
   if(store.eco.coins < price){
     const note = $("shopNote");
     note.textContent = "金币不足（需要 " + price + "）";
-    setTimeout(() => { note.textContent = "衣服点击即买 · 买完自动上身"; }, 1600);
+    setTimeout(() => { note.textContent = "券点击即买 · 扣金币直接生效"; }, 1600);
     return;
   }
   store.eco.coins -= price; store.eco[kind]++;
   saveStore(); refreshEco();
   ecoFx(-price); if(window.Sfx) Sfx.play("buy");
 }
-$("shopBtn").addEventListener("click", () => { showView("shopView"); renderShopClothes(); });
+$("shopBtn").addEventListener("click", () => showView("shopView"));
 $("shopBackBtn").addEventListener("click", showHome);
 $("buyHintBtn").addEventListener("click", () => buyTicket("hint", 15));
 $("buySkipBtn").addEventListener("click", () => buyTicket("skip", 30));
@@ -7264,7 +7264,7 @@ $("resetEcoBtn").addEventListener("click", () => {
   saveStore(); refreshEco();
 });
 
-/* ---------- 衣橱（P3.5）：config/wardrobe.json 驱动，商店购买 + 换装 ---------- */
+/* ---------- 衣橱（P3.5）：config/wardrobe.json 驱动，换装（原商店售卖服装随旧版手绘小人换装体系下架删除） ---------- */
 const WR_FREE = { head: "hat", body: "coat" };   /* 各槽位的免费默认穿戴 */
 let wrItems = null;   /* wardrobe.json 的 items；fetch 失败（如 file://）则衣橱入口隐藏 */
 function wrState(){
@@ -7299,49 +7299,6 @@ function wrEquip(id){
   }
   saveStore(); wrApply(); renderWardrobe();
 }
-function buyClothes(id){
-  const st = wrState();
-  const it = wrItems.find(x => x.id === id);
-  if(!it || wrOwned(id, st)) return;
-  if(store.eco.coins < it.price){
-    const note = $("shopNote");
-    note.textContent = "金币不足（需要 " + it.price + "）";
-    setTimeout(() => { note.textContent = "衣服点击即买 · 买完自动上身"; }, 1600);
-    return;
-  }
-  store.eco.coins -= it.price;
-  st.owned.push(id);
-  if(it.slot === "acc"){ if(!st.worn.acc.includes(id)) st.worn.acc.push(id); }
-  else st.worn[it.slot] = id;   /* 买完即上身 */
-  saveStore(); refreshEco("Coins"); wrApply();
-  ecoFx(-it.price); if(window.Sfx) Sfx.play("buy");
-  renderShopClothes();
-}
-function renderShopClothes(){
-  const box = $("shopClothes");
-  if(!box) return;
-  box.innerHTML = "";
-  const st = wrState();
-  const onSale = wrItems.filter(it => it.ready && it.price > 0 && !wrOwned(it.id, st));
-  onSale.forEach(it => {
-    const row = document.createElement("div");
-    row.className = "shop-item";
-    row.innerHTML = '<div class="shop-info"><b>' + esc(it.name) + '</b><span>' + esc(it.desc || "") + '</span></div>';
-    const btn = document.createElement("button");
-    btn.className = "btn";
-    btn.textContent = "🪙 " + it.price;
-    btn.addEventListener("click", () => buyClothes(it.id));
-    row.appendChild(btn);
-    box.appendChild(row);
-  });
-  if(!onSale.length){
-    const p = document.createElement("p");
-    p.className = "shop-note";
-    p.textContent = wrItems.some(it => it.price > 0 && !wrOwned(it.id, wrState()))
-      ? "新装制作中，敬请期待" : "全部衣服都已入手，谢谢惠顾！";
-    box.appendChild(p);
-  }
-}
 function renderWardrobe(){
   const box = $("wardrobeBody");
   if(!box) return;
@@ -7364,10 +7321,7 @@ function renderWardrobe(){
       if(!owned) c.classList.add("locked");
       c.textContent = it.name + (it.price > 0 && !owned ? " · 🪙" + it.price : "");
       c.title = owned ? (on ? "点击脱下" : "点击穿上") : "还没拥有：去商店购买";
-      c.addEventListener("click", () => {
-        if(owned){ wrEquip(it.id); }
-        else { showView("shopView"); renderShopClothes(); }
-      });
+      c.addEventListener("click", () => { if(owned) wrEquip(it.id); });   /* 售卖服装已随旧小人换装体系下架，未拥有态不再出现 */
       chips.appendChild(c);
     });
     box.appendChild(chips);
@@ -7418,7 +7372,6 @@ function wrInit(json){
   });
   st.worn.acc = st.worn.acc.filter(id => { const it = wrItems.find(x => x.id === id); return it && it.ready; });
   wrApply();
-  renderShopClothes();
 }
 if(window.__WARDROBE_CONFIG__){ wrInit(window.__WARDROBE_CONFIG__); }   /* standalone：配置已内联 */
 else fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(wrInit).catch(() => {
