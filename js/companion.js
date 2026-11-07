@@ -7,7 +7,7 @@
   const POS_KEY = "biaori1_companion_pos";
   const COOLDOWN_MS = 4000;          /* 答题类事件的最小间隔，防止刷屏 */
   const CORRECT_RATE = 0.35;         /* 答对台词的触发概率 */
-  const IDLE_MS = 90000;             /* 无操作多久触发闲置彩蛋 */
+  const IDLE_MS = 300000;            /* 无操作 5 分钟触发闲置提醒；fire("idle") 内部会重排定时器，无操作则每隔 5 分钟再提醒（第一次 5 分钟、第二次 10 分钟…） */
   /* 事件→动作默认表（可被 config/companion.json 的 puppet.eventAction 覆盖） */
   const ACT_DEFAULTS = {
     greet: "wave", "answer-correct": "jump", combo5: "jump",
