@@ -252,6 +252,11 @@ button{font:inherit;cursor:pointer;}
 /* 主页面内嵌视图（商店/约会基金）：内容窄栏不铺满但在主区居中；卡片自衬底色（不再有弹窗白面板） */
 .page-narrow{max-width:520px;margin-inline:auto;}
 .page-narrow .shop-item{background:var(--grad-h);}
+/* 券/时长档内的操作按钮：磨砂半透白，透出所在卡的渐变底（商店买券+约会兑换） */
+.shop-item .btn{
+  background:rgba(255,255,255,.42);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+}
 .shop.lvup{width:min(410px,92vw);}   /* 升级弹窗：奖励一行内容较长，加宽防折行 */
 
 /* ---------- 衣橱 ---------- */
