@@ -6950,8 +6950,8 @@ function check(){
     streak = 0; st.w++;
     wrongStreak++;
     if(window.Sfx) Sfx.play("wrong");
-    if(!questRun && !wrongMode){   /* 练习连错罚币：第 1/2 道 -2，第 3 道起第 n 道 -2n（闯关/错题本不罚） */
-      addCoins(-(wrongStreak <= 2 ? 2 : wrongStreak * 2));
+    if(!questRun){   /* 罚币：错题本每错一道 -5；练习连错第 1/2 道 -2，第 3 道起第 n 道 -2n；闯关不罚（已有降级罚则） */
+      addCoins(-(wrongMode ? 5 : (wrongStreak <= 2 ? 2 : wrongStreak * 2)));
     }
     if(!store.wrong.includes(k)) store.wrong.push(k);
     sessionWrong.push(cur);
