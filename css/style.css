@@ -12,9 +12,6 @@
   --midori-soft:#E1EFE6;
   --line:#D7DDD8;
   --masu-line:#E4E1D6;
-  --orange:#FFA341;        /* 边栏橙：主操作按钮（开始/课程卡/败部复活）与边栏同源 */
-  --orange-soft:#FFBE75;   /* 橙系悬停提亮 */
-  --orange-deep:#F08900;   /* 橙系按下/悬停加深 */
   --side-w:102px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -90,13 +87,14 @@ main section{margin-top:28px;}
 }
 .stage-tests{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:14px;}
 .chip{
-  border:none;background:var(--orange);border-radius:6px;   /* 与边栏同源橙底，实底不再融轮播 */
+  border:none;background:transparent;border-radius:6px;   /* 透明无边框：融进轮播背景更沉浸 */
   padding:7px 4px 5px;text-align:center;cursor:pointer;user-select:none;
   transition:background .12s;
 }
 .chip .no{display:block;font-weight:700;font-size:15px;}
-.chip .ct{display:block;font-size:11px;color:var(--ink);line-height:1.3;}
-.chip:hover{background:var(--orange-soft);}   /* 橙底提亮一档做悬停反馈 */
+.chip .ct{display:block;font-size:11px;color:var(--muted);line-height:1.3;}
+.chip .no,.chip .ct{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}   /* 透明底后文字直接叠在轮播上，白晕保可读 */
+.chip:hover{background:rgba(255,255,255,.35);}   /* 无边框后用淡白底做悬停反馈 */
 .chip.on{background:var(--ai);color:#fff;}
 .chip.on .ct{color:#C9D4E8;}
 /* 悬停彩蛋：移入课程按钮随机出一张图，contain 完整显示、文字隐藏（规则须在 .chip.on 后，否则选中态蓝底盖掉白底衬） */
@@ -112,14 +110,14 @@ button{font:inherit;cursor:pointer;}
 .btn:hover{border-color:var(--ai);color:var(--ai);}
 .opt{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:14px;color:var(--muted);}
 .opt label{display:flex;align-items:center;gap:6px;cursor:pointer;}
-.opt input{accent-color:var(--orange);width:15px;height:15px;}
+.opt input{accent-color:#FFA341;width:15px;height:15px;}   /* 打勾框橙，色值与边栏相同但独立写死不联动 */
 .start{
   width:100%;margin-top:22px;padding:13px;border:none;border-radius:8px;
-  background:var(--orange);color:var(--ink);font-size:16px;font-weight:700;letter-spacing:.08em;
+  background:#FFA341;color:var(--ink);font-size:16px;font-weight:700;letter-spacing:.08em;
   transition:background .12s;
 }
-.start:hover{background:var(--orange-deep);}
-.start:disabled{background:#A8B2C4;cursor:not-allowed;}
+.start:hover{background:#F08900;}
+.start:disabled{background:#FFA341;opacity:.45;cursor:not-allowed;}   /* 未选课文也保持橙的身份，半透示意禁用 */
 #startBtn.peek{color:transparent;background-color:#fff;}   /* hover 彩蛋：图紧裁 contain 居中（人物 1.6:1 竖比例，按钮 8:1 横框内显示 ~85×50），白底衬透明区；收窄到开始按钮本体，防殃及同样挂 .peek 的败部复活 */
 
 /* ---------- drill ---------- */
@@ -328,7 +326,7 @@ button{font:inherit;cursor:pointer;}
 /* ---------- 左侧功能边栏 ---------- */
 .sidebar{
   position:fixed;left:0;top:0;bottom:0;width:var(--side-w);z-index:40;
-  background:var(--orange);border-right:2px solid var(--ink);
+  background:#FFA341;border-right:2px solid var(--ink);
   display:flex;flex-direction:column;align-items:stretch;gap:6px;padding-top:14px;
 }
 .side-item{
@@ -584,6 +582,9 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .timer-row #timerDisp,.timer-row button{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}   /* 透明底叠在轮播上，白晕保可读（同 .chip） */
 .timer-row button:hover{background:rgba(255,255,255,.35);}   /* 淡白底悬停反馈 */
 .timer-row .stop-sq{display:block;width:11px;height:11px;border-radius:2px;background:#E5484D;}   /* 停止=红色方块 */
+#timerPauseBtn .ic-play{display:none;}
+#timerPauseBtn.paused .ic-pause{display:none;}   /* 暂停后图标换黑色三角，再点续走换回竖杠 */
+#timerPauseBtn.paused .ic-play{display:block;}
 /* 落地页总时长角标：练习页清空右侧（轮播底上加白晕）、错题本/闯关绝对居中标题内右侧 */
 .wt-total{font-size:13px;font-weight:400;color:var(--muted);margin-left:10px;}
 #wtPractice{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}
