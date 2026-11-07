@@ -6689,63 +6689,91 @@ function startQuest(lesson, diff){
 }
 const QNODE_ICONS = {   /* 每关图标：填 课号:"表情/文字"，如 1:"🍣"；未填的关显示课号 */
 };
-function addTree(svg, x, y, s, dark){
-  const mk = (dx, dy, w, h, fill) => {
-    const p = document.createElementNS(SVG_NS, "polygon");
-    p.setAttribute("points", (x+dx)+","+(y+dy-h)+" "+(x+dx-w)+","+(y+dy)+" "+(x+dx+w)+","+(y+dy));
-    p.setAttribute("fill", fill);
-    svg.appendChild(p);
-  };
-  mk(-17*s, 8*s, 13*s, 22*s, dark ? "#63C1B0" : "#2E8B7E");
-  mk(2*s, 0, 17*s, 30*s, dark ? "#2E8B7E" : "#63C1B0");
-}
 function buildMap(){
   const box = $("qmapBox");
   box.innerHTML = "";
   const W = box.clientWidth || 640;
-  const gap = 116, top = 64;
-  const H = top + (DATA.lessons.length - 1) * gap + 90;
+  const N = DATA.lessons.length;
+  /* S 型折返主干道：与节点完全解耦——先独立画路（平缓微弧横段 + 大半径 180° 掉头半圆），
+     再用 getPointAtLength 在各层平直段上均匀撒节点（避开掉头弯），圆心精准贴合道路中心线 */
+  const perLayer = W > 700 ? 4 : 3;
+  const layers = Math.ceil(N / perLayer);
+  const layerGap = W > 700 ? 232 : 205;
+  const R = layerGap / 2, edge = R + 26;
+  const X_L = edge, X_R = W - edge, span = X_R - X_L;
+  const yAt = r => 64 + r * layerGap;
+  const H = yAt(layers - 1) + 100;
   box.style.height = H + "px";
-  const pts = DATA.lessons.map((L, i) => ({ x: W * (i % 2 ? 0.78 : 0.22), y: top + i * gap }));
+  let d = `M ${X_L} ${yAt(0)}`;
+  for(let r = 0; r < layers; r++){
+    const x0 = r % 2 ? X_R : X_L, x1 = r % 2 ? X_L : X_R;
+    const sag = (r % 2 ? -1 : 1) * 12;   /* 一点点平缓微弧，端点切线近水平无折角 */
+    d += ` C ${x0 + (x1 - x0) * 0.33} ${yAt(r) + sag}, ${x0 + (x1 - x0) * 0.67} ${yAt(r) + sag}, ${x1} ${yAt(r)}`;
+    if(r < layers - 1){
+      const sweep = r % 2 ? 0 : 1;   /* 右缘顺时针、左缘逆时针的饱满 180° 半圆掉头 */
+      d += ` A ${R} ${R} 0 0 ${sweep} ${x1} ${yAt(r + 1)}`;
+    }
+  }
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("class", "qmap-path");
   svg.setAttribute("width", W);
   svg.setAttribute("height", H);
-  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
-  if(W >= 560){   /* 窄屏不画小树，避免压到节点 */
-    for(let i = 0; i < DATA.lessons.length - 1; i++){
-      addTree(svg, i % 2 ? W * 0.095 : W * 0.905, top + i * gap + gap / 2, i % 2 ? 0.8 : 1.05, i % 3 !== 0);
-    }
-  }
-  let d = "M " + pts[0].x + " " + pts[0].y;
-  for(let i = 1; i < pts.length; i++){
-    const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
-    d += " C " + a.x + " " + my + ", " + b.x + " " + my + ", " + b.x + " " + b.y;
-  }
-  ["qmap-road", "qmap-dash"].forEach(cls => {
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const mkPath = cls => {
     const p = document.createElementNS(SVG_NS, "path");
     p.setAttribute("d", d);
     p.setAttribute("class", cls);
     svg.appendChild(p);
-  });
-  /* 走过的路点亮：第 i 课任一难度 ≥1★，第 i→i+1 段叠一条金色实线（未通关不画，状态随存档自动跟随） */
-  for(let i = 1; i < pts.length; i++){
+    return p;
+  };
+  const road = mkPath("qmap-road");
+  mkPath("qmap-dash");
+  box.appendChild(svg);
+  const segD = m => {   /* 采样点列 → 平滑 Catmull-Rom 贝塞尔 */
+    let d = "M " + m[0].x + " " + m[0].y;
+    for(let i = 0; i < m.length - 1; i++){
+      const p0 = m[Math.max(0, i - 1)], p1 = m[i], p2 = m[i + 1], p3 = m[Math.min(m.length - 1, i + 2)];
+      d += " C " + (p1.x + (p2.x - p0.x) / 6) + " " + (p1.y + (p2.y - p0.y) / 6) + ", "
+                + (p2.x - (p3.x - p1.x) / 6) + " " + (p2.y - (p3.y - p1.y) / 6) + ", "
+                + p2.x + " " + p2.y;
+    }
+    return d;
+  };
+  /* 节点：各层平直段按固定比例取点（13%/37.5%/62.5%/87%，第1/24关顶在路两端，离掉头弯有充足余量） */
+  const arcLen = Math.PI * R, segLen = span;
+  const nodes = [];
+  for(let r = 0; r < layers; r++){
+    const nR = Math.min(perLayer, N - r * perLayer);
+    const start = r * (segLen + arcLen);
+    for(let j = 0; j < nR; j++){
+      let p = [0.13, 0.375, 0.625, 0.87][j];
+      if(r === 0 && j === 0) p = 0;                       /* 第1关顶在路头 */
+      if(r === layers - 1 && j === nR - 1) p = 1;         /* 第24关顶在路尾 */
+      const a = start + segLen * p;
+      const pt = road.getPointAtLength(a);
+      pt.arc = a;
+      nodes.push(pt);
+    }
+  }
+  /* 走过的路点亮：第 i 课任一难度 ≥1★，节点 i-1→i 的弧段采样叠金色实线（穿过掉头弯也沿线走） */
+  for(let i = 1; i < N; i++){
     if(bestStars(i) < 1) continue;
-    const a = pts[i - 1], b = pts[i], my = (a.y + b.y) / 2;
+    const line = [];
+    for(let a = nodes[i - 1].arc; a < nodes[i].arc; a += 14) line.push(road.getPointAtLength(a));
+    line.push(road.getPointAtLength(nodes[i].arc));
     const seg = document.createElementNS(SVG_NS, "path");
-    seg.setAttribute("d", "M " + a.x + " " + a.y + " C " + a.x + " " + my + ", " + b.x + " " + my + ", " + b.x + " " + b.y);
+    seg.setAttribute("d", segD(line));
     seg.setAttribute("class", "qseg-lit");
     svg.appendChild(seg);
   }
-  box.appendChild(svg);
   let nowLesson = 0;
   DATA.lessons.forEach(L => { if(!nowLesson && questUnlocked(L.lesson) && !bestStars(L.lesson)) nowLesson = L.lesson; });
   DATA.lessons.forEach((L, i) => {
     const un = questUnlocked(L.lesson), best = bestStars(L.lesson);
     const wrap = document.createElement("div");
     wrap.className = "qnode " + (!un ? "locked" : best ? "done" : "open") + (L.lesson === nowLesson ? " now" : "") + (best === 3 ? " s3" : "");
-    wrap.style.left = pts[i].x + "px";
-    wrap.style.top = (pts[i].y - 56) + "px";
+    wrap.style.left = nodes[i].x + "px";
+    wrap.style.top = (nodes[i].y - 56) + "px";
     const label = document.createElement("span");
     label.className = "qlabel";
     label.textContent = "第" + L.lesson + "关";
@@ -6770,9 +6798,8 @@ function buildMap(){
   const goal = document.createElement("div");
   goal.className = "qgoal";
   goal.textContent = "🏁";
-  const last = pts[pts.length - 1];
-  goal.style.left = last.x + "px";
-  goal.style.top = (last.y + 42) + "px";
+  goal.style.left = (nodes[N - 1].x + 46) + "px";   /* 第24关已顶在路尾，旗子挪到圆钮右下侧 */
+  goal.style.top = (nodes[N - 1].y + 26) + "px";
   box.appendChild(goal);
   const cur = box.querySelector(".qnode.now");
   if(cur) setTimeout(() => cur.scrollIntoView({ block: "center" }), 60);

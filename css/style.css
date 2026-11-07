@@ -375,19 +375,27 @@ button{font:inherit;cursor:pointer;}
 }
 
 /* ---------- 闯关地图（P2） ---------- */
+/* 主区全宽独立条（与练习页同层）：去掉绿渐变大面板，只留悬浮道路+节点，不挡轮播背景 */
 #questMap{
-  background:linear-gradient(180deg,#58BBA7,#43A090);
-  border-radius:18px;padding:16px 14px 20px;
-  box-shadow:0 12px 28px rgba(38,64,95,.15);
+  margin:28px 0 0 var(--side-w);padding:0 20px 20px 16px;
+  position:relative;z-index:1;
 }
-#questMap .drill-top{color:rgba(255,255,255,.95);font-weight:600;}
-#questMap .drill-top .quit{color:#fff;background:rgba(255,255,255,.16);border-radius:999px;padding:4px 12px;font-weight:600;}
+#questMap .drill-top{position:relative;color:var(--ink);font-weight:600;}
+#questMap .drill-top .map-title{   /* 标题绝对居中（左右元素宽度不等会挤偏） */
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);
+}
+#questMap .drill-top .quit{   /* 重置进度贴右：半透明白胶囊保可读 */
+  color:var(--ink);background:rgba(255,255,255,.55);border-radius:999px;padding:4px 12px;font-weight:600;
+}
+#questMap .note{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}
 #questMap .drill-top .quit:hover{color:#fff;background:rgba(255,255,255,.28);}
 #questMap .note{color:rgba(255,255,255,.85);}
 .qmap{position:relative;margin:6px 0 4px;}
 .qmap-path{position:absolute;left:0;top:0;}
-.qmap-path .qmap-road{fill:none;stroke:#2E8B7E;stroke-width:34;stroke-linecap:round;stroke-linejoin:round;}
-.qmap-path .qmap-dash{fill:none;stroke:#8ED2C3;stroke-width:3;stroke-dasharray:2 12;stroke-linecap:round;}
+.qmap-path .qmap-road{fill:none;stroke:rgba(255,255,255,.55);stroke-width:34;stroke-linecap:round;stroke-linejoin:round;filter:blur(.6px) drop-shadow(0 4px 10px rgba(21,64,56,.28));}   /* 白色磨砂半透明悬浮路+投影 */
+.qmap-path .qmap-dash{fill:none;stroke:rgba(46,139,126,.8);stroke-width:3;stroke-dasharray:2 12;stroke-linecap:round;}   /* 白路上的深青点线 */
 .qnode{
   position:absolute;width:76px;transform:translateX(-50%);
   display:flex;flex-direction:column;align-items:center;gap:5px;
