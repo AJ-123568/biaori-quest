@@ -16,7 +16,7 @@
   <button class="side-item" id="wrongSideBtn" title="错题本"><span class="si-ico">❌</span><span class="si-tx">错题</span></button>
   <button class="side-item" id="questSideBtn" title="闯关地图"><span class="si-ico">🗺</span><span class="si-tx">闯关</span></button>
   <button class="side-item" id="shopBtn" title="商店"><span class="si-ico">🛍</span><span class="si-tx">商店</span></button>
-  <button class="side-item" id="wardrobeBtn" title="衣橱"><span class="si-ico">👗</span><span class="si-tx">衣橱</span></button>
+  <button class="side-item" id="bankBtn" title="中也的约会基金"><span class="si-ico">💞</span><span class="si-tx">约会</span></button>
   <button class="side-item" id="chuuyaBtn" title="中也"><span class="si-ico">🎩</span><span class="si-tx">中也</span></button>
 </aside>
 
@@ -159,11 +159,30 @@
     </div>
   </section>
 
-  <!-- ============ 衣橱 ============ -->
-  <section id="wardrobeView" hidden>
+  <!-- ============ 中也的约会基金：三板块答题时长兑金币（2026-11-07 替换衣橱入口） ============ -->
+  <section id="bankView" hidden>
     <div class="page-narrow">
-      <div id="wardrobeBody"></div>
-      <div class="shop-note">点击换装 · 立即生效</div>
+      <div class="bank-head">
+        <b class="bank-title">💞 中也的约会基金</b>
+        <span class="bank-sub">攒下的每一分钟，中也都记着</span>
+      </div>
+      <div class="bank-stats">
+        <div class="bank-stat"><span class="lab">未兑换时长</span><b id="bankAvail">00:00</b></div>
+        <div class="bank-stat"><span class="lab">已兑换时长</span><b id="bankSpent">00:00</b></div>
+      </div>
+      <div class="shop-item">
+        <div class="shop-info"><b>20 分钟档 · 50 金币</b><span>满 20 分钟、不足 30 分钟时可领 · 兑换扣 20 分钟</span></div>
+        <button class="btn bank-claim" data-min="20" data-reward="50">兑换</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-info"><b>30 分钟档 · 110 金币</b><span>满 30 分钟、不超过 1 小时可领 · 兑换扣 30 分钟</span></div>
+        <button class="btn bank-claim" data-min="30" data-reward="110">兑换</button>
+      </div>
+      <div class="shop-item">
+        <div class="shop-info"><b>1 小时档 · 200 金币</b><span>超过 1 小时可领 · 兑换扣 60 分钟</span></div>
+        <button class="btn bank-claim" data-min="60" data-reward="200">兑换</button>
+      </div>
+      <div class="shop-note" id="bankNote">未兑换时长满 20 分钟就能领第一笔</div>
     </div>
   </section>
 </div>

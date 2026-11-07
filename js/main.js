@@ -6554,7 +6554,8 @@ function loadStore(){
       s.quest = s.quest || {};
       s.custom = s.custom || {};
       s.wc = s.wc || {};   /* 错次记忆：每词自 2026-11-07 起的答错次数，旧存档没有则从空开始（以前的错不计） */
-      s.wt = s.wt || {};   /* 各模式累计答题时长（秒）：{ practice, wrong, quest }，旧存档没有则从零开始 */
+      s.wt = s.wt || {};   /* 各模式答题时长余额（秒）：{ practice, wrong, quest }，兑换会从这里扣 */
+      s.wx = s.wx || 0;    /* 约会基金：累计已兑换时长（秒），只增不减 */
       /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
       if(!Array.isArray(s.questUnlocked)){
         s.questUnlocked = [1];
@@ -6577,6 +6578,7 @@ function loadStore(){
   base.custom = {};
   base.wc = {};
   base.wt = {};
+  base.wx = 0;
   return base;
 }
 const store = loadStore();
@@ -7289,7 +7291,7 @@ function renderWrongBook(){
 }
 
 /* ---------- 视图切换：home = 空主界面，功能全部从左边栏进入 ---------- */
-const SECTIONS = ["setup", "questMap", "wrongBook", "drill", "result", "wrongEmpty", "shopView", "wardrobeView"];
+const SECTIONS = ["setup", "questMap", "wrongBook", "drill", "result", "wrongEmpty", "shopView", "bankView"];
 function showView(sec){
   if(sec !== "drill") bankSessionTime();   /* 离开答题页即结算：答完自动结算/停止退出/侧栏切页全走这一处 */
   $("topbar").hidden = false; $("hud").hidden = false;
@@ -7431,70 +7433,43 @@ $("resetEcoBtn").addEventListener("click", () => {
   saveStore(); refreshEco();
 });
 
-/* ---------- 衣橱（P3.5）：config/wardrobe.json 驱动，换装（原商店售卖服装随旧版手绘小人换装体系下架删除） ---------- */
-const WR_FREE = { head: "hat", body: "coat" };   /* 各槽位的免费默认穿戴 */
-let wrItems = null;   /* wardrobe.json 的 items；fetch 失败（如 file://）则衣橱入口隐藏 */
-function wrState(){
-  const w = store.wardrobe = store.wardrobe || {};
-  w.owned = Array.isArray(w.owned) ? w.owned : [];
-  w.worn = w.worn || {};
-  if(!w.worn.head) w.worn.head = WR_FREE.head;
-  if(!w.worn.body) w.worn.body = WR_FREE.body;
-  if(!Array.isArray(w.worn.acc)) w.worn.acc = [];
-  return w;
+/* ---------- 中也的约会基金：三板块答题时长兑金币（2026-11-07 替换衣橱入口） ---------- */
+const BANK_TIERS = { 20: 50, 30: 110, 60: 200 };   /* 档位分钟 → 金币；未兑换总时长落在哪档就只能兑哪档 */
+function bankAvail(){ return (store.wt.practice || 0) + (store.wt.wrong || 0) + (store.wt.quest || 0); }
+function bankBand(){   /* 所在档：[20,30)→20、[30,60]→30、>60→60，不足 20 → 0（档间无缝，60min 整归 30 档） */
+  const m = bankAvail() / 60;
+  return m >= 20 && m < 30 ? 20 : m >= 30 && m <= 60 ? 30 : m > 60 ? 60 : 0;
 }
-function wrOwned(id, st){
-  const it = wrItems.find(x => x.id === id);
-  return !!(it && (it.owned || st.owned.includes(id)));
-}
-function wrApply(){
-  if(!window.Puppet) return;
-  const st = wrState();
-  const acc = {};
-  st.worn.acc.forEach(id => acc[id] = true);
-  Puppet.setWorn({ head: st.worn.head, body: st.worn.body, acc });
-}
-function wrEquip(id){
-  const st = wrState();
-  const it = wrItems.find(x => x.id === id);
-  if(!it || !wrOwned(id, st)) return;
-  if(it.slot === "acc"){
-    const i = st.worn.acc.indexOf(id);
-    if(i >= 0) st.worn.acc.splice(i, 1); else st.worn.acc.push(id);
-  } else {
-    st.worn[it.slot] = id;
+function bankClaim(min){
+  if(bankBand() !== min) return;
+  const sec = min * 60, share = Math.floor(sec / 3);
+  const keys = ["practice", "wrong", "quest"];
+  let left = sec;   /* 均摊扣：某板块余额不足份额时钳到 0，差额从还有余额的板块补扣（不弹窗） */
+  keys.forEach(k => { const d = Math.min(store.wt[k] || 0, share); store.wt[k] -= d; left -= d; });
+  for(let guard = 0; left > 0 && guard < 9; guard++){
+    keys.forEach(k => { if(left > 0 && store.wt[k] > 0){ const d = Math.min(store.wt[k], left); store.wt[k] -= d; left -= d; } });
   }
-  saveStore(); wrApply(); renderWardrobe();
+  store.wx += sec;
+  saveStore();
+  addCoins(BANK_TIERS[min]);   /* 金币入账：飘字动画 + 存档 */
+  if(window.Sfx) Sfx.play("buy");   /* 收银双音当入账音 */
+  renderBank();
 }
-function renderWardrobe(){
-  const box = $("wardrobeBody");
-  if(!box) return;
-  box.innerHTML = "";
-  const st = wrState();
-  [["head", "头部"], ["body", "服装"], ["acc", "配饰（可叠穿）"]].forEach(([slot, label]) => {
-    const items = wrItems.filter(it => it.slot === slot && (it.ready || wrOwned(it.id, st)));
-    if(!items.length) return;
-    const h = document.createElement("div");
-    h.className = "wr-slot"; h.textContent = label;
-    box.appendChild(h);
-    const chips = document.createElement("div");
-    chips.className = "wr-chips";
-    items.forEach(it => {
-      const c = document.createElement("button");
-      c.className = "wr-chip";
-      const owned = wrOwned(it.id, st);
-      const on = owned && (slot === "acc" ? st.worn.acc.includes(it.id) : st.worn[slot] === it.id);
-      if(on) c.classList.add("on");
-      if(!owned) c.classList.add("locked");
-      c.textContent = it.name + (it.price > 0 && !owned ? " · 🪙" + it.price : "");
-      c.title = owned ? (on ? "点击脱下" : "点击穿上") : "还没拥有：去商店购买";
-      c.addEventListener("click", () => { if(owned) wrEquip(it.id); });   /* 售卖服装已随旧小人换装体系下架，未拥有态不再出现 */
-      chips.appendChild(c);
-    });
-    box.appendChild(chips);
+function renderBank(){
+  $("bankAvail").textContent = fmtDur(bankAvail());
+  $("bankSpent").textContent = fmtDur(store.wx || 0);
+  const band = bankBand();
+  document.querySelectorAll("#bankView .bank-claim").forEach(b => {
+    const mine = +b.dataset.min === band;
+    b.disabled = !mine;
+    b.textContent = mine ? "兑换" : (+b.dataset.min < band ? "已过本档" : "未满时长");
   });
+  $("bankNote").textContent = band
+    ? "现在可领 " + band + " 分钟档 · 兑换掉的时长会均摊从练习/错题/闯关三个板块扣除（不弹窗）"
+    : "未兑换时长满 20 分钟就能领第一笔，中也正替你记着账呢";
 }
-$("wardrobeBtn").addEventListener("click", () => { wrState(); renderWardrobe(); showView("wardrobeView"); });
+$("bankBtn").addEventListener("click", () => { renderBank(); showView("bankView"); });
+$("bankView").addEventListener("click", e => { const b = e.target.closest(".bank-claim"); if(b && !b.disabled) bankClaim(+b.dataset.min); });   /* 委托一次绑定，renderBank 重复刷新不叠监听 */
 
 /* ---------- 中也（P3.6）：侧边栏入口，开关 bot / 语音 ---------- */
 function renderChuuya(){
@@ -7527,23 +7502,6 @@ function renderChuuya(){
 $("chuuyaBtn").addEventListener("click", () => { renderChuuya(); $("chuuyaMask").hidden = false; });
 $("chuuyaCloseBtn").addEventListener("click", () => { $("chuuyaMask").hidden = true; });
 $("chuuyaMask").addEventListener("click", e => { if(e.target === $("chuuyaMask")) $("chuuyaMask").hidden = true; });
-
-function wrInit(json){
-  wrItems = json.items || [];
-  const st = wrState();
-  /* 上次存的穿戴若已不在架（ready 被关掉），回落到免费默认，避免小人隐形 */
-  ["head", "body"].forEach(slot => {
-    const cur = wrItems.find(x => x.id === st.worn[slot]);
-    if(!cur || !cur.ready) st.worn[slot] = WR_FREE[slot];
-  });
-  st.worn.acc = st.worn.acc.filter(id => { const it = wrItems.find(x => x.id === id); return it && it.ready; });
-  wrApply();
-}
-if(window.__WARDROBE_CONFIG__){ wrInit(window.__WARDROBE_CONFIG__); }   /* standalone：配置已内联 */
-else fetch("config/wardrobe.json").then(r => { if(!r.ok) throw 0; return r.json(); }).then(wrInit).catch(() => {
-  const wb = $("wardrobeBtn");
-  if(wb) wb.style.display = "none";
-});
 
 /* ---------- 编辑单词 ---------- */
 let editData = null;   /* 弹窗打开期间的工作副本：[{lesson, base, removed:Set, added:[]}]，保存才写回 store */
