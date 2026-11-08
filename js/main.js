@@ -6828,7 +6828,8 @@ function norm(s){
 const $ = id => document.getElementById(id);
 
 /* ---------- 范围选择 ---------- */
-const selected = new Set();
+const selected = new Set();   /* 单课勾选：练整课 */
+const stageSel = new Set();   /* 阶段抽测组（组首课号）：点开始抽本组词的 30%，与单课勾选叠加去重 */
 const chipEls = {};
 /* 悬停彩蛋：移入课程按钮随机出一张图（每次移入重新随机，预热缓存避免首次闪烁） */
 const PEEK_IMGS = [
@@ -6864,8 +6865,8 @@ function buildChips(){
     box.appendChild(b);
   });
 }
-/* 阶段测试：每 5 课一组（1-5/6-10/…/21-24），点击=组内词洗牌抽 30% 直接进答题，
-   走自由练习分支，金币/错题本/分课升级同一套结算 */
+/* 阶段抽测：每 5 课一组（1-5/6-10/…/21-24），点击=选中/取消本组（按钮自己变橙，不勾选组内课程卡），
+   点开始才抽本组词的 30% 进答题（走自由练习分支，金币/错题本/分课升级同一套结算） */
 function buildStageTests(){
   const box = $("stageTests");
   for(let s = 1; s < DATA.lessons.length + 1; s += 5){
@@ -6874,13 +6875,13 @@ function buildStageTests(){
     const b = document.createElement("button");
     b.className = "chip stage";
     b.innerHTML = '<span class="no">' + label + '</span>';
-    b.title = "从这 " + group.length + " 课里随机抽 30% 的词测试 · 金币与练习相同";
+    b.title = "选中这 " + group.length + " 课的抽测 · 点开始随机抽本组 30% 的词 · 再点取消";
     b.addEventListener("click", () => {
-      const all = [];
-      group.forEach(n => lessonWords(DATA.lessons[n - 1]).forEach(w => all.push(w)));
-      shuffle(all);
+      const on = !stageSel.has(s);
+      if(on) stageSel.add(s); else stageSel.delete(s);
+      b.classList.toggle("on", on);
       setWrong(false);
-      startSession(all.slice(0, Math.round(all.length * 0.30)));
+      refreshStart();
     });
     attachPeek(b);
     box.appendChild(b);
@@ -6897,8 +6898,8 @@ let wrongMode = false;
 function setWrong(on){ wrongMode = on; }
 function refreshStart(){
   const onlyWrong = wrongMode;
-  const selCount = [...selected].reduce((s, l) => s + lessonWords(DATA.lessons[l - 1]).length, 0);
-  const empty = onlyWrong ? store.wrong.length === 0 : (selected.size === 0 || selCount === 0);
+  const selCount = onlyWrong ? 0 : currentPool().length;   /* 阶段组含 30% 抽测份额，按实际进题数显示 */
+  const empty = onlyWrong ? store.wrong.length === 0 : (selected.size === 0 && stageSel.size === 0 || selCount === 0);
   $("startBtn").disabled = empty;
   $("startBtn").textContent = onlyWrong
     ? "开始 · 错题本 " + store.wrong.length + " 词"
@@ -6944,6 +6945,12 @@ function currentPool(){
   }
   const all = [];
   DATA.lessons.forEach(L => { if(selected.has(L.lesson)) lessonWords(L).forEach(w => all.push(w)); });
+  stageSel.forEach(s => {   /* 阶段组=抽测：组内词洗牌取 30%；与单课勾选可叠加，重叠词各出一次（计数才恒等） */
+    const g = [];
+    DATA.lessons.slice(s - 1, s + 4).forEach(L => lessonWords(L).forEach(w => g.push(w)));
+    shuffle(g);
+    all.push(...g.slice(0, Math.round(g.length * 0.30)));
+  });
   return all;
 }
 
@@ -7251,13 +7258,16 @@ function showResult(){
 $("startBtn").addEventListener("click", () => startSession(currentPool()));
 $("allBtn").addEventListener("click", () => {
   DATA.lessons.forEach(L => selected.add(L.lesson));
-  document.querySelectorAll(".chip").forEach(c => c.classList.add("on"));
+  DATA.lessons.forEach(L => chipEls[L.lesson].classList.add("on"));   /* 只勾课程卡：阶段组是 30% 抽测，不跟全选叠加 */
+  stageSel.clear();
+  document.querySelectorAll(".chip.stage").forEach(c => c.classList.remove("on"));
   setWrong(false);
   refreshStart();
 });
 $("noneBtn").addEventListener("click", () => {
   selected.clear();
-  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));
+  stageSel.clear();
+  document.querySelectorAll(".chip").forEach(c => c.classList.remove("on"));   /* .chip 含阶段钮，一并熄灭 */
   refreshStart();
 });
 /* ---------- 错题本过渡页：先看统计再决定，点「败部复活」才进答题 ---------- */
