@@ -45,7 +45,24 @@ header.top h1{   /* 绝对居中（flex:1 会因左右元素宽度不等而偏�
   margin:0;pointer-events:none;white-space:nowrap;
   font-size:20px;font-weight:700;letter-spacing:.02em;
 }
-header.top .sub{font-size:12px;color:var(--muted);margin-left:auto;}
+header.top .sub{font-size:12px;color:var(--muted);}
+/* 背景音乐音符按钮：磨砂半透明白底，浅绿音符；.spinning 旋转、.paused 冻结当前角度（右端一组，紧贴 1065 词左侧） */
+#bgmBtn{
+  margin-left:auto;
+  width:26px;height:26px;border-radius:50%;
+  border:1px solid rgba(35,40,43,.12);
+  background:rgba(255,255,255,.42);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  color:#A1D6A5;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;padding:0;flex:none;
+}
+#bgmBtn:hover{color:#8FC98F;}
+#bgmBtn .bgm-note{display:block;}
+#bgmBtn.spinning .bgm-note{animation:bgm-spin 3s linear infinite;}
+#bgmBtn.spinning.paused .bgm-note{animation-play-state:paused;}
+@keyframes bgm-spin{to{transform:rotate(360deg);}}
 /* 返回主页面箭头：无圆圈细线条，字号颜色与标题一致 */
 .home-back{
   border:none;background:none;color:var(--ink);cursor:pointer;flex:none;

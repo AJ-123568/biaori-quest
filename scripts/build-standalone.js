@@ -29,6 +29,9 @@ const inject = {
 };
 const customSvg = path.join(root, "assets", "companion", "puppet-custom.svg");
 if(fs.existsSync(customSvg)) inject.__PUPPET_CUSTOM_SVG__ = readTxt("assets/companion/puppet-custom.svg");
+/* 背景音乐：存在则整曲 base64 内联（单文件含全部），缺失时 bgm.js 走相对路径且静默容错 */
+const bgmSrc = path.join(root, "audio", "bgm", "bgm-01.mp3");
+if(fs.existsSync(bgmSrc)) inject.__BGM_SRC__ = "data:audio/mpeg;base64," + read(path.join("audio", "bgm", "bgm-01.mp3")).toString("base64");
 
 /* 本地位图全部内联为 base64：递归扫 assets 下的 png/jpg/webp/gif（src/ 是原图备份，不入包）。
    静态完整路径（homestage 轮播 / 悬停彩蛋 / 拖尾 / CSS 光标）最后在成品全文替换成 dataURL；
