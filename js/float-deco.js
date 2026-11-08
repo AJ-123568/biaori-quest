@@ -6,7 +6,7 @@
   "use strict";
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;   /* 减弱动效：整体不出（CSS 还有 display:none 兜底） */
   const MOTIFS = ["❤️", "🫧", "🍬", "✨"];
-  const SIZE = [13, 26], DUR = [18, 34], OPACITY = [0.35, 0.7], SWAY = [4.5, 9.5];   /* px区间/秒区间/透明度区间/摆动周期区间 */
+  const SIZE = [13, 26], DUR = [14, 26], OPACITY = [0.35, 0.7], SWAY = [4.5, 9.5];   /* px区间/秒区间/透明度区间/摆动周期区间 */
 
   document.querySelectorAll(".float-deco").forEach(box => {
     const n = +box.dataset.count || 14;
