@@ -664,3 +664,31 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
   background:var(--panel);border:2px solid #FFA341;
 }
 #bgmVolNum{min-width:2.2em;text-align:right;font-variant-numeric:tabular-nums;}
+
+/* ---------- 全屏漂浮装饰（❤️🫧🍬✨ 自下而上）：主区实例 #hsFloat 垫在轮播氛围底之上、照片卡之下（DOM 序）；
+   边栏实例 .side-float z:-1 画在橙底之上、图标文字之下（.sidebar fixed = stacking context）；
+   所有内容层 z>=1 盖过图案，bot/弹窗/拖尾在更上。 ---------- */
+.float-deco{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;   /* 不接任何点击 */
+}
+.side-float{z-index:-1;}
+.fd-i{
+  position:absolute;bottom:-40px;   /* 从容器底外起步 */
+  animation-name:fd-rise;animation-timing-function:linear;animation-iteration-count:infinite;
+  will-change:transform;
+}
+.fd-i i{
+  display:inline-block;font-style:normal;line-height:1;   /* inline 才要转块级让 transform 生效 */
+  animation-name:fd-sway;animation-timing-function:ease-in-out;animation-iteration-count:infinite;animation-direction:alternate;
+}
+@keyframes fd-rise{
+  from{transform:translateY(0)}
+  to{transform:translateY(calc(-100vh - 120px))}   /* 容器=全屏高，连 bottom 起步余量一起升出顶边 */
+}
+@keyframes fd-sway{
+  from{transform:translateX(-14px) rotate(-8deg)}
+  to{transform:translateX(14px) rotate(8deg)}
+}
+@media (prefers-reduced-motion:reduce){
+  .float-deco{display:none;}
+}
