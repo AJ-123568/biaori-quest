@@ -7522,8 +7522,8 @@ function renderChuuya(){
   box.innerHTML = "";
   const rows = [
     /* 回调收到当前状态 on：点击 = 翻转，所以 set 的是 on 本身（开→关 / 关→开） */
-    ["使用中也 bot", window.Companion ? !Companion.isOff() : false,
-      on => Companion.setOff(on), "关掉后右下角不再显示，重新打开会打招呼"],
+    ["中也 bot", window.Companion ? !Companion.isOff() : false,
+      on => Companion.setOff(on), ""],
     ["台词语音", window.Companion ? !Companion.isMute() : false,
       on => Companion.setMute(on), "关掉后台词气泡照常，但不出声"],
     ["音效音", !(window.Sfx && Sfx.isOff()),
@@ -7532,7 +7532,7 @@ function renderChuuya(){
   rows.forEach(([title, on, toggle, desc]) => {
     const row = document.createElement("div");
     row.className = "shop-item";
-    row.innerHTML = '<div class="shop-info"><b>' + esc(title) + '</b><span>' + esc(desc) + '</span></div>';
+    row.innerHTML = '<div class="shop-info"><b>' + esc(title) + '</b>' + (desc ? '<span>' + esc(desc) + '</span>' : '') + '</div>';   /* desc 为空不渲染说明行 */
     const sw = document.createElement("button");
     sw.type = "button";
     sw.className = "chuuya-sw" + (on ? " on" : "");
