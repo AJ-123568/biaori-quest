@@ -7675,6 +7675,23 @@ $("editSaveBtn").addEventListener("click", () => {
   });
 });
 
+/* ---------- BGM 音量弹窗（双击顶栏音符按钮） ---------- */
+function syncBgmVolUI(){
+  const v = window.Bgm ? Bgm.getVolume() : 25;
+  const r = $("bgmVolRange");
+  r.value = v;
+  r.style.setProperty("--vol", v + "%");
+  $("bgmVolNum").textContent = v;
+}
+$("bgmBtn").addEventListener("dblclick", () => {
+  syncBgmVolUI();
+  $("bgmVolMask").hidden = false;
+});
+$("bgmVolMask").addEventListener("click", e => { if(e.target === $("bgmVolMask")) $("bgmVolMask").hidden = true; });
+$("bgmVolRange").addEventListener("input", e => window.Bgm.setVolume(+e.target.value));
+document.addEventListener("bgmvol", syncBgmVolUI);
+syncBgmVolUI();
+
 buildChips();
 buildStageTests();
 /* 开始按钮彩蛋：hover 显示星粹合绘（图 840×104 与按钮 420×52 同为 8:1，contain 完整显示无裁切）；

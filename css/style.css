@@ -644,3 +644,23 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 /* 条目卡内部保持原横排（文字左、按钮右、框不变高），居中只作用于整栏与标题 */
 .bank-claim:disabled{opacity:.45;cursor:not-allowed;color:var(--muted);}
 .bank-claim:disabled:hover{border-color:var(--line);color:var(--muted);}   /* 压掉 .btn:hover 的变靛蓝 */
+
+/* ---------- BGM 音量弹窗：橙色滑条 ---------- */
+.bgm-vol-row{display:flex;align-items:center;gap:10px;color:var(--ink);}
+.bgm-speaker{flex:none;}
+#bgmVolRange{
+  flex:1;appearance:none;-webkit-appearance:none;
+  height:8px;border-radius:999px;outline:none;cursor:pointer;
+  background:linear-gradient(90deg,#FFA341 var(--vol,25%),rgba(255,255,255,.42) var(--vol,25%));
+}
+#bgmVolRange::-webkit-slider-thumb{
+  appearance:none;-webkit-appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--panel);border:2px solid #FFA341;
+  box-shadow:0 1px 4px rgba(35,40,43,.25);
+}
+#bgmVolRange::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--panel);border:2px solid #FFA341;
+}
+#bgmVolNum{min-width:2.2em;text-align:right;font-variant-numeric:tabular-nums;}
