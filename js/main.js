@@ -6590,9 +6590,9 @@ const wkey = w => "l" + w.lesson + ":" + w.kana;
 /* ---------- 每按钮练习记录（store.pr，2026-11-14 起算） ---------- */
 const PR_ZERO = { r: 0, q: 0, o: 0 };
 const recGet = k => store.pr[k] || PR_ZERO;   /* 展示只读不建档，记账处才落 key */
-const recLine = r => r.q ? r.r + "遍·" + r.q + "题<br>" + Math.round(r.o * 100 / r.q) + "%" : "—";   /* chip 记录块两行：遍数·题数 + 正确率（卡内 75px 放不下三项一行，设计上断在 % 前；半场 r=0 也照显 0遍·x题），没练过「—」 */
-const recBody = r => r.r ? "练 " + r.r + " 遍 · 共 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%"
-  : (r.q ? "还没练完过一遍 · 已答 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%" : "还没练过");   /* 半场退出也要看到已答题数与正确率（2026-11-14 口径：半场也算题） */
+const recLine = r => r.q ? r.r + "遍·" + r.q + "词<br>" + Math.round(r.o * 100 / r.q) + "%" : "—";   /* chip 记录块两行：遍数·词数 + 正确率（卡内 75px 放不下三项一行，设计上断在 % 前；半场 r=0 也照显 0遍·x词），没练过「—」 */
+const recBody = r => r.r ? "练 " + r.r + " 遍 · 共 " + r.q + " 词 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%"
+  : (r.q ? "还没练完过一遍 · 已练 " + r.q + " 词 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%" : "还没练过");   /* 明细正文（两位小数，同错题本占比口径）；半场退出也要看到已练词数与正确率 */
 const recTitle = (label, r) => label + "：" + recBody(r);   /* 悬停明细 */
 
 /* ---------- 单词增删（自定义覆盖层：removed=删除的原词 key，added=新词） ---------- */
