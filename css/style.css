@@ -630,8 +630,8 @@ html, html *{cursor:url("../assets/cursor/dog-wide-cur.png") 22 4, auto !importa
 .stop-shop .s-ok b{color:var(--midori);}
 .stop-shop .s-bad b{color:var(--shu);}
 .stop-shop .stop-foot{justify-content:space-between;padding:0 4px;}
-#stopStayBtn{background:#FFA341;border-color:#FFA341;color:var(--ink);}   /* 不退出=主操作橙，同开始/败部复活 */
-#stopStayBtn:hover{background:#F08900;border-color:#F08900;}
+#stopExitBtn,#stopStayBtn{background:#FFA341;border-color:#FFA341;color:var(--ink);}   /* 退出/不退出都=主操作橙，同开始/败部复活 */
+#stopExitBtn:hover,#stopStayBtn:hover{background:#F08900;border-color:#F08900;}
 
 /* ---------- 中也的约会基金：三板块时长兑金币（替换衣橱入口） ---------- */
 .bank-head{margin-bottom:10px;text-align:center;}
