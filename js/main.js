@@ -6556,6 +6556,7 @@ function loadStore(){
       s.wc = s.wc || {};   /* 错次记忆：每词自 2026-11-07 起的答错次数，旧存档没有则从空开始（以前的错不计） */
       s.wt = s.wt || {};   /* 各模式答题时长余额（秒）：{ practice, wrong, quest }，兑换会从这里扣 */
       s.wx = s.wx || 0;    /* 约会基金：累计已兑换时长（秒），只增不减 */
+      s.pr = s.pr || {};   /* 每按钮练习记录自 2026-11-14 起算：p:l课/p:s组首/q:l课:n|a → {r:遍数,q:题数,o:答对}，以前的练不计（旧存档无 pr 字段从零开始） */
       /* 解锁记忆：一次性从历史星级推导（已通关过的课永久解锁，不受单课重置影响） */
       if(!Array.isArray(s.questUnlocked)){
         s.questUnlocked = [1];
@@ -6579,11 +6580,20 @@ function loadStore(){
   base.wc = {};
   base.wt = {};
   base.wx = 0;
+  base.pr = {};
   return base;
 }
 const store = loadStore();
 function saveStore(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(store)); }catch(e){} }
 const wkey = w => "l" + w.lesson + ":" + w.kana;
+
+/* ---------- 每按钮练习记录（store.pr，2026-11-14 起算） ---------- */
+const PR_ZERO = { r: 0, q: 0, o: 0 };
+const recGet = k => store.pr[k] || PR_ZERO;   /* 展示只读不建档，记账处才落 key */
+const recLine = r => r.r ? r.r + "遍·" + Math.round(r.o * 100 / r.q) + "%" : "—";   /* chip 第三行小字 */
+const recBody = r => r.r ? "练 " + r.r + " 遍 · 共 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%"
+  : (r.q ? "还没练完过一遍 · 已答 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%" : "还没练过");   /* 半场退出也要看到已答题数与正确率（2026-11-14 口径：半场也算题） */
+const recTitle = (label, r) => label + "：" + recBody(r);   /* 悬停明细 */
 
 /* ---------- 单词增删（自定义覆盖层：removed=删除的原词 key，added=新词） ---------- */
 function lessonWords(L){
@@ -6687,6 +6697,8 @@ function openDiff(lesson){
   const q = store.quest["l" + lesson] || { n: 0, a: 0 };
   $("diffNStars").textContent = starStr(q.n);
   $("diffAStars").textContent = starStr(q.a);
+  $("diffNRec").textContent = recBody(recGet("q:l" + lesson + ":n"));   /* 每次开弹窗现读记录：普通/进阶各记各的 */
+  $("diffARec").textContent = recBody(recGet("q:l" + lesson + ":a"));
   $("diffMask").hidden = false;
 }
 function startQuest(lesson, diff){
@@ -6831,6 +6843,7 @@ const $ = id => document.getElementById(id);
 const selected = new Set();   /* 单课勾选：练整课 */
 const stageSel = new Set();   /* 阶段抽测组（组首课号）：点开始抽本组词的 30%，与单课勾选叠加去重 */
 const chipEls = {};
+const stageEls = {};   /* 阶段抽测按钮注册表（组首课号→按钮）：paintChipRecords 会话后重刷记录行 */
 /* 悬停彩蛋：移入课程按钮随机出一张图（每次移入重新随机，预热缓存避免首次闪烁） */
 const PEEK_IMGS = [
   "assets/chuuya/chuuya-22.jpg", "assets/chuuya/chuuya-23.jpg", "assets/chuuya/chuuya-24.jpg",
@@ -6853,7 +6866,7 @@ function buildChips(){
   DATA.lessons.forEach(L => {
     const b = document.createElement("button");
     b.className = "chip"; b.dataset.lesson = L.lesson;
-    b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + lessonWords(L).length + '词</span>';
+    b.innerHTML = '<span class="no">第' + L.lesson + '课</span><span class="ct">' + lessonWords(L).length + '词</span><span class="pr"></span>';
     chipEls[L.lesson] = b;
     b.addEventListener("click", () => {
       if(selected.has(L.lesson)) selected.delete(L.lesson);
@@ -6874,7 +6887,7 @@ function buildStageTests(){
     const label = group[0] + "-" + group[group.length - 1] + "课";
     const b = document.createElement("button");
     b.className = "chip stage";
-    b.innerHTML = '<span class="no">' + label + '</span>';
+    b.innerHTML = '<span class="no">' + label + '</span><span class="pr"></span>';
     b.title = "选中这 " + group.length + " 课的抽测 · 点开始随机抽本组 30% 的词 · 再点取消";
     b.addEventListener("click", () => {
       const on = !stageSel.has(s);
@@ -6883,6 +6896,7 @@ function buildStageTests(){
       setWrong(false);
       refreshStart();
     });
+    stageEls[s] = b;
     attachPeek(b);
     box.appendChild(b);
   }
@@ -6892,6 +6906,21 @@ function updateChipCounts(){   /* 单词增删后同步每课词数与总词数 
     if(chipEls[L.lesson]) chipEls[L.lesson].querySelector(".ct").textContent = lessonWords(L).length + "词";
   });
   $("totalWords").textContent = DATA.lessons.reduce((s, L) => s + lessonWords(L).length, 0);
+}
+function paintChipRecords(){   /* 会话后重刷按钮记录行：chips 只建一次，遍数/正确率要现读 store.pr（练过没练过都在 title 里给全明细） */
+  DATA.lessons.forEach(L => {
+    const b = chipEls[L.lesson];
+    if(!b) return;
+    const r = recGet("p:l" + L.lesson);
+    b.querySelector(".pr").textContent = recLine(r);
+    b.title = recTitle("第" + L.lesson + "课", r);
+  });
+  for(const s in stageEls){
+    const r = recGet("p:s" + s);
+    const last = Math.min(s * 1 + 4, DATA.lessons.length);   /* 末组按实际课数（21~24），不写死 +4 */
+    stageEls[s].querySelector(".pr").textContent = recLine(r);
+    stageEls[s].title = "选中这 " + (last - s + 1) + " 课的抽测 · 点开始随机抽本组 30% 的词 · 再点取消\n" + recTitle("练习" + s + "~" + last + "课", r);   /* 记录拼在机制说明后，原 tooltip 不丢 */
+  }
 }
 /* 错题本模式：从左边栏「错题」进入会话时置位，退出或回主界面时复位 */
 let wrongMode = false;
@@ -6913,6 +6942,7 @@ let cur = null, answered = false, hintUsed = false, forceWrong = false, advanced
 let runUsedTicket = false;   /* 本场用过券：闯关模式下星级封顶 2 星（P2 消费） */
 let hintUsedCount = 0, skipUsedCount = 0;   /* 本场已用券数（停止弹窗统计显示用） */
 let questRun = null;         /* null = 自由练习，否则 { lesson, diff: "n"|"adv" } */
+let sessionNoRound = false;  /* 本场不计遍数：重练本次错题是子集不算完整一遍，题/正确率照记 */
 function advance(){
   if(advanced) return;
   advanced = true;
@@ -6920,10 +6950,12 @@ function advance(){
   nextWord();
 }
 
-function startSession(list, quest = null){
+function startSession(list, quest = null, noRound = false){
   questRun = quest;
   if(quest) lastQuest = quest;
   pool = list.slice();
+  sessionNoRound = noRound;
+  if(quest) pool = pool.map(w => Object.assign({}, w, { _rec: "q:l" + quest.lesson + ":" + (quest.diff === "adv" ? "a" : "n") }));   /* 闯关出处=本关本难度（共享对象也要拷贝成独立实例） */
   if(!quest && $("optRandom").checked) shuffle(pool);
   idx = 0; correctCount = 0; sessionWrong = []; streak = 0; bestStreak = 0; wrongStreak = 0;
   runUsedTicket = false;
@@ -6937,19 +6969,20 @@ function startSession(list, quest = null){
 }
 
 function currentPool(){
+  /* 返回带 _rec 出处标签的浅拷贝池：重叠词各出一次=各是各的拷贝实例，标签互不覆盖，记账才与出题恒等（共享对象挂标签会被后标覆盖） */
   if(wrongMode){
     const set = new Set(store.wrong);
     const all = [];
-    DATA.lessons.forEach(L => lessonWords(L).forEach(w => { if(set.has(wkey(w))) all.push(w); }));
+    DATA.lessons.forEach(L => lessonWords(L).forEach(w => { if(set.has(wkey(w))) all.push(Object.assign({}, w, { _rec: null })); }));
     return all;
   }
   const all = [];
-  DATA.lessons.forEach(L => { if(selected.has(L.lesson)) lessonWords(L).forEach(w => all.push(w)); });
-  stageSel.forEach(s => {   /* 阶段组=抽测：组内词洗牌取 30%；与单课勾选可叠加，重叠词各出一次（计数才恒等） */
+  DATA.lessons.forEach(L => { if(selected.has(L.lesson)) lessonWords(L).forEach(w => all.push(Object.assign({}, w, { _rec: "p:l" + L.lesson }))); });
+  stageSel.forEach(s => {   /* 阶段组=抽测：组内词洗牌取 30%；与单课勾选可叠加，重叠词各出一次（计数才恒等）；出处只记组不落单课，两边记录不混合 */
     const g = [];
     DATA.lessons.slice(s - 1, s + 4).forEach(L => lessonWords(L).forEach(w => g.push(w)));
     shuffle(g);
-    all.push(...g.slice(0, Math.round(g.length * 0.30)));
+    g.slice(0, Math.round(g.length * 0.30)).forEach(w => all.push(Object.assign({}, w, { _rec: "p:s" + s })));
   });
   return all;
 }
@@ -7050,6 +7083,8 @@ function check(){
   const ok = !forceWrong && norm(val) === norm(cur.kana);
   const k = wkey(cur);
   const st = store.stats[k] || (store.stats[k] = { c: 0, w: 0 });
+  const pr = cur._rec ? (store.pr[cur._rec] || (store.pr[cur._rec] = { r: 0, q: 0, o: 0 })) : null;   /* 每按钮练习记录：按题记账（半场也算题，跳过=答错） */
+  if(pr){ pr.q++; if(ok) pr.o++; }
   if(ok){
     correctCount++; streak++; bestStreak = Math.max(bestStreak, streak); wrongStreak = 0;
     st.c++;
@@ -7163,6 +7198,13 @@ if("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => {};
 
 /* ---------- 结果页 ---------- */
 function showResult(){
+  if(!sessionNoRound){   /* 完整答完才算一遍：本场出现的每个出处范围各 +1（全选/多课各记各的，重练错题不计） */
+    new Set(pool.map(w => w._rec).filter(Boolean)).forEach(k => {
+      const pr = store.pr[k] || (store.pr[k] = { r: 0, q: 0, o: 0 });
+      pr.r++;
+    });
+    saveStore();
+  }
   showView("result");
   $("scoreCorrect").textContent = correctCount;
   $("scoreTotal").textContent = pool.length;
@@ -7345,6 +7387,7 @@ function showPractice(){
   bankSessionTime();   /* 先结算：侧栏切练习可能发生在错题本/闯关会话中途，此时 setWrong(false) 还不能先执行 */
   setWrong(false);
   showView("setup"); refreshStart();
+  paintChipRecords();   /* 每次进练习页重刷记录行：上一场可能刚涨了遍数/题数 */
   refreshWt();
 }
 function showQuest(){
@@ -7421,8 +7464,8 @@ document.addEventListener("keydown", e => {
     e.preventDefault(); $("ans").focus(); if(answered) check();
   }
 });
-$("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWrong.slice())));
-$("redoSameBtn").addEventListener("click", () => startSession(pool.slice()));
+$("redoWrongBtn").addEventListener("click", () => startSession(shuffle(sessionWrong.slice()), null, true));   /* 子集重练：题/正确率照记（词自带原出处标签），不算遍 */
+$("redoSameBtn").addEventListener("click", () => startSession(pool.slice(), null, sessionNoRound));   /* 同范围=本场范围原样再来；若本场本身是子集重练（不计遍），延续不计 */
 $("backBtn").addEventListener("click", () => {
   if(questRun){ questRun = null; showQuest(); }
   else if(wrongMode){ showHome(); }
@@ -7694,6 +7737,7 @@ syncBgmVolUI();
 
 buildChips();
 buildStageTests();
+paintChipRecords();   /* 初始就有旧记录的按钮要一次到位（本功能 2026-11-14 起算，首次全为「—」） */
 /* 开始按钮彩蛋：hover 显示星粹合绘（图 840×104 与按钮 420×52 同为 8:1，contain 完整显示无裁切）；
    未选课文（disabled）时不出图，文字隐藏走 .start.peek */
 const startBtnEl = $("startBtn");

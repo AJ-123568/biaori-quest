@@ -112,13 +112,14 @@ main section{margin-top:28px;}
 }
 .chip .no{display:block;font-weight:700;font-size:15px;}
 .chip .ct{display:block;font-size:11px;color:var(--muted);line-height:1.3;}
-.chip .no,.chip .ct{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}   /* 透明底后文字直接叠在轮播上，白晕保可读 */
+.chip .pr{display:block;font-size:10px;color:var(--muted);line-height:1.3;}   /* 每按钮练习记录行：x遍·正确率（2026-11-14 起算），明细在按钮 title */
+.chip .no,.chip .ct,.chip .pr{text-shadow:0 1px 3px rgba(255,255,255,.75),0 0 6px rgba(255,255,255,.45);}   /* 透明底后文字直接叠在轮播上，白晕保可读 */
 .chip:hover{background:rgba(255,255,255,.35);}   /* 无边框后用淡白底做悬停反馈 */
 .chip.on{background:#FFA341;color:var(--ink);}   /* 选中态=与边栏相同橙（色值独立写死），未选=透明 */
-.chip.on .ct{color:var(--ink);}
+.chip.on .ct,.chip.on .pr{color:var(--ink);}
 /* 悬停彩蛋：移入课程按钮随机出一张图，contain 完整显示、文字隐藏（规则须在 .chip.on 后，否则选中态橙底盖掉白底衬） */
 .chip.peek{background-color:#fff;background-size:contain;background-position:center;background-repeat:no-repeat;}
-.chip.peek .no,.chip.peek .ct{visibility:hidden;}
+.chip.peek .no,.chip.peek .ct,.chip.peek .pr{visibility:hidden;}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;}
 button{font:inherit;cursor:pointer;}
 .btn{
@@ -488,6 +489,7 @@ button{font:inherit;cursor:pointer;}
 .qstars{text-align:center;font-size:30px;letter-spacing:6px;color:#D9A441;margin-top:14px;}
 .diff-right{display:flex;align-items:center;gap:10px;}
 .diff-right .dstars{font-size:13px;color:#D9A441;letter-spacing:1px;}
+.drec{display:block;font-size:11px;color:var(--muted);margin-top:2px;}   /* 闯关难度弹窗的每按钮练习记录行 */
 
 /* ---------- 中也伴侣（P3） ---------- */
 .companion{
