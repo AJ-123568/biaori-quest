@@ -6590,7 +6590,7 @@ const wkey = w => "l" + w.lesson + ":" + w.kana;
 /* ---------- 每按钮练习记录（store.pr，2026-11-14 起算） ---------- */
 const PR_ZERO = { r: 0, q: 0, o: 0 };
 const recGet = k => store.pr[k] || PR_ZERO;   /* 展示只读不建档，记账处才落 key */
-const recLine = r => r.r ? r.r + "遍·" + Math.round(r.o * 100 / r.q) + "%" : "—";   /* chip 第三行小字 */
+const recLine = r => r.q ? r.r + "遍·" + r.q + "题<br>" + Math.round(r.o * 100 / r.q) + "%" : "—";   /* chip 记录块两行：遍数·题数 + 正确率（卡内 75px 放不下三项一行，设计上断在 % 前；半场 r=0 也照显 0遍·x题），没练过「—」 */
 const recBody = r => r.r ? "练 " + r.r + " 遍 · 共 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%"
   : (r.q ? "还没练完过一遍 · 已答 " + r.q + " 题 · 正确率 " + (r.o * 100 / r.q).toFixed(2) + "%" : "还没练过");   /* 半场退出也要看到已答题数与正确率（2026-11-14 口径：半场也算题） */
 const recTitle = (label, r) => label + "：" + recBody(r);   /* 悬停明细 */
@@ -6907,18 +6907,18 @@ function updateChipCounts(){   /* 单词增删后同步每课词数与总词数 
   });
   $("totalWords").textContent = DATA.lessons.reduce((s, L) => s + lessonWords(L).length, 0);
 }
-function paintChipRecords(){   /* 会话后重刷按钮记录行：chips 只建一次，遍数/正确率要现读 store.pr（练过没练过都在 title 里给全明细） */
+function paintChipRecords(){   /* 会话后重刷按钮记录行：chips 只建一次，遍数/题数/正确率要现读 store.pr（两位小数明细在 title） */
   DATA.lessons.forEach(L => {
     const b = chipEls[L.lesson];
     if(!b) return;
     const r = recGet("p:l" + L.lesson);
-    b.querySelector(".pr").textContent = recLine(r);
+    b.querySelector(".pr").innerHTML = recLine(r);   /* recLine 含 <br> 断行，纯数字拼接无注入面 */
     b.title = recTitle("第" + L.lesson + "课", r);
   });
   for(const s in stageEls){
     const r = recGet("p:s" + s);
     const last = Math.min(s * 1 + 4, DATA.lessons.length);   /* 末组按实际课数（21~24），不写死 +4 */
-    stageEls[s].querySelector(".pr").textContent = recLine(r);
+    stageEls[s].querySelector(".pr").innerHTML = recLine(r);
     stageEls[s].title = "选中这 " + (last - s + 1) + " 课的抽测 · 点开始随机抽本组 30% 的词 · 再点取消\n" + recTitle("练习" + s + "~" + last + "课", r);   /* 记录拼在机制说明后，原 tooltip 不丢 */
   }
 }
